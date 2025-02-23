@@ -1,0 +1,193 @@
+require:
+  - rubocop-rails
+
+AllCops:
+  DisabledByDefault: true
+  Exclude:
+    - bin/**/*
+    - db/**/*
+    - config/**/*
+    - node_modules/**/*
+    - vendor/**/*
+    - Gemfile
+    - config.ru
+  SuggestExtensions: false
+  TargetRubyVersion: 3.3
+
+Layout/CaseIndentation:
+  Enabled: true
+Layout/CommentIndentation:
+  Enabled: true
+Layout/ElseAlignment:
+  Enabled: true
+Layout/EmptyLineAfterMagicComment:
+  Enabled: true
+Layout/EmptyLinesAroundClassBody:
+  Enabled: true
+Layout/EmptyLinesAroundMethodBody:
+  Enabled: true
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: true
+Layout/EndAlignment:
+  AutoCorrect: true
+  Enabled: true
+  EnforcedStyleAlignWith: variable
+Layout/FirstParameterIndentation:
+  Enabled: true
+Layout/IndentationConsistency:
+  Enabled: true
+  EnforcedStyle: normal
+Layout/IndentationStyle:
+  Enabled: true
+Layout/IndentationWidth:
+  Enabled: true
+Layout/LeadingCommentSpace:
+  Enabled: true
+Layout/SpaceAfterColon:
+  Enabled: true
+Layout/SpaceAfterComma:
+  Enabled: true
+Layout/SpaceAroundEqualsInParameterDefault:
+  Enabled: true
+Layout/SpaceAroundKeyword:
+  Enabled: true
+Layout/SpaceAroundOperators:
+  Enabled: true
+Layout/SpaceBeforeBlockBraces:
+  Enabled: true
+Layout/SpaceBeforeComma:
+  Enabled: true
+Layout/SpaceBeforeFirstArg:
+  Enabled: true
+Layout/SpaceInsideBlockBraces:
+  Enabled: true
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: true
+Layout/SpaceInsideParens:
+  Enabled: true
+Layout/TrailingEmptyLines:
+  Enabled: true
+Layout/TrailingWhitespace:
+  Enabled: true
+Lint/RedundantStringCoercion:
+  Enabled: true
+Lint/RequireParentheses:
+  Enabled: true
+
+Naming/AccessorMethodName:
+  Enabled: true
+Naming/AsciiIdentifiers:
+  Enabled: true
+Naming/BinaryOperatorParameterName:
+  Enabled: true
+Naming/BlockParameterName:
+  Enabled: true
+Naming/ClassAndModuleCamelCase:
+  Enabled: true
+Naming/ConstantName:
+  Enabled: true
+Naming/FileName:
+  Enabled: true
+Naming/HeredocDelimiterCase:
+  Enabled: true
+Naming/HeredocDelimiterNaming:
+  Enabled: true
+Naming/MemoizedInstanceVariableName:
+  Enabled: true
+Naming/MethodName:
+  Enabled: true
+Naming/MethodParameterName:
+  Enabled: true
+  MinNameLength: 2
+# https://docs.rubocop.org/rubocop/1.10/cops_naming.html#namingpredicatename
+# Naming/PredicateName:
+#  Enabled: true
+Naming/RescuedExceptionsVariableName:
+  Enabled: true
+Naming/VariableName:
+  Enabled: true
+Naming/VariableNumber:
+  Enabled: true
+  EnforcedStyle: snake_case
+  AllowedIdentifiers:
+    - google_oauth2
+    - urlsafe_base64
+
+Rails/ActionFilter:
+  Enabled: true
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: true
+Rails/AddColumnIndex:
+  Enabled: true
+Rails/AfterCommitOverride:
+  Enabled: true
+Rails/AssertNot:
+  Enabled: true
+Rails/BelongsTo:
+  Enabled: true
+Rails/Blank:
+  Enabled: true
+Rails/ContentTag:
+  Enabled: true
+Rails/CreateTableWithTimestamps:
+  Enabled: true
+Rails/Date:
+  # TODO
+  # https://docs.rubocop.org/rubocop-rails/cops_rails.html#railsdate
+ Enabled: false
+Rails/DefaultScope:
+  Enabled: true
+Rails/Delegate:
+  Enabled: true
+Rails/DelegateAllowBlank:
+  Enabled: true
+Rails/EnumHash:
+  # TODO
+  # https://docs.rubocop.org/rubocop-rails/cops_rails.html#railsenumhash
+  Enabled: false
+Rails/EnumUniqueness:
+  Enabled: true
+
+Security/Eval:
+  Enabled: true
+Security/JSONLoad:
+  Enabled: true
+Security/MarshalLoad:
+  Enabled: true
+
+Style/AndOr:
+  Enabled: true
+Style/ColonMethodCall:
+  Enabled: true
+Style/DefWithParentheses:
+  Enabled: true
+Style/EvenOdd:
+  Enabled: true
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+Style/GuardClause:
+  Enabled: true
+Style/HashSyntax:
+  Enabled: true
+Style/MethodDefParentheses:
+  Enabled: true
+Style/NilComparison:
+  Enabled: true
+Style/NilLambda:
+  Enabled: true
+Style/NonNilCheck:
+  Enabled: true
+Style/Not:
+  Enabled: true
+Style/RedundantPercentQ:
+  Enabled: true
+Style/RedundantReturn:
+  AllowMultipleReturnValues: true
+  Enabled: true
+Style/Semicolon:
+  AllowAsExpressionSeparator: true
+  Enabled: true
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes

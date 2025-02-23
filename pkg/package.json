@@ -1,0 +1,11 @@
+{
+  "name": "tiny_pixel",
+  "version": "0.0.1",
+  "description": "TinyPixel analytics JS script",
+  "main": "tiny_pixel.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "mjc@hey.com",
+  "license": "MIT"
+}
