@@ -1,0 +1,39 @@
+default: &default
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  primary:
+    <<: *default
+    database: storage/development.sqlite3
+  ingestion:
+    <<: *default
+    database: storage/development_ingestion.sqlite3
+    migrations_paths: db/migrate_ingestion
+
+test:
+  primary:
+    <<: *default
+    database: storage/test.sqlite3
+  ingestion:
+    <<: *default
+    database: storage/test_ingestion.sqlite3
+    migrations_paths: db/migrate_ingestion
+
+production:
+  primary:
+    <<: *default
+    database: storage/production.sqlite3
+  ingestion:
+    <<: *default
+    database: storage/production_ingestion.sqlite3
+    migrations_paths: db/migrate_ingestion
+  cache:
+    <<: *default
+    database: storage/production_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: storage/production_queue.sqlite3
+    migrations_paths: db/queue_migrate

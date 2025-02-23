@@ -1,0 +1,5 @@
+my_blog:
+  property_id: ABCD1234
+  name: My Personal Blog
+  salt: <%= SecureRandom.urlsafe_base64(32) %>
+  salt_last_cycled_at: <%= Time.current %>

@@ -1,0 +1,11 @@
+{
+  "name": "mini_beacon",
+  "version": "0.0.1",
+  "description": "MiniBeacon analytics JS script",
+  "main": "mini_beacon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "mjc@hey.com",
+  "license": "MIT"
+}
