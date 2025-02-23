@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gem "rails", "~> 8.0.0"
 
-gem "concurrent-ruby-edge", "~> 0.7.1", require: "concurrent-edge"
+gem "concurrent-ruby-edge", "~> 0.7.2", require: "concurrent-edge"
 gem "importmap-rails"
 gem "jbuilder"
 gem "maxmind-db"
