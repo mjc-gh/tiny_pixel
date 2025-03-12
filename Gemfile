@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 8.0.0"
+gem "rails", "~> 8.0.2"
 
 gem "concurrent-ruby-edge", "~> 0.7.1", require: "concurrent-edge"
 gem "importmap-rails"
