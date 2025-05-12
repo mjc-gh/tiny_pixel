@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/seuros/capistrano-puma.git
-  revision: dd9b8b7653f8eebc6bf2c96804303169da7cede8
+  revision: a9f499c5eb2c58ac9c35b6e8f0eb2d1bb91c064b
   specs:
     capistrano3-puma (6.0.0)
       capistrano (~> 3.7)
@@ -182,7 +182,7 @@ GEM
     listen (3.9.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
-    logger (1.6.6)
+    logger (1.7.0)
     loofah (2.24.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
