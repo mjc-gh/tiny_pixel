@@ -1,3 +1,3 @@
-every 1.day, at: "04:00 am" do
-  runner "Site.cycle_stale_salts!"
+every :hour do
+  runner "Site.perform_periodic_operations"
 end

@@ -15,6 +15,17 @@ class Site < ApplicationRecord
   scope :need_to_cycle_salt, -> { where(salt_last_cycled_at: ..1.day.ago) }
 
   class << self
+    def perform_periodic_operations
+      # TODO: Aggregate new page visits data
+
+      # Update site salt
+      cycle_stale_salts!
+
+      # TODO: remove visitors with older salt_version
+    end
+
+    private
+
     def cycle_stale_salts!
       need_to_cycle_salt.find_each do |site|
         site.cycle_salt
@@ -27,6 +38,7 @@ class Site < ApplicationRecord
   # last cycled timestamp
   def cycle_salt
     self.salt = SecureRandom.urlsafe_base64(32)
+    self.salt_version += 1
     self.salt_last_cycled_at = Time.current
   end
 

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Visitor < AnalyticsRecord
+  has_many :page_views, foreign_key: :visitor_digest, primary_key: :digest
+
   enum :device_type, {
     desktop: 1,
     mobile: 2,

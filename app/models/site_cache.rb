@@ -10,6 +10,7 @@ class SiteCache
       end
     end
 
+    # TODO: bust the cache when Site salt cycles
     delegate :clear, to: "self.class::STORE"
   end
 end

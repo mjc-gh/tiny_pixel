@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_16_161038) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_01_200243) do
   create_table "page_views", id: false, force: :cascade do |t|
     t.text "visitor_digest", null: false
     t.text "digest", null: false
@@ -31,6 +31,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_16_161038) do
     t.integer "device_type", null: false
     t.integer "browser", null: false
     t.string "country", null: false
+    t.integer "salt_version", default: 0, null: false
     t.index ["digest"], name: "index_visitors_on_digest", unique: true
   end
 end
