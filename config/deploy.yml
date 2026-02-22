@@ -1,0 +1,14 @@
+service: tiny_pixel
+image: ghcr.io/mjc-gh/tiny_pixel
+servers:
+  - 107.170.70.30
+registry:
+  server: ghcr.io
+  username: mjc-gh
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+builder:
+  arch: amd64
+env:
+  secret:
+    - RAILS_MASTER_KEY
