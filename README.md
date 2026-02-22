@@ -1,11 +1,11 @@
 # README
 
-MiniBeacon is a privacy friendly self-hosted, small scale, web analytics
+TinyPixel is a privacy friendly self-hosted, small scale, web analytics
 application written in Rails.
-
 
 ## Setup
 
+TODO
 
 ### Maxmind
 

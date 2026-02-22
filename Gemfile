@@ -1,21 +1,22 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 8.0.0"
+gem "rails", "~> 8.1"
 
+gem 'whenever', require: false
 gem "concurrent-ruby-edge", "~> 0.7.1", require: "concurrent-edge"
 gem "importmap-rails"
 gem "jbuilder"
+gem "kamal"
 gem "maxmind-db"
-gem "user_agent_parser", "~> 2.18"
 gem "propshaft"
-gem "puma", ">= 5.0"
-gem "rack-cors", "~> 2.0"
+gem "puma"
+gem "rack-cors"
 # gem "solid_cache"
-# gem "solid_queue"
-gem "sqlite3", ">= 2.6"
+gem "solid_queue"
+gem "sqlite3"
 gem "stimulus-rails"
 gem "turbo-rails"
-gem 'whenever', require: false
+gem "user_agent_parser", "~> 2.18"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false

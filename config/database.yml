@@ -7,6 +7,10 @@ development:
   primary:
     <<: *default
     database: storage/development.sqlite3
+  queue:
+    <<: *default
+    database: storage/development_queue.sqlite3
+    migrations_paths: db/queue_migrate
   ingestion:
     <<: *default
     database: storage/development_ingestion.sqlite3
@@ -16,6 +20,10 @@ test:
   primary:
     <<: *default
     database: storage/test.sqlite3
+  queue:
+    <<: *default
+    database: storage/test_queue.sqlite3
+    migrations_paths: db/queue_migrate
   ingestion:
     <<: *default
     database: storage/test_ingestion.sqlite3
@@ -25,8 +33,12 @@ test:
 production:
   primary:
     <<: *default
-    database: /mnt/volume_nyc1_gameguru/tiny_pixel/storage/db/production.sqlite3
+    database: <%= ENV["DB_STORAGE_PATH"] %>/production.sqlite3
+  queue:
+    <<: *default
+    database: <%= ENV["DB_STORAGE_PATH"] %>/production_queue.sqlite3
+    migrations_paths: db/queue_migrate
   ingestion:
     <<: *default
-    database: /mnt/volume_nyc1_gameguru/tiny_pixel/storage/db/production_ingestion.sqlite3
+    database: <%= ENV["DB_STORAGE_PATH"] %>/production_ingestion.sqlite3
     migrations_paths: db/migrate_ingestion
