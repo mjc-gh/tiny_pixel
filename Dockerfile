@@ -1,5 +1,7 @@
 ARG RUBY_VERSION=3.4.7
 
+LABEL service="tiny_pixel"
+
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
