@@ -46,4 +46,3 @@ config/deploy/*
 
 # Ignore key files for decrypting credentials and more.
 /config/credentials/*.key
-
