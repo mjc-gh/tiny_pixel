@@ -28,6 +28,9 @@ module TinyPixel
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.middleware.use Middlewares::SilenceRequest, paths: %w[/up /_/pixel.gif]
+
+    # NOTE: Avoids the need for image_processing
+    config.active_storage.variant_processor = :disabled
   end
 
   class << self
