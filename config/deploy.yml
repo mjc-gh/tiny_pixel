@@ -1,5 +1,7 @@
 service: tiny_pixel
 image: ghcr.io/mjc-gh/tiny_pixel
+hosts:
+  - tp.michaeljcoyne.me
 servers:
   - 107.170.70.30
 registry:
