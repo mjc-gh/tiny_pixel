@@ -400,6 +400,11 @@ GEM
       railties (>= 6.0.0)
     stringio (3.2.0)
     thor (1.5.0)
+    thruster (0.1.18)
+    thruster (0.1.18-aarch64-linux)
+    thruster (0.1.18-arm64-darwin)
+    thruster (0.1.18-x86_64-darwin)
+    thruster (0.1.18-x86_64-linux)
     timeout (0.6.0)
     tsort (0.2.0)
     turbo-rails (2.0.23)
@@ -475,6 +480,7 @@ DEPENDENCIES
   solid_queue
   sqlite3
   stimulus-rails
+  thruster
   turbo-rails
   user_agent_parser (~> 2.18)
   web-console
