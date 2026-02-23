@@ -33,12 +33,12 @@ test:
 production:
   primary:
     <<: *default
-    database: <%= ENV["DB_STORAGE_PATH"] %>/production.sqlite3
+    database: storage/production.sqlite3
   queue:
     <<: *default
-    database: <%= ENV["DB_STORAGE_PATH"] %>/production_queue.sqlite3
+    database: storage/production_queue.sqlite3
     migrations_paths: db/queue_migrate
   ingestion:
     <<: *default
-    database: <%= ENV["DB_STORAGE_PATH"] %>/production_ingestion.sqlite3
+    database: storage/production_ingestion.sqlite3
     migrations_paths: db/migrate_ingestion
