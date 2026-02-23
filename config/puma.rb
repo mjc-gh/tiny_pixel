@@ -1,3 +1,5 @@
+rails_env = ENV.fetch("RAILS_ENV", "development")
+
 threads_count = ENV.fetch("RAILS_MAX_THREADS") { 3 }
 threads threads_count, threads_count
 
