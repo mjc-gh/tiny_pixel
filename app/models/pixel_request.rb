@@ -67,7 +67,7 @@ class PixelRequest
 
   def visitor_attributes
     { digest: visitor_digest,
-      property_id: property_id,
+      property_id: property.id,
       browser: visitor_browser,
       device_type: visitor_device_type,
       country: visitor_country }

@@ -3,4 +3,5 @@ my_blog:
   name: My Personal Blog
   salt: <%= SecureRandom.urlsafe_base64(32) %>
   salt_last_cycled_at: <%= Time.current %>
-  salt_version: 0
+  salt_version: 2
+  salt_duration: daily

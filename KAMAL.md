@@ -10,3 +10,9 @@ kamal registry login --skip-local
 ```
 kamal deploy --skip-push --version sha-$(git rev-parse --short HEAD)
 ```
+
+### Console
+
+```
+kamal app exec -i 'bin/rails console'
+```

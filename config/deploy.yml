@@ -8,7 +8,7 @@ registry:
   password:
     - KAMAL_REGISTRY_PASSWORD
 volumes:
-  - "storage:/mnt/volume_nyc2_01/tiny_pixel"
+  - "/mnt/volume_nyc2_01/tiny_pixel:/rails/storage"
 builder:
   arch: amd64
 env:
@@ -18,3 +18,4 @@ env:
 proxy:
   hosts:
     - tp.michaeljcoyne.me
+  ssl: true

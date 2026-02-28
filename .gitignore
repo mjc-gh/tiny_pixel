@@ -10,6 +10,9 @@
 # Ignore all environment files.
 /.env*
 
+# Ignore code coverage reports
+/coverage/*
+
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
@@ -42,7 +45,6 @@ config/deploy/*
 
 # Ignore key files for decrypting credentials and more.
 /config/*.key
-
 
 # Ignore key files for decrypting credentials and more.
 /config/credentials/*.key

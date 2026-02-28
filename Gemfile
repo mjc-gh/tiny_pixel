@@ -22,6 +22,7 @@ gem "user_agent_parser", "~> 2.18"
 gem "bootsnap", require: false
 
 group :development, :test do
+  gem "annotaterb"
   gem "brakeman", require: false
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "pry"
@@ -52,6 +53,8 @@ end
 group :test do
   gem "capybara"
   gem "selenium-webdriver"
+  gem 'simplecov', require: false
+  gem "simplecov-console", require: false
 end
 
 group :production do
