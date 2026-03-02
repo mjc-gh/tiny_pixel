@@ -4,8 +4,6 @@ class PixelRequest
   include ActiveModel::Model
   include ActiveModel::Attributes
 
-  include Digestable
-
   # attribute :origin, :string
   attribute :property_id, :string
   attribute :remote_ip, :string
@@ -152,5 +150,9 @@ class PixelRequest
       TinyPixel.research_log.info "User-agent: #{user_agent.inspect}"
       TinyPixel.research_log.info "User-agent Results: #{p.to_h.inspect}"
     end
+  end
+
+  def sha_256(&block)
+    Digest::SHA256.new.tap(&block)
   end
 end

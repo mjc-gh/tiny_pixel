@@ -36,30 +36,30 @@ class PixelRequestTest < ActiveSupport::TestCase
     site = sites(:my_blog)
     property_id = site.property_id
 
-    req1 = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-    pr1 = PixelRequest.from_incoming(req1, { pid: property_id, p: "/", h: "blog.net" })
-    pr1.process!
+    req_1 = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+    pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "blog.net" })
+    pr_1.process!
 
     # Verify first request created a new session and visit
-    assert pr1.instance_variable_get(:@new_visit)
-    assert pr1.instance_variable_get(:@new_session)
+    assert pr_1.instance_variable_get(:@new_visit)
+    assert pr_1.instance_variable_get(:@new_session)
 
     # Create second request with same visitor within 30 minutes
-    req2 = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-    pr2 = PixelRequest.from_incoming(req2, { pid: property_id, p: "/about", h: "blog.net" })
-    pr2.process!
+    req_2 = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+    pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/about", h: "blog.net" })
+    pr_2.process!
 
     # Verify second request is NOT a new visit (same visitor)
-    refute pr2.instance_variable_get(:@new_visit)
+    refute pr_2.instance_variable_get(:@new_visit)
     # When a PageView exists within 30 minutes, new_session should be false
     # This tests the PageView.exists? branch
-    visitor_digest = pr2.send(:visitor_digest)
+    visitor_digest = pr_2.send(:visitor_digest)
     existing_page_view = PageView.find_by(visitor_digest:)
     assert_not_nil existing_page_view, "PageView should exist from first request"
 
     # The second process call should find this existing PageView
     # and NOT set new_session to true
-    refute pr2.instance_variable_get(:@new_session)
+    refute pr_2.instance_variable_get(:@new_session)
   end
 
   test "handles IPAddr::Error for invalid IP addresses" do
@@ -161,20 +161,20 @@ class PixelRequestTest < ActiveSupport::TestCase
     site = sites(:my_blog)
     req = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
 
-    pr1 = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/", h: "blog.net" })
-    pr2 = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/", h: "blog.net" })
+    pr_1 = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/", h: "blog.net" })
+    pr_2 = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/", h: "blog.net" })
 
-    assert_equal pr1.send(:visitor_digest), pr2.send(:visitor_digest)
+    assert_equal pr_1.send(:visitor_digest), pr_2.send(:visitor_digest)
   end
 
   test "page_view_digest differs for different pathnames" do
     site = sites(:my_blog)
     req = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
 
-    pr1 = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/page1", h: "blog.net" })
-    pr2 = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/page2", h: "blog.net" })
+    pr_1 = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/page1", h: "blog.net" })
+    pr_2 = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/page2", h: "blog.net" })
 
-    refute_equal pr1.send(:page_view_digest), pr2.send(:page_view_digest)
+    refute_equal pr_1.send(:page_view_digest), pr_2.send(:page_view_digest)
   end
 
   test "process! returns nil" do

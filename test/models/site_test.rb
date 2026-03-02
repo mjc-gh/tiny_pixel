@@ -117,17 +117,17 @@ class SiteTest < ActiveSupport::TestCase
   end
 
   test "property_id is unique for different sites" do
-    site1 = Site.create!(
+    site_1 = Site.create!(
       name: "Site 1",
       salt: SecureRandom.urlsafe_base64(32)
     )
 
-    site2 = Site.create!(
+    site_2 = Site.create!(
       name: "Site 2",
       salt: SecureRandom.urlsafe_base64(32)
     )
 
-    assert_not_equal site1.property_id, site2.property_id
+    assert_not_equal site_1.property_id, site_2.property_id
   end
 
   test "before_validation does not reset property_id on update" do

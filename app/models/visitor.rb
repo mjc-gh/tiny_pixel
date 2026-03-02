@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: visitors
+# Database name: ingestion
+#
+#  browser      :integer          not null
+#  country      :string           not null
+#  device_type  :integer          not null
+#  digest       :text             not null
+#  salt_version :integer          default(0), not null
+#  property_id  :integer          not null
+#
+# Indexes
+#
+#  index_visitors_on_digest  (digest) UNIQUE
+#
 class Visitor < AnalyticsRecord
   has_many :page_views, foreign_key: :visitor_digest, primary_key: :digest
 

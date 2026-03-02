@@ -1,5 +1,24 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: sites
+# Database name: primary
+#
+#  id                  :integer          not null, primary key
+#  name                :string           not null
+#  salt                :string           not null
+#  salt_duration       :integer          default("daily"), not null
+#  salt_last_cycled_at :datetime         not null
+#  salt_version        :integer          default(0), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  property_id         :string           not null
+#
+# Indexes
+#
+#  index_sites_on_property_id  (property_id) UNIQUE
+#
 class Site < ApplicationRecord
   PROPERTY_ID_LENGHT = 8
 

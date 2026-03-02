@@ -27,6 +27,7 @@
 - **Line ending**: Unix style (LF)
 - **Indentation**: 2 spaces (not tabs)
 - **Frozen string literals**: Required at the top of all files (`# frozen_string_literal: true`)
+- **Snake Case Variables**: Use `foo_bar_1` instead of `foo_bar1`
 
 ### Scope and Associations
 - Define scopes as lambdas: `scope :need_to_cycle_salt, -> { where(...) }`
