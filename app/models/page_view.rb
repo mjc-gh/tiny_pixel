@@ -5,15 +5,17 @@
 # Table name: page_views
 # Database name: ingestion
 #
-#  attribution    :text
-#  digest         :text             not null
-#  hostname       :text             not null
-#  new_session    :boolean          default(FALSE), not null
-#  new_visit      :boolean          default(FALSE), not null
-#  pathname       :text             not null
-#  referrer       :text
-#  visitor_digest :text             not null
-#  created_at     :datetime         not null
+#  attribution       :text
+#  digest            :text             not null
+#  hostname          :text             not null
+#  new_session       :boolean          default(FALSE), not null
+#  new_visit         :boolean          default(FALSE), not null
+#  pathname          :text             not null
+#  referrer          :text
+#  referrer_hostname :text
+#  referrer_pathname :text
+#  visitor_digest    :text             not null
+#  created_at        :datetime         not null
 #
 # Indexes
 #

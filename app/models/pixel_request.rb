@@ -80,7 +80,9 @@ class PixelRequest
       new_visit: @new_visit,
       new_session: @new_session,
       attribution:,
-      referrer: }
+      referrer:,
+      referrer_hostname: parsed_referrer[:hostname],
+      referrer_pathname: parsed_referrer[:pathname] }
   end
 
   def property
@@ -143,6 +145,10 @@ class PixelRequest
 
   def property_must_exist
     errors.add :property_id, :unknown if property.nil?
+  end
+
+  def parsed_referrer
+    @parsed_referrer ||= ReferrerParser.parse(referrer)
   end
 
   def parsed_user_agent

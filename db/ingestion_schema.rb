@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_03_01_200243) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_02_155407) do
   create_table "page_views", id: false, force: :cascade do |t|
     t.text "attribution"
     t.datetime "created_at", null: false
@@ -20,6 +20,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_03_01_200243) do
     t.boolean "new_visit", default: false, null: false
     t.text "pathname", null: false
     t.text "referrer"
+    t.text "referrer_hostname"
+    t.text "referrer_pathname"
     t.text "visitor_digest", null: false
     t.index ["visitor_digest", "created_at"], name: "page_view_created_at_idx", order: { created_at: :desc }
     t.index ["visitor_digest", "digest", "created_at"], name: "page_views_uniq_idx", unique: true

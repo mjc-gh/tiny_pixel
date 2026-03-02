@@ -185,4 +185,62 @@ class PixelRequestTest < ActiveSupport::TestCase
     result = pr.process!
     assert_nil result
   end
+
+  # Referrer parsing tests
+
+  test "pageview created with referrer gets parsed hostname and pathname" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/products",
+      h: "example.com",
+      r: "https://www.google.com/search?q=ruby+on+rails"
+    })
+    pr.process!
+
+    visitor_digest = pr.send(:visitor_digest)
+    page_view = PageView.find_by(visitor_digest:)
+
+    assert_not_nil page_view
+    assert_equal "google.com", page_view.referrer_hostname
+    assert_equal "/search", page_view.referrer_pathname
+  end
+
+  test "direct visits without referrer have nil parsed components" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com"
+    })
+    pr.process!
+
+    visitor_digest = pr.send(:visitor_digest)
+    page_view = PageView.find_by(visitor_digest:)
+
+    assert_not_nil page_view
+    assert_nil page_view.referrer_hostname
+    assert_nil page_view.referrer_pathname
+  end
+
+  test "parsed_referrer caches result" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      r: "https://example.com/page"
+    })
+
+    result1 = pr.send(:parsed_referrer)
+    result2 = pr.send(:parsed_referrer)
+
+    assert_same result1, result2
+  end
 end
