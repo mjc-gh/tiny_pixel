@@ -238,9 +238,9 @@ class PixelRequestTest < ActiveSupport::TestCase
       r: "https://example.com/page"
     })
 
-    result1 = pr.send(:parsed_referrer)
-    result2 = pr.send(:parsed_referrer)
+    result_1 = pr.send(:parsed_referrer)
+    result_2 = pr.send(:parsed_referrer)
 
-    assert_same result1, result2
+    assert_same result_1, result_2
   end
 end
