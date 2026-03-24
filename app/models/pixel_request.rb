@@ -22,6 +22,8 @@ class PixelRequest
   # Instantiate the parser on load as it's quite expensive
   USER_AGENT_PARSER = UserAgentParser::Parser.new
 
+  UNIQUE_WINDOW = 24.hours
+
   def self.from_incoming(request, params)
     new.tap do |instance|
       instance.assign_attributes(
@@ -42,6 +44,7 @@ class PixelRequest
     @created_at = Time.current
     @new_visit = false
     @new_session = false
+    @is_unique = false
   end
 
   def process!
@@ -55,6 +58,8 @@ class PixelRequest
     else
       @new_session = true unless PageView.exists?(visitor_digest:, created_at: 30.minutes.ago..)
     end
+
+    @is_unique = !PageView.exists?(visitor_digest:, pathname:, created_at: UNIQUE_WINDOW.ago..)
 
     PageView.insert page_view_attributes
 
@@ -79,6 +84,7 @@ class PixelRequest
       pathname:,
       new_visit: @new_visit,
       new_session: @new_session,
+      is_unique: @is_unique,
       attribution:,
       referrer:,
       referrer_hostname: parsed_referrer[:hostname],

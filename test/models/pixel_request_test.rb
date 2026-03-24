@@ -243,4 +243,85 @@ class PixelRequestTest < ActiveSupport::TestCase
 
     assert_same result_1, result_2
   end
+
+  # is_unique handling
+
+  test "first pageview of path is marked as unique" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("5.6.7.8", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/blog", h: "blog.net" })
+    pr.process!
+
+    assert pr.instance_variable_get(:@is_unique)
+  end
+
+  test "second pageview of same path by same visitor is not unique" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+
+    first_req = FakeRequest.new("6.7.8.9", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    first_pr = PixelRequest.from_incoming(first_req, { pid: property_id, p: "/blog", h: "blog.net" })
+    first_pr.process!
+
+    assert first_pr.instance_variable_get(:@is_unique)
+
+    second_req = FakeRequest.new("6.7.8.9", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    second_pr = PixelRequest.from_incoming(second_req, { pid: property_id, p: "/blog", h: "blog.net" })
+    second_pr.process!
+
+    refute second_pr.instance_variable_get(:@is_unique)
+  end
+
+  test "different paths are unique independently" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+
+    first_req = FakeRequest.new("7.8.9.10", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    first_pr = PixelRequest.from_incoming(first_req, { pid: property_id, p: "/blog", h: "blog.net" })
+    first_pr.process!
+
+    assert first_pr.instance_variable_get(:@is_unique)
+
+    second_req = FakeRequest.new("7.8.9.10", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    second_pr = PixelRequest.from_incoming(second_req, { pid: property_id, p: "/about", h: "blog.net" })
+    second_pr.process!
+
+    assert second_pr.instance_variable_get(:@is_unique)
+  end
+
+  test "is_unique resets after 24 hours" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+
+    first_req = FakeRequest.new("8.9.10.11", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    first_pr = PixelRequest.from_incoming(first_req, { pid: property_id, p: "/blog", h: "blog.net" })
+    first_pr.process!
+
+    assert first_pr.instance_variable_get(:@is_unique)
+
+    travel_to 25.hours.from_now do
+      second_req = FakeRequest.new("8.9.10.11", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      second_pr = PixelRequest.from_incoming(second_req, { pid: property_id, p: "/blog", h: "blog.net" })
+      second_pr.process!
+
+      assert second_pr.instance_variable_get(:@is_unique)
+    end
+  end
+
+  test "different visitors on same path are both unique" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+
+    first_req = FakeRequest.new("9.10.11.12", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    first_pr = PixelRequest.from_incoming(first_req, { pid: property_id, p: "/blog", h: "blog.net" })
+    first_pr.process!
+
+    assert first_pr.instance_variable_get(:@is_unique)
+
+    second_req = FakeRequest.new("10.11.12.13", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    second_pr = PixelRequest.from_incoming(second_req, { pid: property_id, p: "/blog", h: "blog.net" })
+    second_pr.process!
+
+    assert second_pr.instance_variable_get(:@is_unique)
+  end
 end
