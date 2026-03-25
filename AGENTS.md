@@ -35,6 +35,7 @@
 - **Line ending**: Unix style (LF)
 - **Indentation**: 2 spaces (not tabs)
 - **Frozen string literals**: Required at the top of all files (`# frozen_string_literal: true`)
+- **Always use snake case**: Use `req_1` instead of `req1`
 
 ### Scope and Associations
 - Define scopes as lambdas: `scope :need_to_cycle_salt, -> { where(...) }`
@@ -75,10 +76,3 @@
 - **Database**: SQLite (primary and ingestion databases)
 - **Linter**: RuboCop with rubocop-rails
 - **Security Scanner**: Brakeman
-
-## Common Tasks for Agents
-
-1. **Adding a Classes**: Use `bundle exec rails g` to create new files where possible; follow Rails conventions for files without generator support.
-2. **Fixing Linting Errors**: Run `bundle exec rubocop -a` to auto-fix, then manual review
-3. **Running Single Test**: Use `bundle exec rails test path/to/test_file.rb:ClassName#test_method`
-4. **Debugging**: Use `bundle exec rails console` for interactive exploration
