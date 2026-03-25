@@ -5,9 +5,8 @@
 **tiny_pixel** is a privacy-friendly, self-hosted web analytics application built with **Ruby on Rails 8.1**. The codebase uses SQLite for data storage, Stimulus for JavaScript interactivity.
 
 ## Planning
-
 - Keep plans as concise as possible
-- Always provide a complete implementation checklist at the end of the plan
+- Always provide an implementation checklist at the end of the plan
 
 ## Development
 
@@ -26,14 +25,6 @@
 ### Writing Tests
 - Do not add unnecessary comments to tests
 - Do not test built-in model validations
-- Snake case all parts of variable names:
-  ```ruby
-  # GOOD
-  pixel_req_1 = obj.method
-
-  # BAD
-  pixel_req1 = obj.method
-  ```
 
 ### General Formatting
 - **Ruby version**: 3.4
@@ -65,6 +56,7 @@
 - Inherit from `AnalyticsRecord` for analytics/analytics-only models (uses separate database)
 - Use `self.table_name = :table_name` only if table name differs from Rails convention
 - Connect to specific databases: `connects_to database: { writing: :ingestion }`
+- Schema comments in model files are updated automatically when running migrations
 
 ### Controllers and Views
 - Follow RESTful conventions: `index`, `show`, `new`, `create`, `edit`, `update`, `destroy`
