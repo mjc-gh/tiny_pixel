@@ -4,6 +4,11 @@
 
 **tiny_pixel** is a privacy-friendly, self-hosted web analytics application built with **Ruby on Rails 8.1**. The codebase uses SQLite for data storage, Stimulus for JavaScript interactivity.
 
+## Planning
+
+- Keep plans as concise as possible
+- Always provide a complete implementation checklist at the end of the plan
+
 ## Development
 
 ### Running Tests
