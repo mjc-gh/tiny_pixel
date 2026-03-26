@@ -3,15 +3,16 @@
 # Table name: sites
 # Database name: primary
 #
-#  id                  :integer          not null, primary key
-#  name                :string           not null
-#  salt                :string           not null
-#  salt_duration       :integer          default("daily"), not null
-#  salt_last_cycled_at :datetime         not null
-#  salt_version        :integer          default(0), not null
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  property_id         :string           not null
+#  id                      :integer          not null, primary key
+#  name                    :string           not null
+#  salt                    :string           not null
+#  salt_duration           :integer          default("daily"), not null
+#  salt_last_cycled_at     :datetime         not null
+#  salt_version            :integer          default(0), not null
+#  session_timeout_minutes :integer          default(30)
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  property_id             :string           not null
 #
 # Indexes
 #

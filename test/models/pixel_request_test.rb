@@ -324,4 +324,325 @@ class PixelRequestTest < ActiveSupport::TestCase
 
     assert second_pr.instance_variable_get(:@is_unique)
   end
+
+  # Session timeout configuration tests
+
+  test "session timeout uses site configuration instead of hardcoded value" do
+    site = Site.create!(name: "Short Timeout Site", salt: "placeholder", session_timeout_minutes: 10)
+    property_id = site.property_id
+    SiteCache.clear
+
+    req_1 = FakeRequest.new("111.112.113.114", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "short-timeout.net" })
+    pr_1.process!
+
+    assert pr_1.instance_variable_get(:@new_session)
+
+    travel_to 11.minutes.from_now do
+      req_2 = FakeRequest.new("111.112.113.114", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/about", h: "short-timeout.net" })
+      pr_2.process!
+
+      assert pr_2.instance_variable_get(:@new_session)
+    end
+  end
+
+  test "pageview within custom session timeout is same session" do
+    site = Site.create!(name: "Long Timeout Site", salt: "placeholder", session_timeout_minutes: 60)
+    property_id = site.property_id
+    SiteCache.clear
+
+    req_1 = FakeRequest.new("112.113.114.115", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "long-timeout.net" })
+    pr_1.process!
+
+    travel_to 45.minutes.from_now do
+      req_2 = FakeRequest.new("112.113.114.115", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/about", h: "long-timeout.net" })
+      pr_2.process!
+
+      refute pr_2.instance_variable_get(:@new_session)
+    end
+  end
+
+  # Duration calculation tests
+
+  test "first pageview has nil duration" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("13.14.15.16", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/", h: "blog.net" })
+    pr.process!
+
+    page_view = PageView.find_by(visitor_digest: pr.send(:visitor_digest))
+
+    assert_nil page_view.duration
+  end
+
+  test "second pageview within session updates previous pageview duration" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+    base_time = Time.current.change(usec: 0)
+
+    travel_to base_time do
+      req_1 = FakeRequest.new("14.15.16.17", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "blog.net" })
+      pr_1.process!
+    end
+
+    visitor_digest = Digest::SHA256.hexdigest(
+      "#{site.salt}14.15.16.17Mozilla/5.0 (Windows NT 10.0; Win64; x64)blog.net"
+    )
+
+    first_page_view = PageView.find_by(visitor_digest:, pathname: "/")
+    assert_nil first_page_view.duration
+
+    travel_to base_time + 5.minutes do
+      req_2 = FakeRequest.new("14.15.16.17", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/about", h: "blog.net" })
+      pr_2.process!
+
+      updated_first_page_view = PageView.find_by(visitor_digest:, pathname: "/")
+      assert_equal 300, updated_first_page_view.duration
+    end
+  end
+
+  test "duration calculation is accurate for multiple successive pageviews" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+    base_time = Time.current.change(usec: 0)
+
+    travel_to base_time do
+      req_1 = FakeRequest.new("15.16.17.18", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/page1", h: "blog.net" })
+      pr_1.process!
+    end
+
+    visitor_digest = Digest::SHA256.hexdigest(
+      "#{site.salt}15.16.17.18Mozilla/5.0 (Windows NT 10.0; Win64; x64)blog.net"
+    )
+
+    travel_to base_time + 2.minutes do
+      req_2 = FakeRequest.new("15.16.17.18", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/page2", h: "blog.net" })
+      pr_2.process!
+    end
+
+    travel_to base_time + 7.minutes do
+      req_3 = FakeRequest.new("15.16.17.18", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_3 = PixelRequest.from_incoming(req_3, { pid: property_id, p: "/page3", h: "blog.net" })
+      pr_3.process!
+    end
+
+    page_view_1 = PageView.find_by(visitor_digest:, pathname: "/page1")
+    page_view_2 = PageView.find_by(visitor_digest:, pathname: "/page2")
+    page_view_3 = PageView.find_by(visitor_digest:, pathname: "/page3")
+
+    assert_equal 120, page_view_1.duration
+    assert_equal 300, page_view_2.duration
+    assert_nil page_view_3.duration
+  end
+
+  test "duration is not calculated for pageview outside session window" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+    base_time = Time.current.change(usec: 0)
+
+    travel_to base_time do
+      req_1 = FakeRequest.new("16.17.18.19", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "blog.net" })
+      pr_1.process!
+    end
+
+    visitor_digest = Digest::SHA256.hexdigest(
+      "#{site.salt}16.17.18.19Mozilla/5.0 (Windows NT 10.0; Win64; x64)blog.net"
+    )
+
+    travel_to base_time + 35.minutes do
+      req_2 = FakeRequest.new("16.17.18.19", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/about", h: "blog.net" })
+      pr_2.process!
+    end
+
+    page_view_1 = PageView.find_by(visitor_digest:, pathname: "/")
+    page_view_2 = PageView.find_by(visitor_digest:, pathname: "/about")
+
+    assert_nil page_view_1.duration
+    assert_nil page_view_2.duration
+  end
+
+  # Bounce detection tests
+
+  test "first pageview is marked as bounced" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("17.18.19.20", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/", h: "blog.net" })
+    pr.process!
+
+    page_view = PageView.find_by(visitor_digest: pr.send(:visitor_digest))
+
+    assert page_view.bounced
+  end
+
+  test "second pageview within session marks previous pageview as not bounced" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+
+    req_1 = FakeRequest.new("18.19.20.21", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "blog.net" })
+    pr_1.process!
+    visitor_digest = pr_1.send(:visitor_digest)
+
+    first_page_view = PageView.find_by(visitor_digest:, pathname: "/")
+    assert first_page_view.bounced
+
+    travel_to 5.minutes.from_now do
+      req_2 = FakeRequest.new("18.19.20.21", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/about", h: "blog.net" })
+      pr_2.process!
+
+      updated_first_page_view = PageView.find_by(visitor_digest:, pathname: "/")
+      second_page_view = PageView.find_by(visitor_digest:, pathname: "/about")
+
+      refute updated_first_page_view.bounced
+      assert second_page_view.bounced
+    end
+  end
+
+  test "all pageviews in session are marked as not bounced" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+
+    req_1 = FakeRequest.new("19.20.21.22", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/page1", h: "blog.net" })
+    pr_1.process!
+    visitor_digest = pr_1.send(:visitor_digest)
+
+    travel_to 5.minutes.from_now do
+      req_2 = FakeRequest.new("19.20.21.22", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/page2", h: "blog.net" })
+      pr_2.process!
+    end
+
+    travel_to 10.minutes.from_now do
+      req_3 = FakeRequest.new("19.20.21.22", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_3 = PixelRequest.from_incoming(req_3, { pid: property_id, p: "/page3", h: "blog.net" })
+      pr_3.process!
+    end
+
+    page_view_1 = PageView.find_by(visitor_digest:, pathname: "/page1")
+    page_view_2 = PageView.find_by(visitor_digest:, pathname: "/page2")
+    page_view_3 = PageView.find_by(visitor_digest:, pathname: "/page3")
+
+    refute page_view_1.bounced
+    refute page_view_2.bounced
+    assert page_view_3.bounced
+  end
+
+  test "last pageview in session retains bounced true" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+
+    req_1 = FakeRequest.new("20.21.22.23", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "blog.net" })
+    pr_1.process!
+    visitor_digest = pr_1.send(:visitor_digest)
+
+    travel_to 5.minutes.from_now do
+      req_2 = FakeRequest.new("20.21.22.23", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/about", h: "blog.net" })
+      pr_2.process!
+    end
+
+    travel_to 40.minutes.from_now do
+      req_3 = FakeRequest.new("20.21.22.23", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_3 = PixelRequest.from_incoming(req_3, { pid: property_id, p: "/contact", h: "blog.net" })
+      pr_3.process!
+    end
+
+    page_view_1 = PageView.find_by(visitor_digest:, pathname: "/")
+    page_view_2 = PageView.find_by(visitor_digest:, pathname: "/about")
+    page_view_3 = PageView.find_by(visitor_digest:, pathname: "/contact")
+
+    refute page_view_1.bounced
+    assert page_view_2.bounced
+    assert page_view_3.bounced
+  end
+
+  test "pageview outside session window does not update previous session bounce status" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+
+    req_1 = FakeRequest.new("21.22.23.24", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "blog.net" })
+    pr_1.process!
+    visitor_digest = pr_1.send(:visitor_digest)
+
+    first_page_view = PageView.find_by(visitor_digest:, pathname: "/")
+    assert first_page_view.bounced
+
+    travel_to 35.minutes.from_now do
+      req_2 = FakeRequest.new("21.22.23.24", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/about", h: "blog.net" })
+      pr_2.process!
+
+      updated_first_page_view = PageView.find_by(visitor_digest:, pathname: "/")
+      assert updated_first_page_view.bounced
+    end
+  end
+
+  test "session boundary exactly at timeout threshold creates new session" do
+    site = sites(:my_blog)
+    property_id = site.property_id
+
+    req_1 = FakeRequest.new("22.23.24.25", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "blog.net" })
+    pr_1.process!
+
+    travel_to 30.minutes.from_now + 1.second do
+      req_2 = FakeRequest.new("22.23.24.25", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/about", h: "blog.net" })
+      pr_2.process!
+
+      assert pr_2.instance_variable_get(:@new_session)
+    end
+  end
+
+  test "different sites with different timeouts work independently" do
+    site_1 = Site.create!(name: "Site One Short", salt: "placeholder1", session_timeout_minutes: 10)
+    site_2 = Site.create!(name: "Site Two Long", salt: "placeholder2", session_timeout_minutes: 60)
+    SiteCache.clear
+
+    req_1 = FakeRequest.new("123.124.125.126", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr_1 = PixelRequest.from_incoming(req_1, { pid: site_1.property_id, p: "/", h: "short.net" })
+    pr_1.process!
+
+    req_2 = FakeRequest.new("124.125.126.127", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr_2 = PixelRequest.from_incoming(req_2, { pid: site_2.property_id, p: "/", h: "long.net" })
+    pr_2.process!
+
+    travel_to 15.minutes.from_now do
+      req_3 = FakeRequest.new("123.124.125.126", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_3 = PixelRequest.from_incoming(req_3, { pid: site_1.property_id, p: "/about", h: "short.net" })
+      pr_3.process!
+
+      req_4 = FakeRequest.new("124.125.126.127", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_4 = PixelRequest.from_incoming(req_4, { pid: site_2.property_id, p: "/about", h: "long.net" })
+      pr_4.process!
+
+      assert pr_3.instance_variable_get(:@new_session)
+      refute pr_4.instance_variable_get(:@new_session)
+    end
+  end
+
+  test "new pageview is created with bounced true and duration nil" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("25.26.27.28", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/", h: "blog.net" })
+    pr.process!
+
+    page_view = PageView.find_by(visitor_digest: pr.send(:visitor_digest))
+
+    assert page_view.bounced
+    assert_nil page_view.duration
+  end
 end

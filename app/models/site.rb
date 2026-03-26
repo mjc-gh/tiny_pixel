@@ -5,15 +5,16 @@
 # Table name: sites
 # Database name: primary
 #
-#  id                  :integer          not null, primary key
-#  name                :string           not null
-#  salt                :string           not null
-#  salt_duration       :integer          default("daily"), not null
-#  salt_last_cycled_at :datetime         not null
-#  salt_version        :integer          default(0), not null
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  property_id         :string           not null
+#  id                      :integer          not null, primary key
+#  name                    :string           not null
+#  salt                    :string           not null
+#  salt_duration           :integer          default("daily"), not null
+#  salt_last_cycled_at     :datetime         not null
+#  salt_version            :integer          default(0), not null
+#  session_timeout_minutes :integer          default(30)
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  property_id             :string           not null
 #
 # Indexes
 #
@@ -30,6 +31,9 @@ class Site < ApplicationRecord
 
   validates :name, :property_id, :salt, presence: true
   validates :name, length: { maximum: 60 }
+  validates :session_timeout_minutes,
+            presence: true,
+            numericality: { greater_than_or_equal_to: 5, less_than_or_equal_to: 1440 }
 
   scope :need_to_cycle_salt, -> { where(salt_last_cycled_at: ..1.day.ago) }
 
@@ -59,6 +63,10 @@ class Site < ApplicationRecord
     self.salt = SecureRandom.urlsafe_base64(32)
     self.salt_version += 1
     self.salt_last_cycled_at = Time.current
+  end
+
+  def session_timeout
+    session_timeout_minutes.minutes
   end
 
   private

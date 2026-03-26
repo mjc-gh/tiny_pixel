@@ -56,7 +56,16 @@ class PixelRequest
       @new_visit = true
       @new_session = true
     else
-      @new_session = true unless PageView.exists?(visitor_digest:, created_at: 30.minutes.ago..)
+      previous_pageview = find_previous_pageview
+      in_same_session = previous_pageview.present? &&
+        (@created_at - previous_pageview.created_at) <= property.session_timeout
+
+      if in_same_session
+        update_previous_pageview_duration(previous_pageview)
+        update_session_pageviews_as_not_bounced(previous_pageview)
+      else
+        @new_session = true
+      end
     end
 
     @is_unique = !PageView.exists?(visitor_digest:, pathname:, created_at: UNIQUE_WINDOW.ago..)
@@ -151,6 +160,32 @@ class PixelRequest
 
   def property_must_exist
     errors.add :property_id, :unknown if property.nil?
+  end
+
+  def find_previous_pageview
+    PageView
+      .where(visitor_digest:)
+      .order(created_at: :desc)
+      .limit(1)
+      .first
+  end
+
+  def update_previous_pageview_duration(previous_pageview)
+    duration = (@created_at - previous_pageview.created_at).to_i
+
+    PageView.where(
+      visitor_digest:,
+      created_at: previous_pageview.created_at
+    ).update_all(duration:)
+  end
+
+  def update_session_pageviews_as_not_bounced(reference_pageview)
+    session_start = reference_pageview.created_at - property.session_timeout
+
+    PageView.where(
+      visitor_digest:,
+      created_at: session_start..reference_pageview.created_at
+    ).update_all(bounced: false)
   end
 
   def parsed_referrer

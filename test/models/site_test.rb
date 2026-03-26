@@ -164,4 +164,56 @@ class SiteTest < ActiveSupport::TestCase
     site = sites(:my_blog)
     assert_equal "daily", site.salt_duration
   end
+
+  test "session_timeout_minutes defaults to 30" do
+    site = Site.create!(name: "Timeout Test", salt: "placeholder")
+
+    assert_equal 30, site.session_timeout_minutes
+  end
+
+  test "session_timeout_minutes validation rejects values below 5" do
+    site = sites(:my_blog)
+    site.session_timeout_minutes = 4
+
+    assert_not site.valid?
+    assert site.errors[:session_timeout_minutes].any?
+  end
+
+  test "session_timeout_minutes validation rejects values above 1440" do
+    site = sites(:my_blog)
+    site.session_timeout_minutes = 1441
+
+    assert_not site.valid?
+    assert site.errors[:session_timeout_minutes].any?
+  end
+
+  test "session_timeout_minutes validation accepts value at lower boundary" do
+    site = sites(:my_blog)
+    site.session_timeout_minutes = 5
+
+    assert site.valid?
+  end
+
+  test "session_timeout_minutes validation accepts value at upper boundary" do
+    site = sites(:my_blog)
+    site.session_timeout_minutes = 1440
+
+    assert site.valid?
+  end
+
+  test "session_timeout_minutes validation rejects nil" do
+    site = sites(:my_blog)
+    site.session_timeout_minutes = nil
+
+    assert_not site.valid?
+    assert site.errors[:session_timeout_minutes].any?
+  end
+
+  test "#session_timeout returns duration in minutes" do
+    site = sites(:my_blog)
+    site.session_timeout_minutes = 45
+
+    assert_equal 45.minutes, site.session_timeout
+    assert_kind_of ActiveSupport::Duration, site.session_timeout
+  end
 end

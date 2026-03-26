@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_03_01_200228) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_26_130154) do
   create_table "sites", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_03_01_200228) do
     t.integer "salt_duration", default: 0, null: false
     t.datetime "salt_last_cycled_at", null: false
     t.integer "salt_version", default: 0, null: false
+    t.integer "session_timeout_minutes", default: 30
     t.datetime "updated_at", null: false
     t.index ["property_id"], name: "index_sites_on_property_id", unique: true
   end
