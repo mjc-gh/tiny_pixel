@@ -389,8 +389,11 @@ class PixelRequestTest < ActiveSupport::TestCase
       pr_1.process!
     end
 
-    visitor_digest = Digest::SHA256.hexdigest(
-      "#{site.salt}14.15.16.17Mozilla/5.0 (Windows NT 10.0; Win64; x64)blog.net"
+    visitor_digest = PixelRequest.calculate_visitor_digest(
+      salt: site.salt,
+      remote_ip: "14.15.16.17",
+      user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      hostname: "blog.net"
     )
 
     first_page_view = PageView.find_by(visitor_digest:, pathname: "/")
@@ -417,8 +420,11 @@ class PixelRequestTest < ActiveSupport::TestCase
       pr_1.process!
     end
 
-    visitor_digest = Digest::SHA256.hexdigest(
-      "#{site.salt}15.16.17.18Mozilla/5.0 (Windows NT 10.0; Win64; x64)blog.net"
+    visitor_digest = PixelRequest.calculate_visitor_digest(
+      salt: site.salt,
+      remote_ip: "15.16.17.18",
+      user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      hostname: "blog.net"
     )
 
     travel_to base_time + 2.minutes do
@@ -453,8 +459,11 @@ class PixelRequestTest < ActiveSupport::TestCase
       pr_1.process!
     end
 
-    visitor_digest = Digest::SHA256.hexdigest(
-      "#{site.salt}16.17.18.19Mozilla/5.0 (Windows NT 10.0; Win64; x64)blog.net"
+    visitor_digest = PixelRequest.calculate_visitor_digest(
+      salt: site.salt,
+      remote_ip: "16.17.18.19",
+      user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      hostname: "blog.net"
     )
 
     travel_to base_time + 35.minutes do

@@ -24,6 +24,15 @@ class PixelRequest
 
   UNIQUE_WINDOW = 24.hours
 
+  def self.calculate_visitor_digest(salt:, remote_ip:, user_agent:, hostname:)
+    digest = Digest::SHA256.new
+    digest << salt
+    digest << remote_ip
+    digest << user_agent
+    digest << hostname
+    digest.hexdigest
+  end
+
   def self.from_incoming(request, params)
     new.tap do |instance|
       instance.assign_attributes(
@@ -135,16 +144,12 @@ class PixelRequest
   end
 
   def visitor_digest
-    return @visitor_digest unless @visitor_digest.nil?
-
-    digest = sha_256 do |d|
-      d << property.salt
-      d << remote_ip
-      d << user_agent
-      d << hostname
-    end
-
-    @visitor_digest ||= digest.hexdigest
+    @visitor_digest ||= self.class.calculate_visitor_digest(
+      salt: property.salt,
+      remote_ip:,
+      user_agent:,
+      hostname:
+    )
   end
 
   def page_view_digest
