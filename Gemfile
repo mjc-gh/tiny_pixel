@@ -28,6 +28,7 @@ group :development, :test do
   gem "pry"
 
   gem "rubocop"
+  gem "rubocop-minitest"
   gem "rubocop-rails"
 
   gem "guard"
