@@ -34,17 +34,6 @@ group :development, :test do
   gem "guard"
   gem "guard-minitest"
   gem "guard-rubocop"
-
-  # TODO these should be required deps? allow for other deploy strategies?
-  # Deployment
-  gem "capistrano", "~> 3.18"
-  #gem "capistrano-puma"
-  gem "capistrano3-puma", github: "seuros/capistrano-puma"
-  gem "capistrano-rails", "~> 1.4"
-  gem "capistrano-rbenv", "~> 2.1", ">= 2.1.4"
-  #gem "capistrano-solid_queue", require: false
-  gem "ed25519", ">= 1.2", "< 2.0"
-  gem "bcrypt_pbkdf", ">= 1.0", "< 2.0"
 end
 
 group :development do
