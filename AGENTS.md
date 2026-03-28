@@ -31,7 +31,7 @@
 - **Ruby version**: 3.4
 - **Line ending**: Unix style (LF)
 - **Indentation**: 2 spaces (not tabs)
-- **Frozen string literals**: Required at the top of all files (`# frozen_string_literal: true`)
+- **Frozen string literals**: Required at the top of all `.rb` files (`# frozen_string_literal: true`)
 - **Always use snake case**: Use `req_1` instead of `req1`
 
 ### Scope and Associations
