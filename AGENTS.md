@@ -9,6 +9,7 @@
 - Always provide an implementation checklist at the end of the plan
 
 ## Development
+- Use `bundle exec rails g` to create models, migrations, controllers, and jobs
 
 ### Running Tests
 - **Run all tests**: `bundle exec rails t`
