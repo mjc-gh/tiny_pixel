@@ -1,9 +1,9 @@
 periodic_jobs: &periodic_jobs
-  daily_aggregation:
-    class: FooJob
+  hourly_aggregation:
+    class: AggregationJob
     queue: aggregation
     args: []
-    schedule: every day
+    schedule: every hour
 
 development:
   <<: *periodic_jobs

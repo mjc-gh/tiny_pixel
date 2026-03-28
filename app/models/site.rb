@@ -29,6 +29,11 @@ class Site < ApplicationRecord
   # TODO handle :weekly (and maybe :monthly?)
   enum :salt_duration, [:daily]
 
+  has_many :hourly_page_stats, dependent: :destroy
+  has_many :daily_page_stats, dependent: :destroy
+  has_many :weekly_page_stats, dependent: :destroy
+  has_many :aggregation_logs, dependent: :destroy
+
   validates :name, :property_id, :salt, presence: true
   validates :name, length: { maximum: 60 }
   validates :session_timeout_minutes,
@@ -39,8 +44,6 @@ class Site < ApplicationRecord
 
   class << self
     def perform_periodic_operations
-      # TODO: Aggregate new page visits data
-
       # Update site salt
       cycle_stale_salts!
 
