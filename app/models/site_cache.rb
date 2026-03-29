@@ -12,9 +12,12 @@ class SiteCache
       end
     end
 
+    def invalidate(property_id)
+      STORE.delete("site:#{property_id}")
+    end
+
     private
 
-    # TODO: bust the cache when Site salt cycles
     def store
       STORE
     end

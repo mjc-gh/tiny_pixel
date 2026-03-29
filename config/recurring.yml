@@ -4,6 +4,11 @@ periodic_jobs: &periodic_jobs
     queue: aggregation
     args: []
     schedule: every hour
+  hourly_salt_cycling:
+    class: SaltCyclingJob
+    queue: default
+    args: []
+    schedule: every hour
 
 development:
   <<: *periodic_jobs

@@ -165,6 +165,120 @@ class SiteTest < ActiveSupport::TestCase
     assert_equal "daily", site.salt_duration
   end
 
+  test "salt_duration enum supports weekly" do
+    site = sites(:my_blog)
+    site.salt_duration = :weekly
+    assert_equal "weekly", site.salt_duration
+  end
+
+  test "salt_duration enum supports monthly" do
+    site = sites(:my_blog)
+    site.salt_duration = :monthly
+    assert_equal "monthly", site.salt_duration
+  end
+
+  test "need_to_cycle_salt scope includes daily sites after 1 day" do
+    site = Site.create!(name: "Daily Site", salt: "placeholder", salt_duration: :daily)
+    site.update(salt_last_cycled_at: 2.days.ago)
+
+    assert_includes Site.need_to_cycle_salt, site
+  end
+
+  test "need_to_cycle_salt scope excludes daily sites within 1 day" do
+    site = Site.create!(name: "Daily Recent Site", salt: "placeholder", salt_duration: :daily)
+    site.update(salt_last_cycled_at: 12.hours.ago)
+
+    assert_not_includes Site.need_to_cycle_salt, site
+  end
+
+  test "need_to_cycle_salt scope includes weekly sites after 1 week" do
+    site = Site.create!(name: "Weekly Site", salt: "placeholder", salt_duration: :weekly)
+    site.update(salt_last_cycled_at: 8.days.ago)
+
+    assert_includes Site.need_to_cycle_salt, site
+  end
+
+  test "need_to_cycle_salt scope excludes weekly sites within 1 week" do
+    site = Site.create!(name: "Weekly Recent Site", salt: "placeholder", salt_duration: :weekly)
+    site.update(salt_last_cycled_at: 3.days.ago)
+
+    assert_not_includes Site.need_to_cycle_salt, site
+  end
+
+  test "need_to_cycle_salt scope includes monthly sites after 1 month" do
+    site = Site.create!(name: "Monthly Site", salt: "placeholder", salt_duration: :monthly)
+    site.update(salt_last_cycled_at: 32.days.ago)
+
+    assert_includes Site.need_to_cycle_salt, site
+  end
+
+  test "need_to_cycle_salt scope excludes monthly sites within 1 month" do
+    site = Site.create!(name: "Monthly Recent Site", salt: "placeholder", salt_duration: :monthly)
+    site.update(salt_last_cycled_at: 15.days.ago)
+
+    assert_not_includes Site.need_to_cycle_salt, site
+  end
+
+  test "#salt_cycle_due? returns true for daily site after 1 day" do
+    site = sites(:my_blog)
+    site.salt_duration = :daily
+    site.salt_last_cycled_at = 2.days.ago
+
+    assert site.salt_cycle_due?
+  end
+
+  test "#salt_cycle_due? returns false for daily site within 1 day" do
+    site = sites(:my_blog)
+    site.salt_duration = :daily
+    site.salt_last_cycled_at = 12.hours.ago
+
+    assert_not site.salt_cycle_due?
+  end
+
+  test "#salt_cycle_due? returns true for weekly site after 1 week" do
+    site = sites(:my_blog)
+    site.salt_duration = :weekly
+    site.salt_last_cycled_at = 8.days.ago
+
+    assert site.salt_cycle_due?
+  end
+
+  test "#salt_cycle_due? returns false for weekly site within 1 week" do
+    site = sites(:my_blog)
+    site.salt_duration = :weekly
+    site.salt_last_cycled_at = 3.days.ago
+
+    assert_not site.salt_cycle_due?
+  end
+
+  test "#salt_cycle_due? returns true for monthly site after 1 month" do
+    site = sites(:my_blog)
+    site.salt_duration = :monthly
+    site.salt_last_cycled_at = 32.days.ago
+
+    assert site.salt_cycle_due?
+  end
+
+  test "#salt_cycle_due? returns false for monthly site within 1 month" do
+    site = sites(:my_blog)
+    site.salt_duration = :monthly
+    site.salt_last_cycled_at = 15.days.ago
+
+    assert_not site.salt_cycle_due?
+  end
+
+  test "::cycle_stale_salts! invalidates SiteCache for cycled sites" do
+    site = sites(:my_blog)
+    site.update(salt_last_cycled_at: 2.days.ago)
+
+    SiteCache[site.property_id]
+    assert_not_nil SiteCache::STORE.read("site:#{site.property_id}")
+
+    Site.cycle_stale_salts!
+
+    assert_nil SiteCache::STORE.read("site:#{site.property_id}")
+  end
+
   test "session_timeout_minutes defaults to 30" do
     site = Site.create!(name: "Timeout Test", salt: "placeholder")
 

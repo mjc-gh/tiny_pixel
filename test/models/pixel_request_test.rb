@@ -654,4 +654,16 @@ class PixelRequestTest < ActiveSupport::TestCase
     assert page_view.bounced
     assert_nil page_view.duration
   end
+
+  test "visitor_attributes includes salt_version from property" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("26.27.28.29", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    pr = PixelRequest.from_incoming(req, { pid: site.property_id, p: "/", h: "blog.net" })
+    pr.process!
+
+    visitor = Visitor.find_by(digest: pr.send(:visitor_digest))
+
+    assert_not_nil visitor
+    assert_equal site.salt_version, visitor.salt_version
+  end
 end

@@ -26,8 +26,7 @@ class Site < ApplicationRecord
   before_validation :set_property_id, on: :create
   before_create :cycle_salt
 
-  # TODO handle :weekly (and maybe :monthly?)
-  enum :salt_duration, [:daily]
+  enum :salt_duration, { daily: 0, weekly: 1, monthly: 2 }
 
   has_many :hourly_page_stats, dependent: :destroy
   has_many :daily_page_stats, dependent: :destroy
@@ -40,7 +39,15 @@ class Site < ApplicationRecord
             presence: true,
             numericality: { greater_than_or_equal_to: 5, less_than_or_equal_to: 1440 }
 
-  scope :need_to_cycle_salt, -> { where(salt_last_cycled_at: ..1.day.ago) }
+  scope :need_to_cycle_salt, lambda {
+    daily_cutoff = 1.day.ago
+    weekly_cutoff = 1.week.ago
+    monthly_cutoff = 1.month.ago
+
+    where(salt_duration: :daily, salt_last_cycled_at: ..daily_cutoff)
+      .or(where(salt_duration: :weekly, salt_last_cycled_at: ..weekly_cutoff))
+      .or(where(salt_duration: :monthly, salt_last_cycled_at: ..monthly_cutoff))
+  }
 
   class << self
     def perform_periodic_operations
@@ -50,22 +57,28 @@ class Site < ApplicationRecord
       # TODO: remove visitors with older salt_version
     end
 
-    private
-
     def cycle_stale_salts!
       need_to_cycle_salt.find_each do |site|
         site.cycle_salt
         site.save!
+        SiteCache.invalidate(site.property_id)
       end
     end
   end
 
-  # TODO: check if salt should actually be cycled based upon salt duration and
-  # last cycled timestamp
   def cycle_salt
     self.salt = SecureRandom.urlsafe_base64(32)
     self.salt_version += 1
     self.salt_last_cycled_at = Time.current
+  end
+
+  def salt_cycle_due?
+    cutoff = case salt_duration
+             when "daily" then 1.day.ago
+             when "weekly" then 1.week.ago
+             when "monthly" then 1.month.ago
+    end
+    salt_last_cycled_at <= cutoff
   end
 
   def session_timeout
