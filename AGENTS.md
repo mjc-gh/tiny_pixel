@@ -58,6 +58,7 @@
 - Use `self.table_name = :table_name` only if table name differs from Rails convention
 - Connect to specific databases: `connects_to database: { writing: :ingestion }`
 - Schema comments in model files are updated automatically when running migrations
+- Do not unit test associations, validations, and other built-in Rails features
 
 ### Controllers and Views
 - Follow RESTful conventions: `index`, `show`, `new`, `create`, `edit`, `update`, `destroy`
