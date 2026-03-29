@@ -1,7 +1,13 @@
 service: tiny_pixel
 image: ghcr.io/mjc-gh/tiny_pixel
 servers:
-  - 107.170.70.30
+  web:
+    hosts:
+      - 107.170.70.30
+  workers:
+    hosts:
+      - 107.170.70.30
+    cmd: ./bin/jobs
 registry:
   server: ghcr.io
   username: mjc-gh
