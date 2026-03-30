@@ -1,0 +1,27 @@
+# == Schema Information
+#
+# Table name: users
+# Database name: primary
+#
+#  id                :integer          not null, primary key
+#  confirmed_at      :datetime
+#  email             :string           not null
+#  password_digest   :string           not null
+#  unconfirmed_email :string
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#
+# Indexes
+#
+#  index_users_on_email  (email) UNIQUE
+#
+# Password for all fixtures is "password123"
+alice:
+  email: alice@example.com
+  password_digest: $2a$12$d9M5BWObpAZwd75.a9vcVOIhmYdrfipVclTN5el6RKHXzZjwrsyhG
+  confirmed_at: <%= Time.current %>
+
+bob:
+  email: bob@example.com
+  password_digest: $2a$12$d9M5BWObpAZwd75.a9vcVOIhmYdrfipVclTN5el6RKHXzZjwrsyhG
+  confirmed_at: <%= Time.current %>

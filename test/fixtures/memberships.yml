@@ -1,0 +1,32 @@
+# == Schema Information
+#
+# Table name: memberships
+# Database name: primary
+#
+#  id         :integer          not null, primary key
+#  role       :integer          default(0), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  site_id    :integer          not null
+#  user_id    :integer          not null
+#
+# Indexes
+#
+#  index_memberships_on_site_id              (site_id)
+#  index_memberships_on_user_id              (user_id)
+#  index_memberships_on_user_id_and_site_id  (user_id,site_id) UNIQUE
+#
+# Foreign Keys
+#
+#  site_id  (site_id => sites.id)
+#  user_id  (user_id => users.id)
+#
+alice_my_blog_admin:
+  user: alice
+  site: my_blog
+  role: 1
+
+bob_my_blog_member:
+  user: bob
+  site: my_blog
+  role: 0

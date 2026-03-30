@@ -83,6 +83,7 @@ GEM
     ansi (1.5.0)
     ast (2.4.3)
     base64 (0.3.0)
+    bcrypt (3.1.22)
     bcrypt_pbkdf (1.1.2)
     bigdecimal (4.0.1)
     bindex (0.8.1)
@@ -323,6 +324,9 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
+    revise_auth (0.8.0)
+      bcrypt (~> 3.1)
+      rails (>= 7.1.0.beta1)
     rexml (3.4.4)
     rubocop (1.86.0)
       json (~> 2.3)
@@ -466,6 +470,7 @@ DEPENDENCIES
   puma
   rack-cors
   rails (~> 8.1)
+  revise_auth
   rubocop
   rubocop-minitest
   rubocop-rails

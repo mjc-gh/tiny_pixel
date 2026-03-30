@@ -28,6 +28,8 @@ class Site < ApplicationRecord
 
   enum :salt_duration, { daily: 0, weekly: 1, monthly: 2 }
 
+  has_many :memberships, dependent: :destroy
+  has_many :users, through: :memberships
   has_many :hourly_page_stats, dependent: :destroy
   has_many :daily_page_stats, dependent: :destroy
   has_many :weekly_page_stats, dependent: :destroy

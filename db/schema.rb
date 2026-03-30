@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_28_133638) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_29_211844) do
   create_table "aggregation_logs", force: :cascade do |t|
     t.string "aggregation_type", null: false
     t.datetime "completed_at"
@@ -64,6 +64,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_133638) do
     t.index ["site_id"], name: "index_hourly_page_stats_on_site_id"
   end
 
+  create_table "memberships", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "role", default: 0, null: false
+    t.integer "site_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["site_id"], name: "index_memberships_on_site_id"
+    t.index ["user_id", "site_id"], name: "index_memberships_on_user_id_and_site_id", unique: true
+    t.index ["user_id"], name: "index_memberships_on_user_id"
+  end
+
   create_table "sites", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -75,6 +86,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_133638) do
     t.integer "session_timeout_minutes", default: 30
     t.datetime "updated_at", null: false
     t.index ["property_id"], name: "index_sites_on_property_id", unique: true
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "confirmed_at"
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "password_digest", null: false
+    t.string "unconfirmed_email"
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   create_table "weekly_page_stats", force: :cascade do |t|
@@ -100,5 +121,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_133638) do
   add_foreign_key "aggregation_logs", "sites"
   add_foreign_key "daily_page_stats", "sites"
   add_foreign_key "hourly_page_stats", "sites"
+  add_foreign_key "memberships", "sites"
+  add_foreign_key "memberships", "users"
   add_foreign_key "weekly_page_stats", "sites"
 end
