@@ -1,5 +1,36 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: weekly_page_stats
+# Database name: primary
+#
+#  id               :integer          not null, primary key
+#  bounced_count    :integer          default(0), not null
+#  duration_count   :integer          default(0), not null
+#  hostname         :string           not null
+#  pageviews        :integer          default(0), not null
+#  pathname         :string           not null
+#  sessions         :integer          default(0), not null
+#  total_duration   :decimal(12, 2)   default(0.0), not null
+#  unique_pageviews :integer          default(0), not null
+#  visits           :integer          default(0), not null
+#  week_start       :date             not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  site_id          :integer          not null
+#
+# Indexes
+#
+#  idx_weekly_page_stats_site_host_week  (site_id,hostname,week_start)
+#  idx_weekly_page_stats_site_week       (site_id,week_start)
+#  idx_weekly_page_stats_unique          (site_id,hostname,pathname,week_start) UNIQUE
+#  index_weekly_page_stats_on_site_id    (site_id)
+#
+# Foreign Keys
+#
+#  site_id  (site_id => sites.id)
+#
 class WeeklyPageStat < ApplicationRecord
   belongs_to :site
 
