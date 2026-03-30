@@ -43,12 +43,4 @@ class V1::PixelsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "image/gif", response.header["Content-Type"]
   end
-
-  test "post valid pixel with existing visitor" do
-    skip
-  end
-
-  test "post valid pixel with existing session" do
-    skip
-  end
 end
