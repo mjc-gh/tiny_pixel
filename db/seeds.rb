@@ -126,6 +126,18 @@ puts "Seeding database..."
 site = Site.find_by(name: "Test Site") || Site.create!(name: "Test Site")
 puts "Using site: #{site.name} (#{site.property_id})"
 
+# Create or find User and Membership
+user = User.find_or_create_by!(email: "test@example.com") do |u|
+  u.password = "thisisapassword"
+  u.confirmed_at = Time.current
+end
+puts "Using user: #{user.email}"
+
+membership = Membership.find_or_create_by!(user: user, site: site) do |m|
+  m.role = :admin
+end
+puts "Using membership: #{user.email} -> #{site.name} (#{membership.role})"
+
 # Clear existing seed data for idempotent re-runs
 puts "Clearing existing seed data..."
 site.hourly_page_stats.delete_all
@@ -248,6 +260,8 @@ puts "Created #{weekly_count} weekly page stats"
 puts "\nSeeding complete!"
 puts "Total records:"
 puts "  - Sites: #{Site.count}"
+puts "  - Users: #{User.count}"
+puts "  - Memberships: #{Membership.count}"
 puts "  - Visitors: #{Visitor.count}"
 puts "  - PageViews: #{PageView.count}"
 puts "  - HourlyPageStats: #{HourlyPageStat.count}"
