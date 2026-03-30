@@ -9,17 +9,17 @@
 - Always provide an implementation checklist at the end of the plan
 
 ## Development
-- Use `bundle exec rails g` to create models, migrations, controllers, and jobs
+- Use `be rails g` to create models, migrations, controllers, and jobs
 
 ### Running Tests
-- **Run all tests**: `bundle exec rails t`
-- **Run a single test file**: `bundle exec rails t test/models/site_test.rb`
-- **Run tests matching a pattern**: `bundle exec rails t --name pattern`
-- **Run tests with coverage**: `COVERAGE=1 bundle exec rails t"`
+- **Run all tests**: `be rails t`
+- **Run a single test file**: `be rails t test/models/site_test.rb`
+- **Run tests matching a pattern**: `be rails t --name pattern`
+- **Run tests with coverage**: `COVERAGE=1 be rails t"`
 
 ### Linting and Code Quality
-- **Run RuboCop**: `bundle exec rubocop`
-- **Auto-fix RuboCop issues**: `bundle exec rubocop -A`
+- **Run RuboCop**: `be rubocop`
+- **Auto-fix RuboCop issues**: `be rubocop -A`
 
 ## Code Style Guidelines
 
