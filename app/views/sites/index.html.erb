@@ -1,0 +1,13 @@
+<h1 class="font-bold text-2xl mb-6">Your Sites</h1>
+
+<% if @sites.any? %>
+  <%= render GridListComponent.new do |grid| %>
+    <% @sites.each do |site| %>
+      <% grid.with_card do %>
+        <%= render SiteCardComponent.new(site: site) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% else %>
+  <p class="text-gray-500">You don't have any sites yet.</p>
+<% end %>

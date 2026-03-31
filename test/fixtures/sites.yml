@@ -25,3 +25,11 @@ my_blog:
   salt_last_cycled_at: <%= Time.current %>
   salt_version: 2
   salt_duration: daily
+
+tech_blog:
+  property_id: EFGH5678
+  name: Tech Blog
+  salt: <%= SecureRandom.urlsafe_base64(32) %>
+  salt_last_cycled_at: <%= Time.current %>
+  salt_version: 1
+  salt_duration: weekly

@@ -30,3 +30,8 @@ bob_my_blog_member:
   user: bob
   site: my_blog
   role: 0
+
+alice_tech_blog_admin:
+  user: alice
+  site: tech_blog
+  role: 1
