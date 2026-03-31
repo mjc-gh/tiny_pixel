@@ -9,7 +9,7 @@
 - Always provide an implementation checklist at the end of the plan
 
 ## Development
-- Use `be rails g` to create models, migrations, controllers, and jobs
+- Use `be rails g` to create models, migrations, controllers, jobs, and view components.
 
 ### Running Tests
 - **Run all tests**: `be rails t`
