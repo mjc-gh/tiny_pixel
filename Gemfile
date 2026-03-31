@@ -52,3 +52,5 @@ end
 group :production do
   gem "thruster"
 end
+
+gem "view_component", "~> 4.6"

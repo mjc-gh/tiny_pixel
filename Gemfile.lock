@@ -430,6 +430,10 @@ GEM
     uri (1.1.1)
     user_agent_parser (2.21.0)
     useragent (0.16.11)
+    view_component (4.6.0)
+      actionview (>= 7.1.0)
+      activesupport (>= 7.1.0)
+      concurrent-ruby (~> 1)
     web-console (4.3.0)
       actionview (>= 8.0.0)
       bindex (>= 0.4.0)
@@ -494,6 +498,7 @@ DEPENDENCIES
   thruster
   turbo-rails
   user_agent_parser (~> 2.18)
+  view_component (~> 4.6)
   web-console
   whenever
 
