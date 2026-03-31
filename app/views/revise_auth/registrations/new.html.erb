@@ -1,31 +1,40 @@
-<h1><%=t ".sign_up" %></h1>
+<div class="w-full max-w-md mx-auto">
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+    <h1 class="text-2xl font-bold text-text-primary mb-6"><%=t ".sign_up" %></h1>
 
-<%= form_with model: @user, url: sign_up_path do |form| %>
-  <% if form.object.errors.any? %>
-    <ul>
-      <% form.object.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+    <%= form_with model: @user, url: sign_up_path, class: "space-y-4" do |form| %>
+      <% if form.object.errors.any? %>
+        <div class="bg-danger-bg border border-danger-border rounded-md p-4">
+          <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
+            <% form.object.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
       <% end %>
-    </ul>
-  <% end %>
-  <div>
-    <%= form.label :email %>
-    <%= form.email_field :email, required: true, autofocus: true %>
-  </div>
 
-  <div>
-    <%= form.label :password %>
-    <%= form.password_field :password, required: true %>
-  </div>
+      <div>
+        <%= form.label :email, class: "block text-sm font-medium text-text-label mb-1" %>
+        <%= form.email_field :email, required: true, autofocus: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+      </div>
 
-  <div>
-    <%= form.label :password_confirmation %>
-    <%= form.password_field :password_confirmation, required: true %>
-  </div>
+      <div>
+        <%= form.label :password, class: "block text-sm font-medium text-text-label mb-1" %>
+        <%= form.password_field :password, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+      </div>
 
-  <div>
-    <%= form.button t(".sign_up") %>
-  </div>
-<% end %>
+      <div>
+        <%= form.label :password_confirmation, class: "block text-sm font-medium text-text-label mb-1" %>
+        <%= form.password_field :password_confirmation, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+      </div>
 
-<%= render "revise_auth/shared/links" %>
+      <div class="pt-2">
+        <%= form.button t(".sign_up"), class: "w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium" %>
+      </div>
+    <% end %>
+
+    <div class="mt-6 pt-6 border-t border-border">
+      <%= render "revise_auth/shared/links" %>
+    </div>
+  </div>
+</div>

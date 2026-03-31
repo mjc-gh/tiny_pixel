@@ -1,25 +1,31 @@
-<h1><%=t ".reset_password" %></h1>
+<div class="w-full max-w-md mx-auto">
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+    <h1 class="text-2xl font-bold text-text-primary mb-6"><%=t ".reset_password" %></h1>
 
-<%= form_with model: @user, url: password_reset_path do |form| %>
-  <% if form.object.errors.any? %>
-    <ul>
-      <% form.object.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+    <%= form_with model: @user, url: password_reset_path, class: "space-y-4" do |form| %>
+      <% if form.object.errors.any? %>
+        <div class="bg-danger-bg border border-danger-border rounded-md p-4">
+          <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
+            <% form.object.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
       <% end %>
-    </ul>
-  <% end %>
 
-  <div>
-    <%= form.label :password %>
-    <%= form.password_field :password, required: true %>
-  </div>
+      <div>
+        <%= form.label :password, class: "block text-sm font-medium text-text-label mb-1" %>
+        <%= form.password_field :password, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+      </div>
 
-  <div>
-    <%= form.label :password_confirmation %>
-    <%= form.password_field :password_confirmation, required: true %>
-  </div>
+      <div>
+        <%= form.label :password_confirmation, class: "block text-sm font-medium text-text-label mb-1" %>
+        <%= form.password_field :password_confirmation, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+      </div>
 
-  <div>
-    <%= form.button t(".reset_password") %>
+      <div class="pt-2">
+        <%= form.button t(".reset_password"), class: "w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium" %>
+      </div>
+    <% end %>
   </div>
-<% end %>
+</div>

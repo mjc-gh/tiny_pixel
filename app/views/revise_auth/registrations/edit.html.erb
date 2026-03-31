@@ -1,71 +1,89 @@
-<h1><%=t ".profile" %></h1>
+<div class="w-full max-w-2xl mx-auto space-y-6">
+  <h1 class="text-2xl font-bold text-text-primary"><%=t ".profile" %></h1>
 
-<%= form_with model: current_user, url: profile_email_path do |form| %>
-  <fieldset>
-    <legend><%=t ".change_email_address" %></legend>
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+    <%= form_with model: current_user, url: profile_email_path, class: "space-y-4" do |form| %>
+      <fieldset>
+        <legend class="text-lg font-semibold text-text-primary mb-4"><%=t ".change_email_address" %></legend>
 
-    <% if current_user.unconfirmed_email? %>
-      <p><%=t ".waiting_confirmation", email: current_user.unconfirmed_email %></p>
-    <% end %>
-
-    <% if form.object.errors.any? %>
-      <ul>
-        <% form.object.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
+        <% if current_user.unconfirmed_email? %>
+          <div class="bg-warning-bg border border-warning-border rounded-md p-4 mb-4">
+            <p class="text-sm text-warning-text"><%=t ".waiting_confirmation", email: current_user.unconfirmed_email %></p>
+          </div>
         <% end %>
-      </ul>
-    <% end %>
 
-    <p><%=t ".current_email_address", email: current_user.email %></p>
-    <p><%=t ".confirmation_instructions" %></p>
-
-    <div>
-      <%= form.label :unconfirmed_email, t(".new_email") %>
-      <%= form.email_field :unconfirmed_email, required: true %>
-    </div>
-
-    <div>
-      <%= form.button t(".save") %>
-    </div>
-  </fieldset>
-<% end %>
-
-<%= form_with model: current_user, url: profile_password_path do |form| %>
-  <fieldset>
-    <legend><%=t ".change_password" %></legend>
-
-    <% if form.object.errors.any? %>
-      <ul>
-        <% form.object.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
+        <% if form.object.errors.any? %>
+          <div class="bg-danger-bg border border-danger-border rounded-md p-4 mb-4">
+            <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
+              <% form.object.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
         <% end %>
-      </ul>
+
+        <p class="text-sm text-text-secondary mb-2"><%=t ".current_email_address", email: current_user.email %></p>
+        <p class="text-sm text-text-muted mb-4"><%=t ".confirmation_instructions" %></p>
+
+        <div class="space-y-4">
+          <div>
+            <%= form.label :unconfirmed_email, t(".new_email"), class: "block text-sm font-medium text-text-label mb-1" %>
+            <%= form.email_field :unconfirmed_email, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+          </div>
+
+          <div>
+            <%= form.button t(".save"), class: "bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium" %>
+          </div>
+        </div>
+      </fieldset>
     <% end %>
+  </div>
 
-    <div>
-      <%= form.label :password_challenge %>
-      <%= form.password_field :password_challenge, required: true %>
-    </div>
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+    <%= form_with model: current_user, url: profile_password_path, class: "space-y-4" do |form| %>
+      <fieldset>
+        <legend class="text-lg font-semibold text-text-primary mb-4"><%=t ".change_password" %></legend>
 
-    <div>
-      <%= form.label :password, t(".new_password") %>
-      <%= form.password_field :password, required: true %>
-    </div>
+        <% if form.object.errors.any? %>
+          <div class="bg-danger-bg border border-danger-border rounded-md p-4 mb-4">
+            <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
+              <% form.object.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
 
-    <div>
-      <%= form.label :password_confirmation %>
-      <%= form.password_field :password_confirmation, required: true %>
-    </div>
+        <div class="space-y-4">
+          <div>
+            <%= form.label :password_challenge, class: "block text-sm font-medium text-text-label mb-1" %>
+            <%= form.password_field :password_challenge, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+          </div>
 
-    <div>
-      <%= form.button t(".save") %>
-    </div>
-  </fieldset>
-<% end %>
+          <div>
+            <%= form.label :password, t(".new_password"), class: "block text-sm font-medium text-text-label mb-1" %>
+            <%= form.password_field :password, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+          </div>
 
-<%= form_with url: profile_path, method: :delete do |form| %>
-  <fieldset>
-    <legend><%=t ".delete_account" %></legend>
-    <%= form.button t(".delete_account"), data: { turbo_confirm: t(".confirm") } %>
-  </fieldset>
-<% end %>
+          <div>
+            <%= form.label :password_confirmation, class: "block text-sm font-medium text-text-label mb-1" %>
+            <%= form.password_field :password_confirmation, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+          </div>
+
+          <div>
+            <%= form.button t(".save"), class: "bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium" %>
+          </div>
+        </div>
+      </fieldset>
+    <% end %>
+  </div>
+
+  <div class="bg-surface border border-danger-border rounded-lg p-6 sm:p-8">
+    <%= form_with url: profile_path, method: :delete do |form| %>
+      <fieldset>
+        <legend class="text-lg font-semibold text-danger mb-4"><%=t ".delete_account" %></legend>
+        <%= form.button t(".delete_account"), data: { turbo_confirm: t(".confirm") }, class: "bg-danger text-white py-2 px-4 rounded-md hover:bg-danger-hover focus:outline-none focus:ring-2 focus:ring-danger focus:ring-offset-2 font-medium" %>
+      </fieldset>
+    <% end %>
+  </div>
+</div>

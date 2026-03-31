@@ -1,1 +1,78 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Background colors */
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f9fafb;
+
+  /* Border colors */
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+
+  /* Text colors */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #6b7280;
+  --color-text-label: #374151;
+
+  /* Primary action colors */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+
+  /* Danger/destructive colors */
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #fecaca;
+  --color-danger-text: #dc2626;
+
+  /* Warning colors */
+  --color-warning-bg: #fefce8;
+  --color-warning-border: #fef08a;
+  --color-warning-text: #a16207;
+
+  /* Input colors */
+  --color-input-border: #d1d5db;
+  --color-input-bg: #ffffff;
+}
+
+/* Dark mode overrides */
+.dark {
+  /* Background colors */
+  --color-background: #111827;
+  --color-surface: #1f2937;
+  --color-surface-hover: #374151;
+
+  /* Border colors */
+  --color-border: #374151;
+  --color-border-light: #4b5563;
+
+  /* Text colors */
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-text-label: #d1d5db;
+
+  /* Primary action colors */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+
+  /* Danger/destructive colors */
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-danger-bg: #450a0a;
+  --color-danger-border: #7f1d1d;
+  --color-danger-text: #fca5a5;
+
+  /* Warning colors */
+  --color-warning-bg: #422006;
+  --color-warning-border: #713f12;
+  --color-warning-text: #fcd34d;
+
+  /* Input colors */
+  --color-input-border: #4b5563;
+  --color-input-bg: #1f2937;
+}
