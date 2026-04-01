@@ -1,0 +1,7 @@
+<% if has_data? %>
+  <div class="w-full" style="height: 300px;">
+    <%= helpers.line_chart chart_data, **chart_options %>
+  </div>
+<% else %>
+  <p class="text-text-muted py-4">No data available for this period.</p>
+<% end %>

@@ -4,7 +4,10 @@
       <h1 class="font-bold text-2xl text-text-primary"><%= @site.name %></h1>
       <p class="text-sm text-text-secondary"><%= @site.property_id %></p>
     </div>
-    <%= render IntervalSelectorComponent.new(current_interval: current_interval, site: @site) %>
+    <div class="flex items-center gap-4">
+      <%= render ViewModeSelectorComponent.new(current_view_mode: current_view_mode, site: @site, current_interval: current_interval) %>
+      <%= render IntervalSelectorComponent.new(current_interval: current_interval, site: @site, current_view_mode: current_view_mode) %>
+    </div>
   </div>
 </div>
 
@@ -12,7 +15,7 @@
   <section>
     <h2 class="font-semibold text-lg text-text-primary mb-4">Page Views</h2>
     <div class="border border-border rounded-lg p-4 bg-surface">
-      <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval) %>" loading="lazy">
+      <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, view_mode: current_view_mode) %>" loading="lazy">
         <p class="text-text-muted">Loading page views...</p>
       </turbo-frame>
     </div>
@@ -21,7 +24,7 @@
   <section>
     <h2 class="font-semibold text-lg text-text-primary mb-4">Visitors</h2>
     <div class="border border-border rounded-lg p-4 bg-surface">
-      <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval) %>" loading="lazy">
+      <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, view_mode: current_view_mode) %>" loading="lazy">
         <p class="text-text-muted">Loading visitors...</p>
       </turbo-frame>
     </div>
@@ -30,7 +33,7 @@
   <section>
     <h2 class="font-semibold text-lg text-text-primary mb-4">Performance</h2>
     <div class="border border-border rounded-lg p-4 bg-surface">
-      <turbo-frame id="performance_stats" src="<%= site_performance_index_path(@site, interval: current_interval) %>" loading="lazy">
+      <turbo-frame id="performance_stats" src="<%= site_performance_index_path(@site, interval: current_interval, view_mode: current_view_mode) %>" loading="lazy">
         <p class="text-text-muted">Loading performance...</p>
       </turbo-frame>
     </div>

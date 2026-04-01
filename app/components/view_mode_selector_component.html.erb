@@ -1,0 +1,15 @@
+<div class="flex items-center gap-2">
+  <label for="view_mode" class="text-sm font-medium text-text-secondary">View:</label>
+  <select
+    id="view_mode"
+    name="view_mode"
+    class="block w-32 rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+    onchange="window.location.href = this.value"
+  >
+    <% view_modes.each do |mode| %>
+      <option value="<%= view_mode_path(mode[:value]) %>" <%= 'selected' if selected?(mode[:value]) %>>
+        <%= mode[:label] %>
+      </option>
+    <% end %>
+  </select>
+</div>

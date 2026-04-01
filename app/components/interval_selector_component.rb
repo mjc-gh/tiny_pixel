@@ -7,9 +7,10 @@ class IntervalSelectorComponent < ViewComponent::Base
     { value: "weekly", label: "Weekly" }
   ].freeze
 
-  def initialize(current_interval:, site:)
+  def initialize(current_interval:, site:, current_view_mode: "graph")
     @current_interval = current_interval
     @site = site
+    @current_view_mode = current_view_mode
   end
 
   def intervals
@@ -21,6 +22,6 @@ class IntervalSelectorComponent < ViewComponent::Base
   end
 
   def interval_path(interval)
-    helpers.site_path(@site, interval: interval)
+    helpers.site_path(@site, interval: interval, view_mode: @current_view_mode)
   end
 end

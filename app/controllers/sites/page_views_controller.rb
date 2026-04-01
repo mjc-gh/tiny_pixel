@@ -12,6 +12,11 @@ module Sites
         .for_site(@site.id)
         .public_send(stats_ordered_scope)
         .paginate(page: params[:page], per_page: PER_PAGE)
+
+      @chart_data = {
+        "Page Views" => stats_model.for_site(@site.id).group(stats_time_column).sum(:pageviews),
+        "Unique Page Views" => stats_model.for_site(@site.id).group(stats_time_column).sum(:unique_pageviews)
+      }
     end
 
     private

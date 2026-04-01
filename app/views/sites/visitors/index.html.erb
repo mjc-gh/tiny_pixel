@@ -1,14 +1,18 @@
 <turbo-frame id="visitors_stats">
-  <%= render StatsTableComponent.new(
-    stats: @stats,
-    columns: [
-      { label: "Visits", method: :visits },
-      { label: "Sessions", method: :sessions }
-    ],
-    time_column: stats_time_column,
-    pagination: @stats,
-    frame_id: "visitors_stats",
-    base_path: site_visitors_path(@site),
-    params: { interval: current_interval }
-  ) %>
+  <% if current_view_mode == "graph" %>
+    <%= render StatsChartComponent.new(data: @chart_data, time_column: stats_time_column, chart_id: "visitors_chart") %>
+  <% else %>
+    <%= render StatsTableComponent.new(
+      stats: @stats,
+      columns: [
+        { label: "Visits", method: :visits },
+        { label: "Sessions", method: :sessions }
+      ],
+      time_column: stats_time_column,
+      pagination: @stats,
+      frame_id: "visitors_stats",
+      base_path: site_visitors_path(@site),
+      params: { interval: current_interval, view_mode: current_view_mode }
+    ) %>
+  <% end %>
 </turbo-frame>

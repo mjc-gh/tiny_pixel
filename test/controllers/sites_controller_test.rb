@@ -97,7 +97,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
 
     get site_url(sites(:my_blog))
 
-    assert_select "option[value='#{site_path(sites(:my_blog), interval: 'daily')}'][selected]"
+    assert_select "option[value='#{site_path(sites(:my_blog), interval: 'daily', view_mode: 'graph')}'][selected]"
   end
 
   test "show returns 404 for unauthorized site" do

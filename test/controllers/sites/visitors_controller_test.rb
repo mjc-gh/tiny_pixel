@@ -37,7 +37,7 @@ module Sites
         sessions: 40
       )
 
-      get site_visitors_url(sites(:tech_blog), interval: "daily")
+      get site_visitors_url(sites(:tech_blog), interval: "daily", view_mode: "table")
 
       assert_response :success
       assert_select "table"
