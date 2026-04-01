@@ -1,0 +1,15 @@
+<div class="flex items-center gap-2">
+  <label for="interval" class="text-sm font-medium text-text-secondary">Interval:</label>
+  <select 
+    id="interval" 
+    name="interval" 
+    class="block w-32 rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+    onchange="window.location.href = this.value"
+  >
+    <% intervals.each do |interval| %>
+      <option value="<%= interval_path(interval[:value]) %>" <%= 'selected' if selected?(interval[:value]) %>>
+        <%= interval[:label] %>
+      </option>
+    <% end %>
+  </select>
+</div>

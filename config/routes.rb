@@ -5,7 +5,13 @@ Rails.application.routes.draw do
 
   revise_auth
 
-  resources :sites, only: [:index]
+  resources :sites, only: [:index, :show] do
+    scope module: :sites do
+      resources :page_views, only: [:index]
+      resources :visitors, only: [:index]
+      resources :performance, only: [:index]
+    end
+  end
   # Pixel ingestion ingestion
   get "/_/pixel.gif" => "v1/pixels#create", as: :v1_pixels
 

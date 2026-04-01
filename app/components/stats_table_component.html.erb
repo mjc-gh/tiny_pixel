@@ -1,0 +1,28 @@
+<% if @stats.any? %>
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-border">
+      <thead class="bg-surface">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Time</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Pathname</th>
+          <% @columns.each do |column| %>
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"><%= column[:label] %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody class="bg-background divide-y divide-border">
+        <% @stats.each do |stat| %>
+          <tr>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-text-muted"><%= format_time(stat) %></td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary font-medium"><%= stat.pathname %></td>
+            <% @columns.each do |column| %>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, column[:method]) %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-text-muted py-4">No data available for this period.</p>
+<% end %>

@@ -1,5 +1,5 @@
-<div class="p-4 border border-border rounded bg-surface">
+<%= link_to site_path(@site), class: "block p-4 border border-border rounded bg-surface hover:border-primary transition-colors" do %>
   <h2 class="font-bold text-lg text-text-primary"><%= @site.name %></h2>
   <p class="text-sm text-text-secondary"><%= @site.property_id %></p>
   <p class="text-sm text-text-muted">Created <%= @site.created_at.strftime("%B %d, %Y") %></p>
-</div>
+<% end %>

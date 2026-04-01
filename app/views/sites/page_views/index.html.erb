@@ -1,0 +1,10 @@
+<turbo-frame id="page_views_stats">
+  <%= render StatsTableComponent.new(
+    stats: @stats,
+    columns: [
+      { label: "Page Views", method: :pageviews },
+      { label: "Unique Page Views", method: :unique_pageviews }
+    ],
+    time_column: stats_time_column
+  ) %>
+</turbo-frame>

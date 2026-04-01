@@ -1,0 +1,10 @@
+<turbo-frame id="visitors_stats">
+  <%= render StatsTableComponent.new(
+    stats: @stats,
+    columns: [
+      { label: "Visits", method: :visits },
+      { label: "Sessions", method: :sessions }
+    ],
+    time_column: stats_time_column
+  ) %>
+</turbo-frame>

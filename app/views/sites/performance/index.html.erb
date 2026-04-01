@@ -1,0 +1,10 @@
+<turbo-frame id="performance_stats">
+  <%= render StatsTableComponent.new(
+    stats: @stats,
+    columns: [
+      { label: "Avg Duration", method: :avg_duration },
+      { label: "Bounce Rate", method: :bounce_rate }
+    ],
+    time_column: stats_time_column
+  ) %>
+</turbo-frame>
