@@ -1,10 +1,18 @@
 # frozen_string_literal: true
 
 class StatsTableComponent < ViewComponent::Base
-  def initialize(stats:, columns:, time_column:)
+  def initialize(stats:, columns:, time_column:, pagination: nil, frame_id: nil, base_path: nil, params: {})
     @stats = stats
     @columns = columns
     @time_column = time_column
+    @pagination = pagination
+    @frame_id = frame_id
+    @base_path = base_path
+    @params = params
+  end
+
+  def render_pagination?
+    @pagination&.respond_to?(:total_pages) && @frame_id.present? && @base_path.present?
   end
 
   def format_time(stat)

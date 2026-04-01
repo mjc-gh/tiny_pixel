@@ -5,6 +5,10 @@
       { label: "Visits", method: :visits },
       { label: "Sessions", method: :sessions }
     ],
-    time_column: stats_time_column
+    time_column: stats_time_column,
+    pagination: @stats,
+    frame_id: "visitors_stats",
+    base_path: site_visitors_path(@site),
+    params: { interval: current_interval }
   ) %>
 </turbo-frame>

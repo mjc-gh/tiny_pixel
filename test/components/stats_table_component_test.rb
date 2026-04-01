@@ -131,4 +131,81 @@ class StatsTableComponentTest < ViewComponent::TestCase
 
     assert_text "s"
   end
+
+  def test_renders_pagination_when_provided
+    stat = DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/",
+      date: Date.current,
+      pageviews: 100
+    )
+    columns = [{ label: "Page Views", method: :pageviews }]
+    pagination = create_paginated_collection(current_page: 1, total_pages: 3)
+
+    render_inline(StatsTableComponent.new(
+      stats: [stat],
+      columns: columns,
+      time_column: :date,
+      pagination: pagination,
+      frame_id: "test_frame",
+      base_path: "/test/path"
+    ))
+
+    assert_selector "nav[aria-label='Pagination']"
+  end
+
+  def test_does_not_render_pagination_without_all_params
+    stat = DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/",
+      date: Date.current,
+      pageviews: 100
+    )
+    columns = [{ label: "Page Views", method: :pageviews }]
+
+    render_inline(StatsTableComponent.new(
+      stats: [stat],
+      columns: columns,
+      time_column: :date,
+      pagination: nil
+    ))
+
+    assert_no_selector "nav[aria-label='Pagination']"
+  end
+
+  def test_does_not_render_pagination_without_frame_id
+    stat = DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/",
+      date: Date.current,
+      pageviews: 100
+    )
+    columns = [{ label: "Page Views", method: :pageviews }]
+    pagination = create_paginated_collection(current_page: 1, total_pages: 3)
+
+    render_inline(StatsTableComponent.new(
+      stats: [stat],
+      columns: columns,
+      time_column: :date,
+      pagination: pagination,
+      frame_id: nil,
+      base_path: "/test/path"
+    ))
+
+    assert_no_selector "nav[aria-label='Pagination']"
+  end
+
+  private
+
+  def create_paginated_collection(current_page:, total_pages:)
+    collection = []
+    collection.define_singleton_method(:current_page) { current_page }
+    collection.define_singleton_method(:total_pages) { total_pages }
+    collection.define_singleton_method(:previous_page) { current_page > 1 ? current_page - 1 : nil }
+    collection.define_singleton_method(:next_page) { current_page < total_pages ? current_page + 1 : nil }
+    collection
+  end
 end

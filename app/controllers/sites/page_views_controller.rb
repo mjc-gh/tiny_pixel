@@ -11,7 +11,7 @@ module Sites
       @stats = stats_model
         .for_site(@site.id)
         .public_send(stats_ordered_scope)
-        .limit(20)
+        .paginate(page: params[:page], per_page: PER_PAGE)
     end
 
     private

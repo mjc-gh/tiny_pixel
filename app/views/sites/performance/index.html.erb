@@ -5,6 +5,10 @@
       { label: "Avg Duration", method: :avg_duration },
       { label: "Bounce Rate", method: :bounce_rate }
     ],
-    time_column: stats_time_column
+    time_column: stats_time_column,
+    pagination: @stats,
+    frame_id: "performance_stats",
+    base_path: site_performance_index_path(@site),
+    params: { interval: current_interval }
   ) %>
 </turbo-frame>

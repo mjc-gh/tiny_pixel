@@ -5,6 +5,7 @@ module IntervalStats
 
   VALID_INTERVALS = %w[hourly daily weekly].freeze
   DEFAULT_INTERVAL = "daily"
+  PER_PAGE = 20
 
   included do
     helper_method :current_interval, :stats_time_column

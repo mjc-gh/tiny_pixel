@@ -55,3 +55,4 @@ end
 
 gem "view_component", "~> 4.6"
 gem "chartkick"
+gem "will_paginate"
