@@ -18,11 +18,5 @@ module Sites
         "Sessions" => stats_model.for_site(@site.id).group(stats_time_column).sum(:sessions)
       }
     end
-
-    private
-
-    def set_site
-      @site = current_user.sites.find(params[:site_id])
-    end
   end
 end
