@@ -28,13 +28,18 @@ These four metrics measure user engagement at different levels:
 | Metric | What it counts | Deduplication |
 |--------|----------------|---------------|
 | **pageviews** | Every page load | None - raw count |
-| **unique_pageviews** | First view of a page per visitor | Per visitor + pathname within 24 hours |
+| **unique_pageviews** | First view of a page per visitor | Per visitor + pathname within salt cycle duration |
 | **visits** | Distinct visitors arriving at the site | Per visitor (based on `new_visit` flag) |
 | **sessions** | Activity periods separated by inactivity | Per visitor, resets after session timeout |
 
 **pageviews** - The raw count of every page load event. If a user refreshes a page 5 times, that's 5 pageviews.
 
-**unique_pageviews** - Counts the first time a visitor views a specific pathname within a 24-hour window. If the same visitor views `/about` three times in an hour, it counts as 1 unique pageview. Determined by the `is_unique` flag set in `PixelRequest#process!`.
+**unique_pageviews** - Counts the first time a visitor views a specific pathname within the site's salt cycle duration. The lookback window depends on the site's `salt_duration` configuration:
+- **Daily** (24-hour relative window): If the same visitor views `/about` three times within 24 hours, it counts as 1 unique pageview. Resets after 24 hours have passed.
+- **Weekly** (calendar week): If the same visitor views `/about` multiple times within the same calendar week, it counts as 1 unique pageview. Resets on the first day of the week.
+- **Monthly** (calendar month): If the same visitor views `/about` multiple times within the same calendar month, it counts as 1 unique pageview. Resets on the first day of the month.
+
+Determined by the `is_unique` flag set in `PixelRequest#process!`.
 
 **visits** - Counts distinct visitors arriving at the site. A visit is recorded when a new visitor digest is inserted (first-time visitor). This represents the number of unique people who visited.
 

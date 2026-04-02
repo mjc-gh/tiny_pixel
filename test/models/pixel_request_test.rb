@@ -289,7 +289,7 @@ class PixelRequestTest < ActiveSupport::TestCase
     assert second_pr.instance_variable_get(:@is_unique)
   end
 
-  test "is_unique resets after 24 hours" do
+  test "is_unique resets after 24 hours for daily salt cycle" do
     site = sites(:my_blog)
     property_id = site.property_id
 
@@ -305,6 +305,122 @@ class PixelRequestTest < ActiveSupport::TestCase
       second_pr.process!
 
       assert second_pr.instance_variable_get(:@is_unique)
+    end
+  end
+
+  test "is_unique resets at beginning of week for weekly salt cycle" do
+    site = Site.create!(name: "Weekly Site", salt: "placeholder_weekly", salt_duration: :weekly)
+    property_id = site.property_id
+    SiteCache.clear
+
+    # Create first pageview on a Monday
+    monday = Time.current.beginning_of_week
+    travel_to monday do
+      req_1 = FakeRequest.new("23.24.25.26", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/blog", h: "weekly.net" })
+      pr_1.process!
+
+      assert pr_1.instance_variable_get(:@is_unique)
+    end
+
+    # Same visitor on Wednesday (same week) - not unique
+    wednesday = monday + 2.days
+    travel_to wednesday do
+      req_2 = FakeRequest.new("23.24.25.26", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/blog", h: "weekly.net" })
+      pr_2.process!
+
+      refute pr_2.instance_variable_get(:@is_unique)
+    end
+
+    # Same visitor on next Monday (new week) - unique
+    next_monday = monday + 1.week
+    travel_to next_monday do
+      req_3 = FakeRequest.new("23.24.25.26", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_3 = PixelRequest.from_incoming(req_3, { pid: property_id, p: "/blog", h: "weekly.net" })
+      pr_3.process!
+
+      assert pr_3.instance_variable_get(:@is_unique)
+    end
+  end
+
+  test "is_unique resets at beginning of month for monthly salt cycle" do
+    site = Site.create!(name: "Monthly Site", salt: "placeholder_monthly", salt_duration: :monthly)
+    property_id = site.property_id
+    SiteCache.clear
+
+    # Create first pageview on the 5th of the month
+    month_start = Time.current.beginning_of_month
+    fifth = month_start + 4.days
+
+    travel_to fifth do
+      req_1 = FakeRequest.new("24.25.26.27", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/blog", h: "monthly.net" })
+      pr_1.process!
+
+      assert pr_1.instance_variable_get(:@is_unique)
+    end
+
+    # Same visitor on the 25th (same month) - not unique
+    twenty_fifth = month_start + 24.days
+    travel_to twenty_fifth do
+      req_2 = FakeRequest.new("24.25.26.27", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_2 = PixelRequest.from_incoming(req_2, { pid: property_id, p: "/blog", h: "monthly.net" })
+      pr_2.process!
+
+      refute pr_2.instance_variable_get(:@is_unique)
+    end
+
+    # Same visitor on 1st of next month (new month) - unique
+    next_month_first = month_start + 1.month
+    travel_to next_month_first do
+      req_3 = FakeRequest.new("24.25.26.27", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr_3 = PixelRequest.from_incoming(req_3, { pid: property_id, p: "/blog", h: "monthly.net" })
+      pr_3.process!
+
+      assert pr_3.instance_variable_get(:@is_unique)
+    end
+  end
+
+  test "first pageview is unique for all salt durations" do
+    %i[daily weekly monthly].each do |duration|
+      site = Site.create!(name: "Test #{duration}", salt: "test_#{duration}", salt_duration: duration)
+      property_id = site.property_id
+      SiteCache.clear
+
+      req = FakeRequest.new("30.31.32.33", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      pr = PixelRequest.from_incoming(req, { pid: property_id, p: "/test", h: "test.net" })
+      pr.process!
+
+      assert pr.instance_variable_get(:@is_unique), "First pageview should be unique for #{duration} salt cycle"
+
+      # Clean up
+      site.destroy
+      SiteCache.clear
+    end
+  end
+
+  test "different paths are unique independently for all salt durations" do
+    %i[daily weekly monthly].each do |duration|
+      site = Site.create!(name: "Path Test #{duration}", salt: "path_test_#{duration}", salt_duration: duration)
+      property_id = site.property_id
+      SiteCache.clear
+
+      first_req = FakeRequest.new("31.32.33.34", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      first_pr = PixelRequest.from_incoming(first_req, { pid: property_id, p: "/path1", h: "path-test.net" })
+      first_pr.process!
+
+      assert first_pr.instance_variable_get(:@is_unique), "First path should be unique for #{duration} salt cycle"
+
+      second_req = FakeRequest.new("31.32.33.34", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+      second_pr = PixelRequest.from_incoming(second_req, { pid: property_id, p: "/path2", h: "path-test.net" })
+      second_pr.process!
+
+      assert second_pr.instance_variable_get(:@is_unique), "Different path should be unique for #{duration} salt cycle"
+
+      # Clean up
+      site.destroy
+      SiteCache.clear
     end
   end
 

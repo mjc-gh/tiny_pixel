@@ -22,8 +22,6 @@ class PixelRequest
   # Instantiate the parser on load as it's quite expensive
   USER_AGENT_PARSER = UserAgentParser::Parser.new
 
-  UNIQUE_WINDOW = 24.hours
-
   def self.calculate_visitor_digest(salt:, remote_ip:, user_agent:, hostname:)
     digest = Digest::SHA256.new
     digest << salt
@@ -77,7 +75,7 @@ class PixelRequest
       end
     end
 
-    @is_unique = !PageView.exists?(visitor_digest:, pathname:, created_at: UNIQUE_WINDOW.ago..)
+    @is_unique = !PageView.exists?(visitor_digest:, pathname:, created_at: unique_window_start..)
 
     PageView.insert page_view_attributes
 
@@ -85,6 +83,14 @@ class PixelRequest
   end
 
   private
+
+  def unique_window_start
+    case property.salt_duration
+    when "daily" then 24.hours.ago
+    when "weekly" then Time.current.beginning_of_week
+    when "monthly" then Time.current.beginning_of_month
+    end
+  end
 
   def visitor_attributes
     { digest: visitor_digest,
