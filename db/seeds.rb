@@ -123,7 +123,7 @@ end
 puts "Seeding database..."
 
 # Create or find Site
-site = Site.find_by(name: "Test Site") || Site.create!(name: "Test Site")
+site = Site.find_by(name: "Test Site") || Site.create!(name: "Test Site", salt: "testsalt")
 puts "Using site: #{site.name} (#{site.property_id})"
 
 # Create or find User and Membership
