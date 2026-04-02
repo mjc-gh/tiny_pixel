@@ -1,77 +1,42 @@
-# AGENTS.md - Development Guidelines for tiny_pixel
+# Development Guidelines - tiny_pixel
 
-## Project Overview
+**tiny_pixel**: Privacy-friendly, self-hosted web analytics built with **Ruby on Rails 8.1**, SQLite, and Stimulus.
 
-**tiny_pixel** is a privacy-friendly, self-hosted web analytics application built with **Ruby on Rails 8.1**. The codebase uses SQLite for data storage, Stimulus for JavaScript interactivity.
+## Quick Commands
 
-## Planning
-- Keep plans as concise as possible
-- Always provide an implementation checklist at the end of the plan
+| Task | Command |
+|------|---------|
+| Generate | `be rails g [model\|controller\|job\|component]` |
+| Test | `be rails t` \| `be rails t test/models/site_test.rb` \| `be rails t --name pattern` |
+| Coverage | `COVERAGE=1 be rails t` |
+| Lint | `be rubocop` |
+| Auto-fix | `be rubocop -A` |
 
-## Development
-- Use `be rails g` to create models, migrations, controllers, jobs, and view components.
+## Code Style
 
-### Running Tests
-- **Run all tests**: `be rails t`
-- **Run a single test file**: `be rails t test/models/site_test.rb`
-- **Run tests matching a pattern**: `be rails t --name pattern`
-- **Run tests with coverage**: `COVERAGE=1 be rails t"`
+**Formatting**: Ruby 3.4, 2-space indentation, Unix line endings (LF)
 
-### Linting and Code Quality
-- **Run RuboCop**: `be rubocop`
-- **Auto-fix RuboCop issues**: `be rubocop -A`
+**Required**: 
+- Frozen string literals at top of `.rb` files: `# frozen_string_literal: true`
+- Snake case naming: `req_1` not `req1`
+- No unnecessary comments or tests for built-in validations
 
-## Code Style Guidelines
+**Structure**:
+- Callbacks → Enums → Scopes → Validations (in class body)
+- Scopes as lambdas: `scope :name, -> { where(...) }`
+- Rails exceptions: `ActiveRecord::RecordNotFound`, `ActiveRecord::ValidationError`
 
-### Writing Tests
-- Do not add unnecessary comments to tests
-- Do not test built-in model validations
+**Models**:
+- Inherit from `ApplicationRecord` (main) or `AnalyticsRecord` (analytics-only)
+- Use explicit foreign/primary keys when needed
+- Use `self.table_name` only if non-standard
 
-### General Formatting
-- **Ruby version**: 3.4
-- **Line ending**: Unix style (LF)
-- **Indentation**: 2 spaces (not tabs)
-- **Frozen string literals**: Required at the top of all `.rb` files (`# frozen_string_literal: true`)
-- **Always use snake case**: Use `req_1` instead of `req1`
+**Controllers**: RESTful conventions with strong parameters  
+**Views**: Render JSON or HTML per endpoint purpose
 
-### Scope and Associations
-- Define scopes as lambdas: `scope :need_to_cycle_salt, -> { where(...) }`
-- Use foreign keys and primary keys explicitly when needed
+## References
 
-### Error Handling
-- Use Rails exception types: `ActiveRecord::RecordNotFound`, `ActiveRecord::ValidationError`
-- Use `before_validation`, `before_create`, `before_save` hooks for data preparation
-- Raise meaningful exceptions with descriptive messages
-
-### Class and Method Structure
-- Place callbacks (`before_create`, `before_validation`, etc.) at the top of class body
-- Define enums before associations
-- Define scopes before validations
-
-### Comments and Documentation
-- Use `#` for single-line comments
-- Do not write unnecessary comments
-
-### Database Models
-- Inherit from `ApplicationRecord` for main database models
-- Inherit from `AnalyticsRecord` for analytics/analytics-only models (uses separate database)
-- Use `self.table_name = :table_name` only if table name differs from Rails convention
-- Connect to specific databases: `connects_to database: { writing: :ingestion }`
-- Schema comments in model files are updated automatically when running migrations
-- Do not unit test associations, validations, and other built-in Rails features
-
-### Controllers and Views
-- Follow RESTful conventions: `index`, `show`, `new`, `create`, `edit`, `update`, `destroy`
-- Use strong parameters: `params.require(:model).permit(:field1, :field2)`
-- Render JSON or HTML appropriately for endpoint purpose
-
-## Key Project Details
-
-- **Test Framework**: Rails default (Minitest)
-- **Test Fixtures**: Located in `test/fixtures/`
-- **RuboCop Config**: `.rubocop.yml` with RuboCop-Rails extension enabled
-- **Code Coverage**: simplecov test coverage; table outputs to console with `COVERAGE` env var
-- **Target Ruby**: 3.4
-- **Database**: SQLite (primary and ingestion databases)
-- **Linter**: RuboCop with rubocop-rails
-- **Security Scanner**: Brakeman
+- **Stats Models**: See `@doc/AGGREGATED_STATS.md` for `HourlyPageStat`, `DailyPageStat`, `WeeklyPageStat`
+- **ViewComponents**: See `@app/components`
+- **Stack**: Minitest, simplecov, RuboCop-Rails, Brakeman
+- **Databases**: SQLite (primary + ingestion)
