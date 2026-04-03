@@ -36,10 +36,9 @@ module Sites
         pageviews: 100
       )
 
-      get site_page_views_url(sites(:tech_blog), interval: "daily", view_mode: "table")
+      get site_page_views_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
-      assert_select "table"
     end
 
     test "displays page views data with hourly interval" do

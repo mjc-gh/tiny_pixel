@@ -39,10 +39,9 @@ module Sites
         duration_count: 50
       )
 
-      get site_performance_index_url(sites(:tech_blog), interval: "daily", view_mode: "table")
+      get site_performance_index_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
-      assert_select "table"
     end
 
     test "displays performance data with hourly interval" do

@@ -42,7 +42,7 @@ module Sites
         duration_count: 30
       )
 
-      get site_pathnames_url(sites(:tech_blog), interval: "daily", view_mode: "table")
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
       assert_select "table"
@@ -78,7 +78,7 @@ module Sites
         duration_count: 20
       )
 
-      get site_pathnames_url(sites(:tech_blog), interval: "daily", view_mode: "table")
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
       assert_select "table"
@@ -103,7 +103,7 @@ module Sites
         duration_count: 30
       )
 
-      get site_pathnames_url(sites(:tech_blog), interval: "hourly", view_mode: "table")
+      get site_pathnames_url(sites(:tech_blog), interval: "hourly")
 
       assert_response :success
     end
@@ -124,7 +124,7 @@ module Sites
         duration_count: 30
       )
 
-      get site_pathnames_url(sites(:tech_blog), interval: "weekly", view_mode: "table")
+      get site_pathnames_url(sites(:tech_blog), interval: "weekly")
 
       assert_response :success
     end
@@ -174,7 +174,7 @@ module Sites
         duration_count: 30
       )
 
-      get site_pathnames_url(sites(:tech_blog), interval: "daily", view_mode: "table")
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
       # /high should appear before /low in the table
@@ -200,7 +200,7 @@ module Sites
         duration_count: 30
       )
 
-      get site_pathnames_url(sites(:tech_blog), interval: "daily", view_mode: "table")
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
       # 50/100 * 100 = 50.0%
@@ -223,7 +223,7 @@ module Sites
         duration_count: 10
       )
 
-      get site_pathnames_url(sites(:tech_blog), interval: "daily", view_mode: "table")
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
       # 120.0 / 10 = 12.0s
@@ -250,7 +250,7 @@ module Sites
         )
       end
 
-      get site_pathnames_url(sites(:tech_blog), interval: "daily", view_mode: "table")
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
       # Should have pagination controls
@@ -260,7 +260,7 @@ module Sites
     test "shows no data message when no stats available" do
       login(users(:alice), password: "password123")
 
-      get site_pathnames_url(sites(:tech_blog), interval: "daily", view_mode: "table")
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
       assert_select "p", { text: /No data available/ }
