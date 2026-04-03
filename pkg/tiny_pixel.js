@@ -21,13 +21,17 @@ const TinyPixel = (function() {
   }
 
   const getRandom = (length) => {
-    if (window.crypto === undefined) {
+    const cryptoObj = (typeof window !== 'undefined' && window.crypto) || 
+                      (typeof global !== 'undefined' && global.crypto) || 
+                      undefined;
+    
+    if (cryptoObj === undefined) {
       return Math.floor(1e10 * Math.random());
     }
 
     const arr = new Uint8Array(length);
 
-    crypto.getRandomValues(arr);
+    cryptoObj.getRandomValues(arr);
 
     // TODO: don't allow / or - chars?
     return btoa(String.fromCharCode.apply(null, arr)).replace(/=/g, "");
@@ -79,7 +83,7 @@ const TinyPixel = (function() {
       if (!propertyId)
         console.debug("TinyPixel: No data-property-id on <script> tag");
       if (!server)
-        console.debug("TinyPixel: No data-property-id on <script> tag");
+        console.debug("TinyPixel: No data-server on <script> tag");
     },
 
     emitPageView: () => {

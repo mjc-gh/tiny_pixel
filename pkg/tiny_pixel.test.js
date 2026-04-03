@@ -1,12 +1,20 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
+import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test';
 import TinyPixel from './tiny_pixel.js';
 
 describe('TinyPixel', () => {
   let mockScript;
   let originalLocation;
   let originalDocument;
+  let originalImage;
+  let originalCrypto;
 
   beforeEach(() => {
+    // Reset TinyPixel state by calling setup with a script that has no data
+    const originalDebug = console.debug;
+    console.debug = () => {}; // Suppress debug output during reset
+    TinyPixel.setup({ dataset: {} });
+    console.debug = originalDebug;
+
     // Mock location object
     originalLocation = global.location;
     global.location = {
@@ -16,16 +24,48 @@ describe('TinyPixel', () => {
       href: 'https://example.com/page'
     };
 
+    // Mock Image constructor
+    originalImage = global.Image;
+    global.Image = class MockImage {
+      constructor() {
+        this.src = '';
+        this.style = {};
+        this.listeners = {};
+        this.parentNode = {
+          removeChild: mock(() => {})
+        };
+      }
+      
+      setAttribute(name, value) {
+        this[`_${name}`] = value;
+      }
+      
+      getAttribute(name) {
+        return this[`_${name}`] || null;
+      }
+      
+      addEventListener(event, handler) {
+        if (!this.listeners[event]) {
+          this.listeners[event] = [];
+        }
+        this.listeners[event].push(handler);
+      }
+    };
+
     // Mock document object
     originalDocument = global.document;
+    const appendChildMock = mock(() => {});
     global.document = {
       currentScript: null,
       referrer: '',
       body: {
-        appendChild: mock(() => {}),
+        appendChild: appendChildMock,
         children: []
       }
     };
+
+    // Store original crypto
+    originalCrypto = global.crypto;
 
     // Create a mock script element
     mockScript = {
@@ -34,6 +74,14 @@ describe('TinyPixel', () => {
         server: 'https://analytics.example.com'
       }
     };
+  });
+  
+  afterEach(() => {
+    // Restore global objects
+    if (originalLocation) global.location = originalLocation;
+    if (originalDocument) global.document = originalDocument;
+    if (originalImage) global.Image = originalImage;
+    if (originalCrypto !== undefined) global.crypto = originalCrypto;
   });
 
   describe('TinyPixel.setup()', () => {
@@ -95,7 +143,7 @@ describe('TinyPixel', () => {
 
       TinyPixel.setup(script);
 
-      expect(consoleSpy).toHaveBeenCalledWith('TinyPixel: No data-property-id on <script> tag');
+      expect(consoleSpy).toHaveBeenCalledWith('TinyPixel: No data-server on <script> tag');
 
       console.debug = originalDebug;
     });
@@ -115,9 +163,12 @@ describe('TinyPixel', () => {
       expect(calls.length).toBeGreaterThan(0);
 
       const imgElement = calls[0][0];
-      expect(imgElement.src).toContain('utm_source=google');
-      expect(imgElement.src).toContain('utm_medium=cpc');
-      expect(imgElement.src).toContain('utm_campaign=spring');
+      const url = new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+      const qs = url.searchParams.get('qs');
+      
+      expect(qs).toContain('utm_source=google');
+      expect(qs).toContain('utm_medium=cpc');
+      expect(qs).toContain('utm_campaign=spring');
     });
 
     it('filters out non-UTM query parameters', () => {
@@ -129,10 +180,13 @@ describe('TinyPixel', () => {
       const calls = global.document.body.appendChild.mock.calls;
       const imgElement = calls[0][0];
 
-      expect(imgElement.src).toContain('utm_source=google');
-      expect(imgElement.src).toContain('utm_medium=cpc');
-      expect(imgElement.src).not.toContain('other_param');
-      expect(imgElement.src).not.toContain('random');
+      const url = new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+      const qs = url.searchParams.get('qs');
+      
+      expect(qs).toContain('utm_source=google');
+      expect(qs).toContain('utm_medium=cpc');
+      expect(qs).not.toContain('other_param');
+      expect(qs).not.toContain('random');
     });
 
     it('handles empty query strings', () => {
@@ -178,8 +232,8 @@ describe('TinyPixel', () => {
       expect(nParam).not.toBeNull();
       expect(typeof nParam).toBe('string');
       expect(nParam.length).toBeGreaterThan(0);
-      // Should be base64-encoded (alphanumeric, +, -, _)
-      expect(/^[A-Za-z0-9_+-]+$/.test(nParam)).toBe(true);
+      // Should be base64-encoded (alphanumeric, +, /, -, _)
+      expect(/^[A-Za-z0-9+/_-]+$/.test(nParam)).toBe(true);
     });
 
     it('falls back to Math.random when crypto is unavailable', () => {
