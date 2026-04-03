@@ -1,6 +1,9 @@
 # Ignore agent plans
 /.plans/*
 
+# Ignore kamal secrets
+/.kamal/secrets
+
 # Ignore bundler config.
 /.bundle
 
