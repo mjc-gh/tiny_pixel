@@ -1,6 +1,6 @@
 ---
 description: Stage changes, commit with semantic message, and push to main
-model: anthropic/claude-haiku-4.5
+model: openrouter/anthropic/claude-haiku-4.5
 ---
 
 Stage all changes, write a semantic commit message, and push to main.

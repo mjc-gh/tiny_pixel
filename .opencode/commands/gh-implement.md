@@ -1,6 +1,6 @@
 ---
 description: Fetch a GitHub issue and implement it
-model: anthropic/claude-haiku-4.5
+model: openrouter/anthropic/claude-haiku-4.5
 ---
 
 Here is the GitHub issue to implement:
@@ -13,4 +13,4 @@ Based on this issue:
 2. Follow the exact plan described in the issue
 3. Implement the required changes following the project's coding
 conventions in AGENTS.md
-- Follow the checklist in the issue and complete all tasks 
+4. Follow the checklist in the issue and complete all tasks
