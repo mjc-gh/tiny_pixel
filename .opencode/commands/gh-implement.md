@@ -14,3 +14,5 @@ Based on this issue:
 3. Implement the required changes following the project's coding
 conventions in AGENTS.md
 4. Follow the checklist in the issue and complete all tasks
+
+**IMPORTANT**: Do NOT commit changes or call git. Only implement the code changes requested in the issue. The user will handle commits themselves.
