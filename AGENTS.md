@@ -37,6 +37,7 @@
 ## References
 
 - **Stats Models**: See `@doc/AGGREGATED_STATS.md` for `HourlyPageStat`, `DailyPageStat`, `WeeklyPageStat`
+- **Tracking Script**: See `@doc/TRACKING_SCRIPT.md` for implementation details of `pkg/tiny_pixel.js`
 - **ViewComponents**: See `@app/components`
 - **Stack**: Minitest, simplecov, RuboCop-Rails, Brakeman
 - **Databases**: SQLite (primary + ingestion)

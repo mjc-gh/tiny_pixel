@@ -4,7 +4,7 @@
   "description": "TinyPixel analytics JS script",
   "main": "tiny_pixel.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "bun test"
   },
   "author": "mjc@hey.com",
   "license": "MIT"

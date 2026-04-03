@@ -90,5 +90,13 @@ const TinyPixel = (function() {
   };
 }());
 
-TinyPixel.setup(document.currentScript);
-TinyPixel.emitPageView();
+// Auto-initialize only in browser context
+if (typeof document !== 'undefined' && document.currentScript) {
+  TinyPixel.setup(document.currentScript);
+  TinyPixel.emitPageView();
+}
+
+// Export for testing
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = TinyPixel;
+}
