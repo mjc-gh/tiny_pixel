@@ -75,11 +75,17 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Run tests
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Run Rails tests
         env:
           RAILS_ENV: test
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test test:system
+
+      - name: Run JS tracking code tests
+        run: cd pkg && bun test
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
