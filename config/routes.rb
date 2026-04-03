@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   resources :sites, only: [:index, :show] do
     scope module: :sites do
+      resources :pathnames, only: [:index]
       resources :page_views, only: [:index]
       resources :visitors, only: [:index]
       resources :performance, only: [:index]

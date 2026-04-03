@@ -1,0 +1,35 @@
+<% if @stats.any? %>
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-border">
+      <thead class="bg-surface">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Pathname</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Page Views</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Unique Page Views</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Visits</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Sessions</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Bounce Rate</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Avg Duration</th>
+        </tr>
+      </thead>
+      <tbody class="bg-background divide-y divide-border">
+        <% @stats.each do |stat| %>
+          <tr>
+            <td class="px-4 py-3 text-sm text-text-primary font-medium"><%= stat.pathname %></td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :pageviews) %></td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :unique_pageviews) %></td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :visits) %></td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :sessions) %></td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :bounce_rate) %></td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :avg_duration) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <% if render_pagination? %>
+    <%= render PaginationComponent.new(collection: @pagination, base_path: @base_path, frame_id: @frame_id, params: @params) %>
+  <% end %>
+<% else %>
+  <p class="text-text-muted py-4">No data available for this period.</p>
+<% end %>

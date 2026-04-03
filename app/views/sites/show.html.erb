@@ -13,6 +13,15 @@
 
 <div class="space-y-8">
   <section>
+    <h2 class="font-semibold text-lg text-text-primary mb-4">Pathname Summary</h2>
+    <div class="border border-border rounded-lg p-4 bg-surface">
+      <turbo-frame id="pathname_stats" src="<%= site_pathnames_path(@site, interval: current_interval, view_mode: current_view_mode) %>" loading="lazy">
+        <p class="text-text-muted">Loading pathname summary...</p>
+      </turbo-frame>
+    </div>
+  </section>
+
+  <section>
     <h2 class="font-semibold text-lg text-text-primary mb-4">Page Views</h2>
     <div class="border border-border rounded-lg p-4 bg-surface">
       <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, view_mode: current_view_mode) %>" loading="lazy">

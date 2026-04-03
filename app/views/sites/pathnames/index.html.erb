@@ -1,0 +1,9 @@
+<turbo-frame id="pathname_stats">
+  <%= render PathnameSummaryComponent.new(
+    stats: @stats,
+    pagination: @stats,
+    frame_id: "pathname_stats",
+    base_path: site_pathnames_path(@site),
+    params: { interval: current_interval, view_mode: current_view_mode }
+  ) %>
+</turbo-frame>
