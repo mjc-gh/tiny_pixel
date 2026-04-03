@@ -1,5 +1,6 @@
 ---
 description: Fetch a GitHub issue and implement it
+model: anthropic/claude-haiku-4.5
 ---
 
 Here is the GitHub issue to implement:

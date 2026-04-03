@@ -1,5 +1,6 @@
 ---
 description: Refine a GitHub issue with implementation plan and checklist
+model: anthropic/claude-opus-4.5
 ---
 
 Fetch GitHub issue #$1 and refine it with a detailed implementation plan.
