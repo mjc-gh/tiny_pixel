@@ -13,7 +13,7 @@ module Sites
         .public_send(stats_ordered_scope)
         .paginate(page: params[:page], per_page: PER_PAGE)
 
-      @chart_data = build_performance_chart_data
+      build_performance_chart_data
     end
 
     def build_performance_chart_data
@@ -39,10 +39,8 @@ module Sites
         bounce_rate_data[time_key] = row.pageviews.positive? ? (row.bounced_count.to_f / row.pageviews * 100).round(2) : 0
       end
 
-      {
-        "Avg Duration (s)" => avg_duration_data,
-        "Bounce Rate (%)" => bounce_rate_data
-      }
+      @avg_duration_chart_data = { "Avg Duration (s)" => avg_duration_data }
+      @bounce_rate_chart_data = { "Bounce Rate (%)" => bounce_rate_data }
     end
   end
 end

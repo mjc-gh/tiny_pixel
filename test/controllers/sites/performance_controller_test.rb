@@ -132,5 +132,27 @@ module Sites
       assert_response :success
       # Chart data should only contain data for "/" pathname
     end
+
+    test "renders separate avg duration and bounce rate charts" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        bounced_count: 20,
+        total_duration: 500.0,
+        duration_count: 50
+      )
+
+      get site_performance_index_url(sites(:tech_blog), interval: "daily")
+
+      assert_response :success
+      assert_select "h3", text: "Average Duration"
+      assert_select "h3", text: "Bounce Rate"
+      assert_select "#avg_duration_chart"
+      assert_select "#bounce_rate_chart"
+    end
   end
 end
