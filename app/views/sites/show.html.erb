@@ -40,7 +40,7 @@
     </div>
   </section>
 
-  <div class="gap-y-8 gap-x-4 grid grid-cols-2">
+  <div class="gap-y-8 gap-x-4 grid grid-cols-1 md:grid-cols-2">
     <section>
       <h2 class="font-semibold text-lg text-text-primary mb-4">Page Views</h2>
       <div class="border border-border rounded-lg p-4 bg-surface">
@@ -59,13 +59,11 @@
       </div>
     </section>
 
-    <section>
+    <section class="col-span-2">
       <h2 class="font-semibold text-lg text-text-primary mb-4">Performance</h2>
-      <div class="border border-border rounded-lg p-4 bg-surface">
-        <turbo-frame id="performance_stats" src="<%= site_performance_index_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="performanceFrame">
-          <p class="text-text-muted">Loading performance...</p>
-        </turbo-frame>
-      </div>
+      <turbo-frame id="performance_stats" src="<%= site_performance_index_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="performanceFrame">
+        <p class="text-text-muted">Loading performance...</p>
+      </turbo-frame>
     </section>
   </div>
 </div>
