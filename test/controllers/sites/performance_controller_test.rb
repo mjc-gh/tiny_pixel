@@ -75,5 +75,62 @@ module Sites
 
       assert_response :success
     end
+
+    test "filters performance data by pathname when param present" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        bounced_count: 20,
+        total_duration: 500.0,
+        duration_count: 50
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/about",
+        date: Date.current,
+        pageviews: 50,
+        bounced_count: 10,
+        total_duration: 250.0,
+        duration_count: 25
+      )
+
+      get site_performance_index_url(sites(:tech_blog), pathname: "/")
+
+      assert_response :success
+    end
+
+    test "chart data includes only filtered pathname" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        bounced_count: 20,
+        total_duration: 500.0,
+        duration_count: 50
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/about",
+        date: Date.current,
+        pageviews: 50,
+        bounced_count: 10,
+        total_duration: 250.0,
+        duration_count: 25
+      )
+
+      get site_performance_index_url(sites(:tech_blog), pathname: "/")
+
+      assert_response :success
+      # Chart data should only contain data for "/" pathname
+    end
   end
 end

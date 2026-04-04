@@ -17,8 +17,10 @@ module Sites
     end
 
     def build_performance_chart_data
-      aggregated = stats_model
-        .for_site(@site.id)
+      scope = stats_model.for_site(@site.id)
+      scope = scope.for_pathname(current_pathname) if current_pathname.present?
+
+      aggregated = scope
         .group(stats_time_column)
         .select(
           stats_time_column,

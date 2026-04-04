@@ -1,16 +1,37 @@
-<div class="mb-6">
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-    <div>
-      <h1 class="font-bold text-2xl text-text-primary"><%= @site.name %></h1>
-      <p class="text-sm text-text-secondary"><%= @site.property_id %></p>
+<div data-controller="pathname-filter" data-pathname-filter-site-value="<%= @site.id %>" data-pathname-filter-interval-value="<%= current_interval %>">
+  <div class="mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="font-bold text-2xl text-text-primary"><%= @site.name %></h1>
+        <p class="text-sm text-text-secondary"><%= @site.property_id %></p>
+      </div>
+      <div class="flex items-center gap-4">
+        <%= render IntervalSelectorComponent.new(current_interval: current_interval, site: @site, pathname: current_pathname) %>
+      </div>
     </div>
-    <div class="flex items-center gap-4">
-      <%= render IntervalSelectorComponent.new(current_interval: current_interval, site: @site) %>
-    </div>
-  </div>
-</div>
 
-<div class="space-y-8">
+    <% if current_pathname.present? %>
+      <div class="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between" data-pathname-filter-target="filterIndicator">
+        <p class="text-sm text-text-primary">
+          Filtered by: <span class="font-semibold" data-pathname-text><%= current_pathname %></span>
+        </p>
+        <button type="button" class="text-xs font-medium text-primary hover:text-primary/80 transition-colors" data-action="click->pathname-filter#clearFilter">
+          Clear Filter
+        </button>
+      </div>
+    <% else %>
+      <div class="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between hidden" data-pathname-filter-target="filterIndicator">
+        <p class="text-sm text-text-primary">
+          Filtered by: <span class="font-semibold" data-pathname-text></span>
+        </p>
+        <button type="button" class="text-xs font-medium text-primary hover:text-primary/80 transition-colors" data-action="click->pathname-filter#clearFilter">
+          Clear Filter
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="space-y-8">
   <section>
     <h2 class="font-semibold text-lg text-text-primary mb-4">Pathname Summary</h2>
     <div class="border border-border rounded-lg p-4 bg-surface">
@@ -23,7 +44,7 @@
   <section>
     <h2 class="font-semibold text-lg text-text-primary mb-4">Page Views</h2>
     <div class="border border-border rounded-lg p-4 bg-surface">
-      <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval) %>" loading="lazy">
+      <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="pageViewsFrame">
         <p class="text-text-muted">Loading page views...</p>
       </turbo-frame>
     </div>
@@ -32,18 +53,19 @@
   <section>
     <h2 class="font-semibold text-lg text-text-primary mb-4">Visitors</h2>
     <div class="border border-border rounded-lg p-4 bg-surface">
-      <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval) %>" loading="lazy">
+      <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="visitorsFrame">
         <p class="text-text-muted">Loading visitors...</p>
       </turbo-frame>
     </div>
   </section>
 
-  <section>
-    <h2 class="font-semibold text-lg text-text-primary mb-4">Performance</h2>
-    <div class="border border-border rounded-lg p-4 bg-surface">
-      <turbo-frame id="performance_stats" src="<%= site_performance_index_path(@site, interval: current_interval) %>" loading="lazy">
-        <p class="text-text-muted">Loading performance...</p>
-      </turbo-frame>
-    </div>
-  </section>
+    <section>
+      <h2 class="font-semibold text-lg text-text-primary mb-4">Performance</h2>
+      <div class="border border-border rounded-lg p-4 bg-surface">
+        <turbo-frame id="performance_stats" src="<%= site_performance_index_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="performanceFrame">
+          <p class="text-text-muted">Loading performance...</p>
+        </turbo-frame>
+      </div>
+    </section>
+  </div>
 </div>

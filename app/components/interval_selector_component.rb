@@ -7,9 +7,10 @@ class IntervalSelectorComponent < ViewComponent::Base
     { value: "weekly", label: "Weekly" }
   ].freeze
 
-  def initialize(current_interval:, site:)
+  def initialize(current_interval:, site:, pathname: nil)
     @current_interval = current_interval
     @site = site
+    @pathname = pathname
   end
 
   def intervals
@@ -21,6 +22,8 @@ class IntervalSelectorComponent < ViewComponent::Base
   end
 
   def interval_path(interval)
-    helpers.site_path(@site, interval: interval)
+    path_params = { interval: interval }
+    path_params[:pathname] = @pathname if @pathname.present?
+    helpers.site_path(@site, path_params)
   end
 end

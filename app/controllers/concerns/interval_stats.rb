@@ -8,7 +8,7 @@ module IntervalStats
   PER_PAGE = 20
 
   included do
-    helper_method :current_interval, :stats_time_column
+    helper_method :current_interval, :current_pathname, :stats_time_column
   end
 
   def current_interval
@@ -16,6 +16,10 @@ module IntervalStats
       interval = params[:interval]
       VALID_INTERVALS.include?(interval) ? interval : DEFAULT_INTERVAL
     end
+  end
+
+  def current_pathname
+    @current_pathname ||= params[:pathname]
   end
 
   def stats_model

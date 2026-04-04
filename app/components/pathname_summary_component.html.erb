@@ -14,7 +14,7 @@
       </thead>
       <tbody class="bg-background divide-y divide-border">
         <% @stats.each do |stat| %>
-          <tr>
+          <tr class="cursor-pointer hover:bg-surface-hover transition-colors" data-action="click->pathname-filter#selectPathname" data-pathname="<%= stat.pathname %>">
             <td class="px-4 py-3 text-sm text-text-primary font-medium"><%= stat.pathname %></td>
             <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :pageviews) %></td>
             <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :unique_pageviews) %></td>

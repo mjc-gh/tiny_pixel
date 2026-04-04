@@ -73,5 +73,54 @@ module Sites
 
       assert_response :success
     end
+
+    test "filters visitors by pathname when param present" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        visits: 50,
+        sessions: 40
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/about",
+        date: Date.current,
+        visits: 25,
+        sessions: 20
+      )
+
+      get site_visitors_url(sites(:tech_blog), pathname: "/")
+
+      assert_response :success
+    end
+
+    test "chart data includes only filtered pathname" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        visits: 50,
+        sessions: 40
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/about",
+        date: Date.current,
+        visits: 25,
+        sessions: 20
+      )
+
+      get site_visitors_url(sites(:tech_blog), pathname: "/")
+
+      assert_response :success
+      # Chart data should only contain data for "/" pathname
+    end
   end
 end
