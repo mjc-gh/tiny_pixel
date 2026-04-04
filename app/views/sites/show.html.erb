@@ -1,5 +1,5 @@
-<div data-controller="pathname-filter" data-pathname-filter-site-value="<%= @site.id %>" data-pathname-filter-interval-value="<%= current_interval %>">
-  <div class="mb-6">
+<div class="space-y-6" data-controller="pathname-filter" data-pathname-filter-site-value="<%= @site.id %>" data-pathname-filter-interval-value="<%= current_interval %>">
+  <div>
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="font-bold text-2xl text-text-primary"><%= @site.name %></h1>
@@ -31,7 +31,6 @@
     <% end %>
   </div>
 
-  <div class="space-y-8">
   <section>
     <h2 class="font-semibold text-lg text-text-primary mb-4">Pathname Summary</h2>
     <div class="border border-border rounded-lg p-4 bg-surface">
@@ -41,23 +40,24 @@
     </div>
   </section>
 
-  <section>
-    <h2 class="font-semibold text-lg text-text-primary mb-4">Page Views</h2>
-    <div class="border border-border rounded-lg p-4 bg-surface">
-      <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="pageViewsFrame">
-        <p class="text-text-muted">Loading page views...</p>
-      </turbo-frame>
-    </div>
-  </section>
+  <div class="gap-y-8 gap-x-4 grid grid-cols-2">
+    <section>
+      <h2 class="font-semibold text-lg text-text-primary mb-4">Page Views</h2>
+      <div class="border border-border rounded-lg p-4 bg-surface">
+        <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="pageViewsFrame">
+          <p class="text-text-muted">Loading page views...</p>
+        </turbo-frame>
+      </div>
+    </section>
 
-  <section>
-    <h2 class="font-semibold text-lg text-text-primary mb-4">Visitors</h2>
-    <div class="border border-border rounded-lg p-4 bg-surface">
-      <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="visitorsFrame">
-        <p class="text-text-muted">Loading visitors...</p>
-      </turbo-frame>
-    </div>
-  </section>
+    <section>
+      <h2 class="font-semibold text-lg text-text-primary mb-4">Visitors</h2>
+      <div class="border border-border rounded-lg p-4 bg-surface">
+        <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="visitorsFrame">
+          <p class="text-text-muted">Loading visitors...</p>
+        </turbo-frame>
+      </div>
+    </section>
 
     <section>
       <h2 class="font-semibold text-lg text-text-primary mb-4">Performance</h2>
