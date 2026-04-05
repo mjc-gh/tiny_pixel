@@ -3,9 +3,9 @@
 require "test_helper"
 
 module Sites
-  class PerformanceControllerTest < ActionDispatch::IntegrationTest
+  class AvgDurationControllerTest < ActionDispatch::IntegrationTest
     test "redirects unauthenticated users to login" do
-      get site_performance_index_url(sites(:tech_blog))
+      get site_avg_duration_index_url(sites(:tech_blog))
 
       assert_redirected_to login_path
     end
@@ -13,7 +13,7 @@ module Sites
     test "authenticated users can access index" do
       login(users(:alice), password: "password123")
 
-      get site_performance_index_url(sites(:tech_blog))
+      get site_avg_duration_index_url(sites(:tech_blog))
 
       assert_response :success
     end
@@ -21,12 +21,12 @@ module Sites
     test "returns turbo frame with stats" do
       login(users(:alice), password: "password123")
 
-      get site_performance_index_url(sites(:tech_blog))
+      get site_avg_duration_index_url(sites(:tech_blog))
 
-      assert_select "turbo-frame#performance_stats"
+      assert_select "turbo-frame#avg_duration_stats"
     end
 
-    test "displays performance data with daily interval" do
+    test "displays avg duration data with daily interval" do
       login(users(:alice), password: "password123")
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -39,23 +39,23 @@ module Sites
         duration_count: 50
       )
 
-      get site_performance_index_url(sites(:tech_blog), interval: "daily")
+      get site_avg_duration_index_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
     end
 
-    test "displays performance data with hourly interval" do
+    test "displays avg duration data with hourly interval" do
       login(users(:alice), password: "password123")
 
-      get site_performance_index_url(sites(:tech_blog), interval: "hourly")
+      get site_avg_duration_index_url(sites(:tech_blog), interval: "hourly")
 
       assert_response :success
     end
 
-    test "displays performance data with weekly interval" do
+    test "displays avg duration data with weekly interval" do
       login(users(:alice), password: "password123")
 
-      get site_performance_index_url(sites(:tech_blog), interval: "weekly")
+      get site_avg_duration_index_url(sites(:tech_blog), interval: "weekly")
 
       assert_response :success
     end
@@ -63,7 +63,7 @@ module Sites
     test "returns 404 for unauthorized site" do
       login(users(:bob), password: "password123")
 
-      get site_performance_index_url(sites(:tech_blog))
+      get site_avg_duration_index_url(sites(:tech_blog))
 
       assert_response :not_found
     end
@@ -71,12 +71,12 @@ module Sites
     test "allows bob to access my_blog where he is a member" do
       login(users(:bob), password: "password123")
 
-      get site_performance_index_url(sites(:my_blog))
+      get site_avg_duration_index_url(sites(:my_blog))
 
       assert_response :success
     end
 
-    test "filters performance data by pathname when param present" do
+    test "filters avg duration data by pathname when param present" do
       login(users(:alice), password: "password123")
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -99,7 +99,7 @@ module Sites
         duration_count: 25
       )
 
-      get site_performance_index_url(sites(:tech_blog), pathname: "/")
+      get site_avg_duration_index_url(sites(:tech_blog), pathname: "/")
 
       assert_response :success
     end
@@ -127,13 +127,13 @@ module Sites
         duration_count: 25
       )
 
-      get site_performance_index_url(sites(:tech_blog), pathname: "/")
+      get site_avg_duration_index_url(sites(:tech_blog), pathname: "/")
 
       assert_response :success
       # Chart data should only contain data for "/" pathname
     end
 
-    test "renders separate avg duration and bounce rate charts" do
+    test "renders avg duration chart" do
       login(users(:alice), password: "password123")
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -146,13 +146,10 @@ module Sites
         duration_count: 50
       )
 
-      get site_performance_index_url(sites(:tech_blog), interval: "daily")
+      get site_avg_duration_index_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
-      assert_select "h3", text: "Average Duration"
-      assert_select "h3", text: "Bounce Rate"
       assert_select "#avg_duration_chart"
-      assert_select "#bounce_rate_chart"
     end
   end
 end

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["pageViewsFrame", "visitorsFrame", "performanceFrame", "filterIndicator"]
+  static targets = ["pageViewsFrame", "visitorsFrame", "avgDurationFrame", "bounceRateFrame", "filterIndicator"]
   static values = { pathname: String, site: String, interval: String }
 
   selectPathname(event) {
@@ -33,9 +33,14 @@ export default class extends Controller {
       this.visitorsFrameTarget.src = `${visitorsUrl}?${baseParams}${pathnameParam}`
     }
 
-    if (this.hasPerformanceFrameTarget) {
-      const performanceUrl = this.performanceFrameTarget.src.split("?")[0]
-      this.performanceFrameTarget.src = `${performanceUrl}?${baseParams}${pathnameParam}`
+    if (this.hasAvgDurationFrameTarget) {
+      const avgDurationUrl = this.avgDurationFrameTarget.src.split("?")[0]
+      this.avgDurationFrameTarget.src = `${avgDurationUrl}?${baseParams}${pathnameParam}`
+    }
+
+    if (this.hasBounceRateFrameTarget) {
+      const bounceRateUrl = this.bounceRateFrameTarget.src.split("?")[0]
+      this.bounceRateFrameTarget.src = `${bounceRateUrl}?${baseParams}${pathnameParam}`
     }
   }
 

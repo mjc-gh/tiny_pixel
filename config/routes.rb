@@ -10,7 +10,8 @@ Rails.application.routes.draw do
       resources :pathnames, only: [:index]
       resources :page_views, only: [:index]
       resources :visitors, only: [:index]
-      resources :performance, only: [:index]
+      resources :avg_duration, only: [:index]
+      resources :bounce_rate, only: [:index]
     end
   end
   # Pixel ingestion ingestion

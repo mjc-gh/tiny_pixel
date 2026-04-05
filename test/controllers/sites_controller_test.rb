@@ -73,7 +73,8 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "turbo-frame#page_views_stats"
     assert_select "turbo-frame#visitors_stats"
-    assert_select "turbo-frame#performance_stats"
+    assert_select "turbo-frame#avg_duration_stats"
+    assert_select "turbo-frame#bounce_rate_stats"
   end
 
   test "show displays interval selector" do

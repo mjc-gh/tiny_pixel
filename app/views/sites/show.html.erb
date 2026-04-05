@@ -32,7 +32,6 @@
   </div>
 
   <section>
-    <h2 class="font-semibold text-lg text-text-primary mb-4">Pathname Summary</h2>
     <div class="border border-border rounded-lg p-4 bg-surface">
       <turbo-frame id="pathname_stats" src="<%= site_pathnames_path(@site, interval: current_interval) %>" loading="lazy">
         <p class="text-text-muted">Loading pathname summary...</p>
@@ -42,7 +41,6 @@
 
   <div class="gap-y-8 gap-x-4 grid grid-cols-1 md:grid-cols-2">
     <section>
-      <h2 class="font-semibold text-lg text-text-primary mb-4">Page Views</h2>
       <div class="border border-border rounded-lg p-4 bg-surface">
         <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="pageViewsFrame">
           <p class="text-text-muted">Loading page views...</p>
@@ -51,7 +49,6 @@
     </section>
 
     <section>
-      <h2 class="font-semibold text-lg text-text-primary mb-4">Visitors</h2>
       <div class="border border-border rounded-lg p-4 bg-surface">
         <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="visitorsFrame">
           <p class="text-text-muted">Loading visitors...</p>
@@ -59,11 +56,20 @@
       </div>
     </section>
 
-    <section class="col-span-2">
-      <h2 class="font-semibold text-lg text-text-primary mb-4">Performance</h2>
-      <turbo-frame id="performance_stats" src="<%= site_performance_index_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="performanceFrame">
-        <p class="text-text-muted">Loading performance...</p>
-      </turbo-frame>
+    <section>
+      <div class="border border-border rounded-lg p-4 bg-surface">
+        <turbo-frame id="avg_duration_stats" src="<%= site_avg_duration_index_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="avgDurationFrame">
+          <p class="text-text-muted">Loading avg duration...</p>
+        </turbo-frame>
+      </div>
+    </section>
+
+    <section>
+      <div class="border border-border rounded-lg p-4 bg-surface">
+        <turbo-frame id="bounce_rate_stats" src="<%= site_bounce_rate_index_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="bounceRateFrame">
+          <p class="text-text-muted">Loading bounce rate...</p>
+        </turbo-frame>
+      </div>
     </section>
   </div>
 </div>
