@@ -8,7 +8,7 @@ module IntervalStats
   PER_PAGE = 20
 
   included do
-    helper_method :current_interval, :current_pathname, :stats_time_column
+    helper_method :current_interval, :current_pathname, :current_hostname, :stats_time_column
   end
 
   def current_interval
@@ -20,6 +20,10 @@ module IntervalStats
 
   def current_pathname
     @current_pathname ||= params[:pathname]
+  end
+
+  def current_hostname
+    @current_hostname ||= params[:hostname]
   end
 
   def stats_model

@@ -197,11 +197,12 @@ end
 puts "Created #{visitors.count} visitors"
 puts "Created #{page_view_count} page views"
 
-# Create Aggregated Stats (14 days)
-puts "Creating aggregated stats..."
-
+# Calculate aggregation date range
 aggregated_end_date = Date.current - 1.day
 aggregated_start_date = aggregated_end_date - AGGREGATED_DATA_DAYS.days
+
+# Create Aggregated Stats (14 days)
+puts "\nCreating aggregated stats for test site..."
 
 hourly_count = 0
 daily_count = 0
@@ -256,6 +257,88 @@ end
 puts "Created #{hourly_count} hourly page stats"
 puts "Created #{daily_count} daily page stats"
 puts "Created #{weekly_count} weekly page stats"
+
+# Create Multi-Domain Site
+puts "\nCreating multi-domain site..."
+
+multi_site = Site.find_by(name: "Multi-Domain Site") || Site.create!(
+  name: "Multi-Domain Site",
+  salt: SecureRandom.urlsafe_base64(32),
+  display_hostname: true
+)
+puts "Using multi-domain site: #{multi_site.name} (#{multi_site.property_id})"
+
+# Ensure user has membership for multi-site
+Membership.find_or_create_by!(user: user, site: multi_site) do |m|
+  m.role = :admin
+end
+
+# Clear existing seed data for multi-site idempotent re-runs
+multi_site.hourly_page_stats.delete_all
+multi_site.daily_page_stats.delete_all
+multi_site.weekly_page_stats.delete_all
+
+# Create stats for multi-domain site
+puts "Creating multi-domain site aggregated stats..."
+
+multi_hostnames = ["app.example.com", "docs.example.com", "blog.example.com"].freeze
+multi_hourly_count = 0
+multi_daily_count = 0
+multi_weekly_count = 0
+
+# Track daily and weekly totals for multi-site
+multi_weekly_totals = Hash.new { |h, k| h[k] = Hash.new(0) }
+
+(aggregated_start_date..aggregated_end_date).each do |date|
+  week_start = date.beginning_of_week(:monday)
+  multi_daily_totals = Hash.new { |h, k| h[k] = Hash.new(0) }
+
+  # Create hourly stats for each hostname
+  24.times do |hour|
+    time_bucket = Time.zone.local(date.year, date.month, date.day, hour)
+    multiplier = hourly_traffic_multiplier(hour)
+
+    multi_hostnames.each do |hostname|
+      PATHNAMES.each do |pathname|
+        base_pageviews = (rand(3..15) * multiplier).round
+        next if base_pageviews.zero?
+
+        metrics = random_metrics(base_pageviews)
+        create_hourly_stat(multi_site, hostname, pathname, time_bucket, metrics)
+        multi_hourly_count += 1
+
+        # Accumulate daily totals
+        metrics.each { |k, v| multi_daily_totals[[hostname, pathname]][k] += v }
+      end
+    end
+  end
+
+  # Create daily stats from accumulated hourly totals
+  multi_hostnames.each do |hostname|
+    PATHNAMES.each do |pathname|
+      totals = multi_daily_totals[[hostname, pathname]]
+      next if totals[:pageviews].zero?
+
+      create_daily_stat(multi_site, hostname, pathname, date, totals)
+      multi_daily_count += 1
+
+      # Accumulate weekly totals
+      totals.each { |k, v| multi_weekly_totals[[week_start, hostname, pathname]][k] += v }
+    end
+  end
+end
+
+# Create weekly stats from accumulated daily totals
+multi_weekly_totals.each do |(week_start, hostname, pathname), totals|
+  next if totals[:pageviews].zero?
+
+  create_weekly_stat(multi_site, hostname, pathname, week_start, totals)
+  multi_weekly_count += 1
+end
+
+puts "Created #{multi_hourly_count} hourly page stats for multi-domain site"
+puts "Created #{multi_daily_count} daily page stats for multi-domain site"
+puts "Created #{multi_weekly_count} weekly page stats for multi-domain site"
 
 puts "\nSeeding complete!"
 puts "Total records:"

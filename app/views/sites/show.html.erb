@@ -10,10 +10,10 @@
       </div>
     </div>
 
-    <% if current_pathname.present? %>
+    <% if current_pathname.present? || current_hostname.present? %>
       <div class="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between" data-pathname-filter-target="filterIndicator">
         <p class="text-sm text-text-primary">
-          Filtered by: <span class="font-semibold" data-pathname-text><%= current_pathname %></span>
+          Filtered by: <span class="font-semibold" data-filter-text><%= "#{current_hostname}#{current_pathname}" %></span>
         </p>
         <button type="button" class="text-xs font-medium text-primary hover:text-primary/80 transition-colors" data-action="click->pathname-filter#clearFilter">
           Clear Filter
@@ -22,7 +22,7 @@
     <% else %>
       <div class="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between hidden" data-pathname-filter-target="filterIndicator">
         <p class="text-sm text-text-primary">
-          Filtered by: <span class="font-semibold" data-pathname-text></span>
+          Filtered by: <span class="font-semibold" data-filter-text></span>
         </p>
         <button type="button" class="text-xs font-medium text-primary hover:text-primary/80 transition-colors" data-action="click->pathname-filter#clearFilter">
           Clear Filter
@@ -42,7 +42,7 @@
   <div class="gap-y-8 gap-x-4 grid grid-cols-1 md:grid-cols-2">
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-        <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="pageViewsFrame">
+        <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname) %>" loading="lazy" data-pathname-filter-target="pageViewsFrame">
           <p class="text-text-muted">Loading page views...</p>
         </turbo-frame>
       </div>
@@ -50,7 +50,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-        <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="visitorsFrame">
+        <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname) %>" loading="lazy" data-pathname-filter-target="visitorsFrame">
           <p class="text-text-muted">Loading visitors...</p>
         </turbo-frame>
       </div>
@@ -58,7 +58,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-        <turbo-frame id="avg_duration_stats" src="<%= site_avg_duration_index_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="avgDurationFrame">
+        <turbo-frame id="avg_duration_stats" src="<%= site_avg_duration_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname) %>" loading="lazy" data-pathname-filter-target="avgDurationFrame">
           <p class="text-text-muted">Loading avg duration...</p>
         </turbo-frame>
       </div>
@@ -66,7 +66,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-        <turbo-frame id="bounce_rate_stats" src="<%= site_bounce_rate_index_path(@site, interval: current_interval, pathname: current_pathname) %>" loading="lazy" data-pathname-filter-target="bounceRateFrame">
+        <turbo-frame id="bounce_rate_stats" src="<%= site_bounce_rate_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname) %>" loading="lazy" data-pathname-filter-target="bounceRateFrame">
           <p class="text-text-muted">Loading bounce rate...</p>
         </turbo-frame>
       </div>

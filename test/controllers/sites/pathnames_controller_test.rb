@@ -265,5 +265,131 @@ module Sites
       assert_response :success
       assert_select "p", { text: /No data available/ }
     end
+
+    test "does not display hostname column when display_hostname is false" do
+      login(users(:alice), password: "password123")
+      sites(:tech_blog).update!(display_hostname: false)
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        unique_pageviews: 50,
+        visits: 40,
+        sessions: 30,
+        bounced_count: 20,
+        total_duration: 120.5,
+        duration_count: 30
+      )
+
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
+
+      assert_response :success
+      assert_select "th", text: "Pathname"
+      assert_select "th", { text: "Hostname", count: 0 }
+    end
+
+    test "displays hostname column when display_hostname is true" do
+      login(users(:alice), password: "password123")
+      sites(:tech_blog).update!(display_hostname: true)
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        unique_pageviews: 50,
+        visits: 40,
+        sessions: 30,
+        bounced_count: 20,
+        total_duration: 120.5,
+        duration_count: 30
+      )
+
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
+
+      assert_response :success
+      assert_select "th", text: "Hostname"
+      assert_select "th", text: "Pathname"
+      assert_select "td", text: "example.com"
+    end
+
+    test "groups stats by hostname and pathname when display_hostname is true" do
+      login(users(:alice), password: "password123")
+      sites(:tech_blog).update!(display_hostname: true)
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "app.example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        unique_pageviews: 50,
+        visits: 40,
+        sessions: 30,
+        bounced_count: 20,
+        total_duration: 120.5,
+        duration_count: 30
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "docs.example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 50,
+        unique_pageviews: 25,
+        visits: 20,
+        sessions: 15,
+        bounced_count: 10,
+        total_duration: 60.0,
+        duration_count: 15
+      )
+
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
+
+      assert_response :success
+      # Both hostnames should be displayed as separate rows
+      assert_select "td", text: "app.example.com"
+      assert_select "td", text: "docs.example.com"
+    end
+
+    test "groups stats by pathname only when display_hostname is false" do
+      login(users(:alice), password: "password123")
+      sites(:tech_blog).update!(display_hostname: false)
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "app.example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        unique_pageviews: 50,
+        visits: 40,
+        sessions: 30,
+        bounced_count: 20,
+        total_duration: 120.5,
+        duration_count: 30
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "docs.example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 50,
+        unique_pageviews: 25,
+        visits: 20,
+        sessions: 15,
+        bounced_count: 10,
+        total_duration: 60.0,
+        duration_count: 15
+      )
+
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
+
+      assert_response :success
+      # Stats should be aggregated - only one "/" row with combined values
+      body = response.body
+      slash_count = body.scan("<td class=\"px-4 py-3 text-sm text-text-primary font-medium\">/<\/td>").count
+      assert_equal 1, slash_count, "Expected only one aggregated / row"
+    end
   end
 end

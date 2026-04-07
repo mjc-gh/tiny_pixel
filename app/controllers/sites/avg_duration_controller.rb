@@ -16,6 +16,7 @@ module Sites
     def build_avg_duration_chart_data
       scope = stats_model.for_site(@site.id)
       scope = scope.for_pathname(current_pathname) if current_pathname.present?
+      scope = scope.where(hostname: current_hostname) if current_hostname.present?
 
       aggregated = scope
         .group(stats_time_column)

@@ -15,6 +15,7 @@ module Sites
 
       scope = stats_model.for_site(@site.id)
       scope = scope.for_pathname(current_pathname) if current_pathname.present?
+      scope = scope.where(hostname: current_hostname) if current_hostname.present?
 
       @chart_data = {
         "Visits" => scope.group(stats_time_column).sum(:visits),

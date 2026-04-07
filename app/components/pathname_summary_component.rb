@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 class PathnameSummaryComponent < ViewComponent::Base
-  def initialize(stats:, pagination: nil, frame_id: nil, base_path: nil, params: {})
+  def initialize(stats:, pagination: nil, frame_id: nil, base_path: nil, params: {}, display_hostname: false)
     @stats = stats
     @pagination = pagination
     @frame_id = frame_id
     @base_path = base_path
     @params = params
+    @display_hostname = display_hostname
   end
 
   def render_pagination?

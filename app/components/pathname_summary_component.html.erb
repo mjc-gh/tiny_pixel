@@ -3,6 +3,9 @@
     <table class="min-w-full divide-y divide-border">
       <thead class="bg-surface">
         <tr>
+          <% if @display_hostname %>
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Hostname</th>
+          <% end %>
           <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Pathname</th>
           <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Page Views</th>
           <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Unique Page Views</th>
@@ -14,7 +17,10 @@
       </thead>
       <tbody class="bg-background divide-y divide-border">
         <% @stats.each do |stat| %>
-          <tr class="cursor-pointer hover:bg-surface-hover transition-colors" data-action="click->pathname-filter#selectPathname" data-pathname="<%= stat.pathname %>">
+          <tr class="cursor-pointer hover:bg-surface-hover transition-colors" data-action="click->pathname-filter#selectPathname" data-pathname="<%= stat.pathname %>" data-hostname="<%= stat.hostname %>">
+            <% if @display_hostname %>
+              <td class="px-4 py-3 text-sm text-text-primary"><%= stat.hostname %></td>
+            <% end %>
             <td class="px-4 py-3 text-sm text-text-primary font-medium"><%= stat.pathname %></td>
             <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :pageviews) %></td>
             <td class="px-4 py-3 whitespace-nowrap text-sm text-text-primary"><%= format_value(stat, :unique_pageviews) %></td>

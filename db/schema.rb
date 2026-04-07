@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_29_211844) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_07_110940) do
   create_table "aggregation_logs", force: :cascade do |t|
     t.string "aggregation_type", null: false
     t.datetime "completed_at"
@@ -77,6 +77,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_29_211844) do
 
   create_table "sites", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "display_hostname", default: false, null: false
     t.string "name", null: false
     t.string "property_id", null: false
     t.string "salt", null: false

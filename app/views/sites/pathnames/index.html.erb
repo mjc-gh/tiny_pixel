@@ -4,6 +4,7 @@
     pagination: @stats,
     frame_id: "pathname_stats",
     base_path: site_pathnames_path(@site),
-    params: { interval: current_interval }
+    params: { interval: current_interval },
+    display_hostname: @display_hostname
   ) %>
 </turbo-frame>

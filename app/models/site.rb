@@ -6,6 +6,7 @@
 # Database name: primary
 #
 #  id                      :integer          not null, primary key
+#  display_hostname        :boolean          default(FALSE), not null
 #  name                    :string           not null
 #  salt                    :string           not null
 #  salt_duration           :integer          default("daily"), not null
