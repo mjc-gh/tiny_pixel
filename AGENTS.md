@@ -25,6 +25,7 @@
 - Callbacks → Enums → Scopes → Validations (in class body)
 - Scopes as lambdas: `scope :name, -> { where(...) }`
 - Rails exceptions: `ActiveRecord::RecordNotFound`, `ActiveRecord::ValidationError`
+- One class per Ruby `.rb` file
 
 **Models**:
 - Inherit from `ApplicationRecord` (main) or `AnalyticsRecord` (analytics-only)
