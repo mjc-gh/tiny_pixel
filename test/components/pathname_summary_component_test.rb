@@ -35,7 +35,7 @@ class PathnameSummaryComponentTest < ViewComponent::TestCase
 
   def build_pageview_stat(pathname:, pageviews:, hostname: nil)
     if hostname
-      Sites::PathnamesController::PageviewStat.new(
+      PageviewStat.new(
         hostname: hostname,
         pathname: pathname,
         pageviews: pageviews,
@@ -47,7 +47,7 @@ class PathnameSummaryComponentTest < ViewComponent::TestCase
         duration_count: 30
       )
     else
-      Sites::PathnamesController::PageviewStat.new(
+      PageviewStat.new(
         pathname: pathname,
         pageviews: pageviews,
         unique_pageviews: 50,
@@ -129,7 +129,7 @@ class PathnameSummaryComponentTest < ViewComponent::TestCase
   end
 
   test "formats bounce rate with percentage" do
-    stat = Sites::PathnamesController::PageviewStat.new(
+    stat = PageviewStat.new(
       pathname: "/",
       pageviews: 100,
       unique_pageviews: 50,
@@ -146,7 +146,7 @@ class PathnameSummaryComponentTest < ViewComponent::TestCase
   end
 
   test "formats avg duration with seconds" do
-    stat = Sites::PathnamesController::PageviewStat.new(
+    stat = PageviewStat.new(
       pathname: "/",
       pageviews: 100,
       unique_pageviews: 50,
