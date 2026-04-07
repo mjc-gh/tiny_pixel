@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   revise_auth
 
-  resources :sites, only: [:index, :show] do
+  resources :sites, only: [:index, :show, :edit, :update] do
     scope module: :sites do
       resources :pathnames, only: [:index]
       resources :page_views, only: [:index]

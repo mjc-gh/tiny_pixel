@@ -34,7 +34,7 @@
     </table>
   </div>
   <% if render_pagination? %>
-    <%= render PaginationComponent.new(collection: @pagination, base_path: @base_path, frame_id: @frame_id, params: @params) %>
+    <%= render PaginationComponent.new(collection: @stats, base_path: @base_path, frame_id: @frame_id, params: @params) %>
   <% end %>
 <% else %>
   <p class="text-text-muted py-4">No data available for this period.</p>

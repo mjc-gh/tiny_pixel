@@ -29,3 +29,21 @@
 
 en:
   hello: "Hello world"
+  common:
+    save: "Save"
+    back: "Back"
+    settings: "Settings"
+  sites:
+    edit:
+      title: "Site Settings"
+      settings: "Settings"
+      salt_duration_label: "Salt Cycling Frequency"
+      salt_duration_help: "Controls how often the site's visitor salt is rotated"
+      display_hostname_label: "Display Hostname"
+      display_hostname_help: "When enabled, stats are grouped by hostname and pathname. When disabled, stats are grouped by pathname only."
+    salt_durations:
+      daily: "Daily"
+      weekly: "Weekly"
+      monthly: "Monthly"
+    update:
+      success: "Site settings updated successfully"

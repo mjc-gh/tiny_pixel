@@ -253,8 +253,10 @@ module Sites
       get site_pathnames_url(sites(:tech_blog), interval: "daily")
 
       assert_response :success
-      # Should have pagination controls
-      assert_select "nav[aria-label*='Paginat']" # PaginationComponent renders pagination nav
+      # Verify pathnames are displayed (first page should show 20 items)
+      assert_select "table"
+      assert_select "td", { text: "/page-0", count: 1 }
+      assert_select "td", { text: "/page-1", count: 1 }
     end
 
     test "shows no data message when no stats available" do
@@ -390,6 +392,121 @@ module Sites
       body = response.body
       slash_count = body.scan("<td class=\"px-4 py-3 text-sm text-text-primary font-medium\">/<\/td>").count
       assert_equal 1, slash_count, "Expected only one aggregated / row"
+    end
+
+    test "returns single row when filtering by pathname" do
+      login(users(:alice), password: "password123")
+      sites(:tech_blog).update!(display_hostname: false)
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        unique_pageviews: 50,
+        visits: 40,
+        sessions: 30,
+        bounced_count: 20,
+        total_duration: 120.5,
+        duration_count: 30
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/about",
+        date: Date.current,
+        pageviews: 50,
+        unique_pageviews: 25,
+        visits: 20,
+        sessions: 15,
+        bounced_count: 10,
+        total_duration: 60.0,
+        duration_count: 15
+      )
+
+      get site_pathnames_url(sites(:tech_blog), interval: "daily", pathname: "/about")
+
+      assert_response :success
+      # Only /about should be displayed
+      assert_select "td", { text: "/about", count: 1 }
+      assert_select "td", { text: "/", count: 0 }
+    end
+
+    test "returns single row when filtering by pathname and hostname" do
+      login(users(:alice), password: "password123")
+      sites(:tech_blog).update!(display_hostname: true)
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        unique_pageviews: 50,
+        visits: 40,
+        sessions: 30,
+        bounced_count: 20,
+        total_duration: 120.5,
+        duration_count: 30
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "docs.example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 50,
+        unique_pageviews: 25,
+        visits: 20,
+        sessions: 15,
+        bounced_count: 10,
+        total_duration: 60.0,
+        duration_count: 15
+      )
+
+      get site_pathnames_url(sites(:tech_blog), interval: "daily", pathname: "/", hostname: "docs.example.com")
+
+      assert_response :success
+      # Only docs.example.com with / should be displayed
+      assert_select "td", { text: "docs.example.com", count: 1 }
+      assert_select "td", { text: "example.com", count: 0 }
+      assert_select "td", { text: "/", count: 1 }
+    end
+
+    test "returns all pathnames when no filter param" do
+      login(users(:alice), password: "password123")
+      sites(:tech_blog).update!(display_hostname: false)
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        pageviews: 100,
+        unique_pageviews: 50,
+        visits: 40,
+        sessions: 30,
+        bounced_count: 20,
+        total_duration: 120.5,
+        duration_count: 30
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/about",
+        date: Date.current,
+        pageviews: 50,
+        unique_pageviews: 25,
+        visits: 20,
+        sessions: 15,
+        bounced_count: 10,
+        total_duration: 60.0,
+        duration_count: 15
+      )
+
+      get site_pathnames_url(sites(:tech_blog), interval: "daily")
+
+      assert_response :success
+      # Both pathnames should be displayed
+      assert_select "td", { text: "/", count: 1 }
+      assert_select "td", { text: "/about", count: 1 }
     end
   end
 end

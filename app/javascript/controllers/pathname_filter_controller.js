@@ -12,6 +12,7 @@ export default class extends Controller {
 
     this.updateFrameSources(pathname, hostname)
     this.showFilterIndicator(pathname, hostname)
+    this.updateBrowserURL(pathname, hostname)
   }
 
   clearFilter() {
@@ -20,6 +21,7 @@ export default class extends Controller {
 
     this.updateFrameSources(null, null)
     this.hideFilterIndicator()
+    this.updateBrowserURL(null, null)
   }
 
   updateFrameSources(pathname, hostname) {
@@ -66,5 +68,34 @@ export default class extends Controller {
     if (this.hasFilterIndicatorTarget) {
       this.filterIndicatorTarget.classList.add("hidden")
     }
+  }
+
+  updateBrowserURL(pathname, hostname) {
+    // Build URL with filter params
+    const baseURL = window.location.pathname
+    const params = new URLSearchParams(window.location.search)
+    
+    // Update or remove filter parameters
+    if (pathname) {
+      params.set("pathname", pathname)
+    } else {
+      params.delete("pathname")
+    }
+    
+    if (hostname) {
+      params.set("hostname", hostname)
+    } else {
+      params.delete("hostname")
+    }
+    
+    // Ensure interval is preserved
+    if (!params.has("interval")) {
+      params.set("interval", this.intervalValue)
+    }
+    
+    const newURL = params.toString() ? `${baseURL}?${params.toString()}` : baseURL
+    
+    // Use Turbo.visit with advance action to update browser URL
+    Turbo.visit(newURL, { action: "advance" })
   }
 }

@@ -28,6 +28,13 @@ module Sites
 
     def build_pathname_stats
       base_query = stats_model.for_site(@site.id)
+
+      # Filter by pathname and optional hostname
+      if current_pathname.present?
+        base_query = base_query.where(pathname: current_pathname)
+        base_query = base_query.where(hostname: current_hostname) if current_hostname.present?
+      end
+
       stats = {}
 
       if @display_hostname

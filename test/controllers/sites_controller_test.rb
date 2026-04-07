@@ -116,4 +116,70 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+
+  test "edit redirects unauthenticated users to login" do
+    get edit_site_url(sites(:my_blog))
+
+    assert_redirected_to login_path
+  end
+
+  test "authenticated users can access edit for their sites" do
+    login(users(:alice), password: "password123")
+
+    get edit_site_url(sites(:my_blog))
+
+    assert_response :success
+  end
+
+  test "edit displays current site settings" do
+    login(users(:alice), password: "password123")
+
+    get edit_site_url(sites(:my_blog))
+
+    assert_select "select#site_salt_duration"
+    assert_select "input#site_display_hostname[type='checkbox']"
+  end
+
+  test "update redirects unauthenticated users to login" do
+    patch site_url(sites(:my_blog)), params: { site: { salt_duration: "weekly" } }
+
+    assert_redirected_to login_path
+  end
+
+  test "update saves valid salt_duration changes" do
+    login(users(:alice), password: "password123")
+    original_duration = sites(:my_blog).salt_duration
+
+    patch site_url(sites(:my_blog)), params: { site: { salt_duration: "weekly" } }
+
+    sites(:my_blog).reload
+    assert_equal "weekly", sites(:my_blog).salt_duration
+    assert_not_equal original_duration, sites(:my_blog).salt_duration
+  end
+
+  test "update saves valid display_hostname changes" do
+    login(users(:alice), password: "password123")
+    original_display_hostname = sites(:my_blog).display_hostname
+
+    patch site_url(sites(:my_blog)), params: { site: { display_hostname: !original_display_hostname } }
+
+    sites(:my_blog).reload
+    assert_equal !original_display_hostname, sites(:my_blog).display_hostname
+  end
+
+  test "update returns 404 for unauthorized site" do
+    login(users(:bob), password: "password123")
+
+    patch site_url(sites(:tech_blog)), params: { site: { salt_duration: "monthly" } }
+
+    assert_response :not_found
+  end
+
+  test "update redirects to site show page on success" do
+    login(users(:alice), password: "password123")
+
+    patch site_url(sites(:my_blog)), params: { site: { salt_duration: "monthly" } }
+
+    assert_redirected_to site_url(sites(:my_blog))
+  end
 end
