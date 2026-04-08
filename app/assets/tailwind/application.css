@@ -72,7 +72,18 @@
   --color-warning-border: #713f12;
   --color-warning-text: #fcd34d;
 
-  /* Input colors */
-  --color-input-border: #4b5563;
-  --color-input-bg: #1f2937;
+   /* Input colors */
+   --color-input-border: #4b5563;
+   --color-input-bg: #1f2937;
+}
+
+/* Slideover animations */
+dialog.slideover[open] {
+  animation: slide-in-from-right 250ms forwards ease;
+}
+
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(-100%);
+  }
 }

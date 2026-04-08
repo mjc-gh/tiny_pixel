@@ -47,3 +47,9 @@ en:
       monthly: "Monthly"
     update:
       success: "Site settings updated successfully"
+    instructions:
+      title: "Setup Instructions"
+      description: "Add this script tag to your website to start tracking visitors."
+      snippet_label: "Tracking Script"
+      copy: "Copy to clipboard"
+      close: "Close"
