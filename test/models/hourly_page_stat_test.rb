@@ -99,4 +99,71 @@ class HourlyPageStatTest < ActiveSupport::TestCase
 
     assert_equal ["b.com", "a.com", "c.com"], stats.pluck(:hostname)
   end
+
+  test "global scope filters by dimension = 'global'" do
+    HourlyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test",
+      time_bucket: @time_bucket,
+      dimension: "global"
+    )
+    HourlyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test2",
+      time_bucket: @time_bucket,
+      dimension: "country:US"
+    )
+
+    assert_equal 1, HourlyPageStat.global.count
+    assert_equal "global", HourlyPageStat.global.first.dimension
+  end
+
+  test "for_dimension scope filters by specific dimension" do
+    HourlyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test",
+      time_bucket: @time_bucket,
+      dimension: "country:US"
+    )
+    HourlyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test2",
+      time_bucket: @time_bucket,
+      dimension: "country:GB"
+    )
+
+    assert_equal 1, HourlyPageStat.for_dimension("country:US").count
+    assert_equal "country:US", HourlyPageStat.for_dimension("country:US").first.dimension
+  end
+
+  test "for_dimension_type scope filters by dimension type" do
+    HourlyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test",
+      time_bucket: @time_bucket,
+      dimension: "country:US"
+    )
+    HourlyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test2",
+      time_bucket: @time_bucket,
+      dimension: "country:GB"
+    )
+    HourlyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test3",
+      time_bucket: @time_bucket,
+      dimension: "browser:chrome"
+    )
+
+    assert_equal 2, HourlyPageStat.for_dimension_type("country").count
+    assert_equal 1, HourlyPageStat.for_dimension_type("browser").count
+  end
 end

@@ -208,6 +208,133 @@ class AggregationServiceTest < ActiveSupport::TestCase
     assert HourlyPageStat.exists?(site: @site)
   end
 
+  test "aggregate_hourly with global dimension creates global stats" do
+    create_test_page_views(@time_bucket)
+
+    result = @service.aggregate_hourly(@time_bucket, dimension: "global")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "global", stat.dimension
+  end
+
+  test "aggregate_daily with global dimension creates global stats" do
+    create_test_page_views_for_day(@time_bucket.to_date)
+
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension: "global")
+
+    assert_equal 1, result[:created]
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "global", stat.dimension
+  end
+
+  test "aggregate_weekly with global dimension creates global stats" do
+    week_start = @time_bucket.to_date.beginning_of_week(:monday)
+    create_test_page_views_for_week(week_start)
+
+    result = @service.aggregate_weekly(week_start, dimension: "global")
+
+    assert_equal 1, result[:created]
+    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "global", stat.dimension
+  end
+
+  test "aggregate_hourly with country dimension creates country dimension stats" do
+    create_test_page_views(@time_bucket)
+
+    result = @service.aggregate_hourly(@time_bucket, dimension: "country:US")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "country:US", stat.dimension
+  end
+
+  test "aggregate_daily with country dimension creates country dimension stats" do
+    create_test_page_views_for_day(@time_bucket.to_date)
+
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension: "country:US")
+
+    assert_equal 1, result[:created]
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "country:US", stat.dimension
+  end
+
+  test "aggregate_weekly with country dimension creates country dimension stats" do
+    week_start = @time_bucket.to_date.beginning_of_week(:monday)
+    create_test_page_views_for_week(week_start)
+
+    result = @service.aggregate_weekly(week_start, dimension: "country:US")
+
+    assert_equal 1, result[:created]
+    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "country:US", stat.dimension
+  end
+
+  test "aggregation still works with backward compatibility (no dimension parameter)" do
+    create_test_page_views(@time_bucket)
+
+    result = @service.aggregate_hourly(@time_bucket)
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "global", stat.dimension
+  end
+
+  test "dimension_expression_for_type returns correct SQL for country" do
+    expr = AggregationService.dimension_expression_for_type("country")
+
+    assert_equal "visitors.country", expr
+  end
+
+  test "dimension_expression_for_type returns correct SQL for browser" do
+    expr = AggregationService.dimension_expression_for_type("browser")
+
+    assert_equal "visitors.browser", expr
+  end
+
+  test "dimension_expression_for_type returns correct SQL for device_type" do
+    expr = AggregationService.dimension_expression_for_type("device_type")
+
+    assert_equal "visitors.device_type", expr
+  end
+
+  test "dimension_expression_for_type returns nil for unknown dimension" do
+    expr = AggregationService.dimension_expression_for_type("unknown")
+
+    assert_nil expr
+  end
+
+  test "format_dimension_value returns 'global' when dimension is 'global'" do
+    formatted = AggregationService.format_dimension_value("global", "any_value")
+
+    assert_equal "global", formatted
+  end
+
+  test "format_dimension_value formats dimension correctly for country" do
+    formatted = AggregationService.format_dimension_value("country:US", "US")
+
+    assert_equal "country:US", formatted
+  end
+
+  test "format_dimension_value formats dimension correctly for browser" do
+    formatted = AggregationService.format_dimension_value("browser:chrome", "1")
+
+    assert_equal "browser:1", formatted
+  end
+
+  test "format_dimension_value formats dimension correctly for device_type" do
+    formatted = AggregationService.format_dimension_value("device_type:mobile", "2")
+
+    assert_equal "device_type:2", formatted
+  end
+
   private
 
   def create_test_page_views(time_bucket)

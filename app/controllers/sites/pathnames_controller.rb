@@ -27,7 +27,7 @@ module Sites
     private
 
     def build_pathname_stats
-      base_query = stats_model.for_site(@site.id)
+      base_query = stats_model.for_site(@site.id).global
 
       # Filter by pathname and optional hostname
       if current_pathname.present?

@@ -10,10 +10,11 @@ module Sites
     def index
       @stats = stats_model
         .for_site(@site.id)
+        .global
         .public_send(stats_ordered_scope)
         .paginate(page: params[:page], per_page: PER_PAGE)
 
-      scope = stats_model.for_site(@site.id)
+      scope = stats_model.for_site(@site.id).global
       scope = scope.for_pathname(current_pathname) if current_pathname.present?
       scope = scope.where(hostname: current_hostname) if current_hostname.present?
 

@@ -8,6 +8,7 @@
 #  id               :integer          not null, primary key
 #  bounced_count    :integer          default(0), not null
 #  date             :date             not null
+#  dimension        :string           default("global"), not null
 #  duration_count   :integer          default(0), not null
 #  hostname         :string           not null
 #  pageviews        :integer          default(0), not null
@@ -22,9 +23,10 @@
 #
 # Indexes
 #
+#  idx_daily_page_stats_dimension       (dimension)
 #  idx_daily_page_stats_site_date       (site_id,date)
 #  idx_daily_page_stats_site_host_date  (site_id,hostname,date)
-#  idx_daily_page_stats_unique          (site_id,hostname,pathname,date) UNIQUE
+#  idx_daily_page_stats_unique          (site_id,hostname,pathname,dimension,date) UNIQUE
 #  index_daily_page_stats_on_site_id    (site_id)
 #
 # Foreign Keys
@@ -38,10 +40,13 @@ class DailyPageStat < ApplicationRecord
   scope :for_date_range, ->(start_date, end_date) { where(date: start_date..end_date) }
   scope :for_hostname, ->(hostname) { where(hostname: hostname) }
   scope :for_pathname, ->(pathname) { where(pathname: pathname) }
+  scope :global, -> { where(dimension: "global") }
+  scope :for_dimension, ->(dimension) { where(dimension: dimension) }
+  scope :for_dimension_type, ->(type) { where("dimension LIKE ?", "#{type}:%") }
   scope :ordered_by_pageviews, -> { order(pageviews: :desc) }
   scope :ordered_by_date, -> { order(date: :desc) }
 
-  validates :hostname, :pathname, :date, presence: true
+  validates :hostname, :pathname, :date, :dimension, presence: true
 
   def avg_duration
     return nil if duration_count.zero?

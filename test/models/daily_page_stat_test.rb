@@ -99,4 +99,71 @@ class DailyPageStatTest < ActiveSupport::TestCase
 
     assert_equal ["b.com", "a.com", "c.com"], stats.pluck(:hostname)
   end
+
+  test "global scope filters by dimension = 'global'" do
+    DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test",
+      date: @date,
+      dimension: "global"
+    )
+    DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test2",
+      date: @date,
+      dimension: "country:US"
+    )
+
+    assert_equal 1, DailyPageStat.global.count
+    assert_equal "global", DailyPageStat.global.first.dimension
+  end
+
+  test "for_dimension scope filters by specific dimension" do
+    DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test",
+      date: @date,
+      dimension: "country:US"
+    )
+    DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test2",
+      date: @date,
+      dimension: "country:GB"
+    )
+
+    assert_equal 1, DailyPageStat.for_dimension("country:US").count
+    assert_equal "country:US", DailyPageStat.for_dimension("country:US").first.dimension
+  end
+
+  test "for_dimension_type scope filters by dimension type" do
+    DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test",
+      date: @date,
+      dimension: "country:US"
+    )
+    DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test2",
+      date: @date,
+      dimension: "country:GB"
+    )
+    DailyPageStat.create!(
+      site: @site,
+      hostname: "example.com",
+      pathname: "/test3",
+      date: @date,
+      dimension: "browser:chrome"
+    )
+
+    assert_equal 2, DailyPageStat.for_dimension_type("country").count
+    assert_equal 1, DailyPageStat.for_dimension_type("browser").count
+  end
 end
