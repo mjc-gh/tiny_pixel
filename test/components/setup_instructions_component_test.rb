@@ -12,6 +12,15 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_selector "[data-controller='slideover']"
   end
 
+  def test_slideover_has_turbo_temporary_attribute
+    site = sites(:tech_blog)
+    request = OpenStruct.new(base_url: "http://localhost:3000")
+
+    render_inline(SetupInstructionsComponent.new(site: site, request: request))
+
+    assert_selector "[data-controller='slideover'][data-turbo-temporary]"
+  end
+
   def test_renders_dialog_element
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")

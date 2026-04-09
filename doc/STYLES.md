@@ -73,7 +73,7 @@ Slideovers use the native HTML `<dialog>` element with the `tailwindcss-stimulus
 
 ### Structure
 
-- **Container**: `<div data-controller="slideover" data-slideover-open-value="true">`
+- **Container**: `<div data-controller="slideover" data-slideover-open-value="true" data-turbo-temporary>`
 - **Dialog element**: `<dialog data-slideover-target="dialog">`
 - **Closing**: Use `data-action="slideover#close"` on buttons or the `Escape` key
 - **Auto-open**: Set `data-slideover-open-value="true"` to open on page load (required for Turbo frame delivery)
@@ -113,7 +113,7 @@ dialog.slideover[open] {
 ### Example
 
 ```erb
-<div data-controller="slideover" data-slideover-open-value="true">
+<div data-controller="slideover" data-slideover-open-value="true" data-turbo-temporary>
   <dialog data-slideover-target="dialog" class="slideover h-full max-h-full m-0 w-96 p-8 bg-surface backdrop:bg-black/80">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-lg font-bold">Title</h2>
