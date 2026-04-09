@@ -8,18 +8,17 @@ BROWSERS = %i[chrome firefox safari edge opera].freeze
 DEVICE_TYPES = %i[desktop mobile].freeze
 COUNTRIES = %w[US GB DE FR CA AU JP].freeze
 
-RAW_DATA_DAYS = 7
 AGGREGATED_DATA_DAYS = 14
 VISITOR_COUNT = 75
 
 # Helper Methods
 
 def create_visitor(site, index)
-  digest = Digest::SHA256.hexdigest("visitor-#{site.property_id}-#{index}-#{Time.current.to_i}")
+  digest = Digest::SHA256.hexdigest("visitor-#{site.id}-#{index}-#{Time.current.to_i}")
 
   Visitor.create!(
     digest: digest,
-    property_id: site.property_id,
+    property_id: site.id,
     browser: BROWSERS.sample,
     device_type: DEVICE_TYPES.sample,
     country: COUNTRIES.sample,
@@ -56,67 +55,7 @@ def create_page_view(visitor, timestamp, options = {})
   )
 end
 
-def random_metrics(base_pageviews)
-  pageviews = base_pageviews
-  unique_pageviews = [pageviews, (pageviews * rand(0.6..0.9)).round].min
-  sessions = [unique_pageviews, (unique_pageviews * rand(0.7..0.95)).round].min
-  visits = [sessions, (sessions * rand(0.5..0.85)).round].min
-  bounced_count = (visits * rand(0.2..0.5)).round
-  duration_count = (pageviews * rand(0.6..0.8)).round
-  total_duration = duration_count * rand(30..180)
 
-  {
-    pageviews: pageviews,
-    unique_pageviews: unique_pageviews,
-    sessions: sessions,
-    visits: visits,
-    bounced_count: bounced_count,
-    total_duration: total_duration,
-    duration_count: duration_count
-  }
-end
-
-def create_hourly_stat(site, hostname, pathname, time_bucket, metrics)
-  HourlyPageStat.create!(
-    site: site,
-    hostname: hostname,
-    pathname: pathname,
-    time_bucket: time_bucket,
-    **metrics
-  )
-end
-
-def create_daily_stat(site, hostname, pathname, date, metrics)
-  DailyPageStat.create!(
-    site: site,
-    hostname: hostname,
-    pathname: pathname,
-    date: date,
-    **metrics
-  )
-end
-
-def create_weekly_stat(site, hostname, pathname, week_start, metrics)
-  WeeklyPageStat.create!(
-    site: site,
-    hostname: hostname,
-    pathname: pathname,
-    week_start: week_start,
-    **metrics
-  )
-end
-
-def hourly_traffic_multiplier(hour)
-  case hour
-  when 0..5 then rand(0.1..0.3)
-  when 6..8 then rand(0.4..0.6)
-  when 9..11 then rand(0.8..1.0)
-  when 12..14 then rand(0.9..1.2)
-  when 15..17 then rand(0.7..0.9)
-  when 18..20 then rand(0.5..0.7)
-  else rand(0.2..0.4)
-  end
-end
 
 # Seed Execution
 
@@ -147,11 +86,11 @@ PageView.delete_all
 Visitor.delete_all
 puts "Cleared existing data"
 
-# Create Visitors and PageViews (7 days of raw data)
-puts "Creating visitors and page views..."
+# Create Visitors and PageViews (14 days of raw data)
+puts "Creating visitors and page views for test site..."
 
 end_date = Time.current.beginning_of_day - 1.day
-start_date = end_date - RAW_DATA_DAYS.days
+start_date = end_date - AGGREGATED_DATA_DAYS.days
 
 visitors = []
 VISITOR_COUNT.times do |i|
@@ -197,62 +136,34 @@ end
 puts "Created #{visitors.count} visitors"
 puts "Created #{page_view_count} page views"
 
-# Calculate aggregation date range
+# Aggregate stats using AggregationService
+puts "\nAggregating stats for test site using AggregationService..."
+
 aggregated_end_date = Date.current - 1.day
 aggregated_start_date = aggregated_end_date - AGGREGATED_DATA_DAYS.days
 
-# Create Aggregated Stats (14 days)
-puts "\nCreating aggregated stats for test site..."
+service = AggregationService.new(site)
 
-hourly_count = 0
-daily_count = 0
-weekly_count = 0
-
-# Track daily totals for weekly aggregation
-weekly_totals = Hash.new { |h, k| h[k] = Hash.new(0) }
-
+# Aggregate hourly stats
 (aggregated_start_date..aggregated_end_date).each do |date|
-  week_start = date.beginning_of_week(:monday)
-  daily_totals = Hash.new { |h, k| h[k] = Hash.new(0) }
-
-  # Create hourly stats
   24.times do |hour|
     time_bucket = Time.zone.local(date.year, date.month, date.day, hour)
-    multiplier = hourly_traffic_multiplier(hour)
-
-    PATHNAMES.each do |pathname|
-      base_pageviews = (rand(5..20) * multiplier).round
-      next if base_pageviews.zero?
-
-      metrics = random_metrics(base_pageviews)
-      create_hourly_stat(site, HOSTNAME, pathname, time_bucket, metrics)
-      hourly_count += 1
-
-      # Accumulate daily totals
-      metrics.each { |k, v| daily_totals[pathname][k] += v }
-    end
-  end
-
-  # Create daily stats from accumulated hourly totals
-  PATHNAMES.each do |pathname|
-    totals = daily_totals[pathname]
-    next if totals[:pageviews].zero?
-
-    create_daily_stat(site, HOSTNAME, pathname, date, totals)
-    daily_count += 1
-
-    # Accumulate weekly totals
-    totals.each { |k, v| weekly_totals[[week_start, pathname]][k] += v }
+    service.aggregate_hourly(time_bucket)
   end
 end
 
-# Create weekly stats from accumulated daily totals
-weekly_totals.each do |(week_start, pathname), totals|
-  next if totals[:pageviews].zero?
-
-  create_weekly_stat(site, HOSTNAME, pathname, week_start, totals)
-  weekly_count += 1
+# Aggregate daily stats
+(aggregated_start_date..aggregated_end_date).each do |date|
+  service.aggregate_daily(date)
 end
+
+# Aggregate weekly stats
+week_starts = (aggregated_start_date..aggregated_end_date).map { |d| d.beginning_of_week(:monday) }.uniq
+week_starts.each { |week_start| service.aggregate_weekly(week_start) }
+
+hourly_count = site.hourly_page_stats.count
+daily_count = site.daily_page_stats.count
+weekly_count = site.weekly_page_stats.count
 
 puts "Created #{hourly_count} hourly page stats"
 puts "Created #{daily_count} daily page stats"
@@ -277,64 +188,82 @@ end
 multi_site.hourly_page_stats.delete_all
 multi_site.daily_page_stats.delete_all
 multi_site.weekly_page_stats.delete_all
+PageView.where(hostname: ["app.example.com", "docs.example.com", "blog.example.com"]).delete_all
+Visitor.where(property_id: multi_site.id).delete_all
 
-# Create stats for multi-domain site
-puts "Creating multi-domain site aggregated stats..."
+# Create Visitors and PageViews for multi-domain site
+puts "Creating visitors and page views for multi-domain site..."
 
 multi_hostnames = ["app.example.com", "docs.example.com", "blog.example.com"].freeze
-multi_hourly_count = 0
-multi_daily_count = 0
-multi_weekly_count = 0
+multi_visitors = []
+VISITOR_COUNT.times do |i|
+  multi_visitors << create_visitor(multi_site, i)
+end
 
-# Track daily and weekly totals for multi-site
-multi_weekly_totals = Hash.new { |h, k| h[k] = Hash.new(0) }
+multi_page_view_count = 0
+multi_visitors.each do |visitor|
+  session_count = rand(1..5)
+  first_session = true
 
+  session_count.times do
+    session_start = rand(start_date..end_date)
+    page_count = rand(1..6)
+    first_page = true
+    session_pages = PATHNAMES.sample(page_count)
+    hostname = multi_hostnames.sample
+
+    session_pages.each_with_index do |pathname, idx|
+      timestamp = session_start + (idx * rand(30..300)).seconds
+      is_last_page = idx == session_pages.length - 1
+      bounced = page_count == 1
+
+      create_page_view(
+        visitor,
+        timestamp,
+        hostname: hostname,
+        pathname: pathname,
+        referrer: first_page && rand < 0.4 ? REFERRERS.compact.sample : nil,
+        is_unique: first_session && first_page,
+        new_session: first_page,
+        new_visit: first_session && first_page,
+        bounced: bounced,
+        duration: is_last_page ? nil : rand(10..300)
+      )
+      multi_page_view_count += 1
+      first_page = false
+    end
+
+    first_session = false
+  end
+end
+
+puts "Created #{multi_visitors.count} visitors for multi-domain site"
+puts "Created #{multi_page_view_count} page views for multi-domain site"
+
+# Aggregate stats for multi-domain site using AggregationService
+puts "Aggregating stats for multi-domain site using AggregationService..."
+
+multi_service = AggregationService.new(multi_site)
+
+# Aggregate hourly stats
 (aggregated_start_date..aggregated_end_date).each do |date|
-  week_start = date.beginning_of_week(:monday)
-  multi_daily_totals = Hash.new { |h, k| h[k] = Hash.new(0) }
-
-  # Create hourly stats for each hostname
   24.times do |hour|
     time_bucket = Time.zone.local(date.year, date.month, date.day, hour)
-    multiplier = hourly_traffic_multiplier(hour)
-
-    multi_hostnames.each do |hostname|
-      PATHNAMES.each do |pathname|
-        base_pageviews = (rand(3..15) * multiplier).round
-        next if base_pageviews.zero?
-
-        metrics = random_metrics(base_pageviews)
-        create_hourly_stat(multi_site, hostname, pathname, time_bucket, metrics)
-        multi_hourly_count += 1
-
-        # Accumulate daily totals
-        metrics.each { |k, v| multi_daily_totals[[hostname, pathname]][k] += v }
-      end
-    end
-  end
-
-  # Create daily stats from accumulated hourly totals
-  multi_hostnames.each do |hostname|
-    PATHNAMES.each do |pathname|
-      totals = multi_daily_totals[[hostname, pathname]]
-      next if totals[:pageviews].zero?
-
-      create_daily_stat(multi_site, hostname, pathname, date, totals)
-      multi_daily_count += 1
-
-      # Accumulate weekly totals
-      totals.each { |k, v| multi_weekly_totals[[week_start, hostname, pathname]][k] += v }
-    end
+    multi_service.aggregate_hourly(time_bucket)
   end
 end
 
-# Create weekly stats from accumulated daily totals
-multi_weekly_totals.each do |(week_start, hostname, pathname), totals|
-  next if totals[:pageviews].zero?
-
-  create_weekly_stat(multi_site, hostname, pathname, week_start, totals)
-  multi_weekly_count += 1
+# Aggregate daily stats
+(aggregated_start_date..aggregated_end_date).each do |date|
+  multi_service.aggregate_daily(date)
 end
+
+# Aggregate weekly stats
+week_starts.each { |week_start| multi_service.aggregate_weekly(week_start) }
+
+multi_hourly_count = multi_site.hourly_page_stats.count
+multi_daily_count = multi_site.daily_page_stats.count
+multi_weekly_count = multi_site.weekly_page_stats.count
 
 puts "Created #{multi_hourly_count} hourly page stats for multi-domain site"
 puts "Created #{multi_daily_count} daily page stats for multi-domain site"
