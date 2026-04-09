@@ -12,12 +12,17 @@ tiny_pixel aggregates page analytics into three time-based models: hourly, daily
 
 ## Common Fields
 
-Each record is uniquely identified by `(site_id, hostname, pathname, time_bucket/date/week_start)`.
+Each record is uniquely identified by `(site_id, hostname, pathname, dimension, time_bucket/date/week_start)`.
 
 ### Dimensions
 - **site_id** - Foreign key to the site
 - **hostname** - The page's hostname
 - **pathname** - The page's path
+- **dimension** - Aggregation dimension (string, non-nullable, default: `"global"`)
+  - `"global"` - Aggregated across all dimension values (default for all records)
+  - `"country:<value>"` - Aggregated by country (e.g., `"country:US"`, `"country:GB"`)
+  - `"browser:<value>"` - Aggregated by browser (e.g., `"browser:chrome"`, `"browser:firefox"`)
+  - `"device_type:<value>"` - Aggregated by device type (e.g., `"device_type:mobile"`, `"device_type:desktop"`)
 
 ### Metrics
 
@@ -62,9 +67,78 @@ A single visit can span multiple sessions if the user is inactive and returns la
 ## Available Scopes
 
 All three models provide identical scopes:
+
+### Location Scopes
 - `for_site(site_id)` - Filter by site
 - `for_date_range(start, end)` - Filter by time range
 - `for_hostname(hostname)` - Filter by hostname
 - `for_pathname(pathname)` - Filter by pathname
+
+### Dimension Scopes
+- `global` - Filter to global stats only (dimension = `"global"`)
+- `for_dimension(dimension)` - Filter by specific dimension (e.g., `for_dimension("country:US")`)
+- `for_dimension_type(type)` - Filter by dimension type (e.g., `for_dimension_type("country")` returns all `country:*` records)
+
+### Ordering Scopes
 - `ordered_by_pageviews` - Order by pageviews descending
 - `ordered_by_time` / `ordered_by_date` / `ordered_by_week` - Order by time descending
+
+## Querying Examples
+
+### Get global stats for a site
+```ruby
+HourlyPageStat.for_site(123).global
+```
+
+### Get country-specific stats
+```ruby
+HourlyPageStat.for_site(123).for_dimension("country:US")
+```
+
+### Get all country breakdowns
+```ruby
+HourlyPageStat.for_site(123).for_dimension_type("country")
+```
+
+### Get stats by specific time period
+```ruby
+DailyPageStat.for_site(123).global.for_date_range(Date.today - 7.days, Date.today)
+```
+
+## Dimension Format
+
+Dimensions use a hierarchical string format to support flexible aggregation dimensions:
+- **Type prefix** (before colon): `country`, `browser`, `device_type`, or `global`
+- **Value** (after colon): The specific value for that dimension type
+
+This format allows:
+- Easy filtering: `WHERE dimension LIKE 'country:%'` matches all country breakdowns
+- Type safety: Parse the prefix to validate dimension types
+- Future extensibility: Add new dimension types without schema changes
+- Simple default: All records default to `"global"` for backward compatibility
+
+## Aggregation Service
+
+The `AggregationService` supports dimension-based aggregation:
+
+### Basic Aggregation (Global Stats)
+```ruby
+AggregationService.aggregate_hourly_for_site(site, time_bucket)
+```
+
+### Dimension-Specific Aggregation
+```ruby
+service = AggregationService.new(site)
+service.aggregate_hourly(time_bucket, dimension: "country:US")
+```
+
+Supported dimension types:
+- `"global"` - Aggregates across all dimension values (default)
+- `"country:<value>"` - Groups by visitor country
+- `"browser:<value>"` - Groups by visitor browser
+- `"device_type:<value>"` - Groups by visitor device type
+
+### Class Methods for Dimension Handling
+
+- `AggregationService.dimension_expression_for_type(type)` - Returns SQL column expression for dimension type
+- `AggregationService.format_dimension_value(dimension, raw_value)` - Formats dimension value for storage
