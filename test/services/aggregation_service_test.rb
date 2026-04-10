@@ -311,6 +311,12 @@ class AggregationServiceTest < ActiveSupport::TestCase
     assert_nil expr
   end
 
+  test "dimension_expression_for_type returns correct handling for referrer_hostname" do
+    expr = AggregationService.dimension_expression_for_type("referrer_hostname")
+
+    assert_equal "referrer_hostname", expr
+  end
+
   test "format_dimension_value returns 'global' when dimension is 'global'" do
     formatted = AggregationService.format_dimension_value("global", "any_value")
 
@@ -333,6 +339,76 @@ class AggregationServiceTest < ActiveSupport::TestCase
     formatted = AggregationService.format_dimension_value("device_type:mobile", "2")
 
     assert_equal "device_type:2", formatted
+  end
+
+  test "aggregate_hourly with referrer_hostname dimension creates referrer dimension stats" do
+    create_test_page_views_with_referrer(@time_bucket, "google.com")
+
+    result = @service.aggregate_hourly(@time_bucket, dimension: "referrer_hostname:google.com")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "referrer_hostname:google.com", stat.dimension
+  end
+
+  test "aggregate_hourly with referrer_hostname correctly aggregates all page views in a visit" do
+    create_test_page_views_with_referrer(@time_bucket, "google.com")
+
+    result = @service.aggregate_hourly(@time_bucket, dimension: "referrer_hostname:google.com")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    # Should have 3 page views even though only first one has referrer_hostname set
+    assert_equal 3, stat.pageviews
+    assert_equal 1, stat.visits
+  end
+
+  test "aggregate_hourly with referrer_hostname handles direct traffic (NULL referrer)" do
+    create_test_page_views_with_direct_traffic(@time_bucket)
+
+    result = @service.aggregate_hourly(@time_bucket, dimension: "referrer_hostname:direct")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "referrer_hostname:direct", stat.dimension
+    assert_equal 3, stat.pageviews
+  end
+
+  test "aggregate_daily with referrer_hostname dimension creates referrer dimension stats" do
+    create_test_page_views_with_referrer_for_day(@time_bucket.to_date, "github.com")
+
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension: "referrer_hostname:github.com")
+
+    assert_equal 1, result[:created]
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "referrer_hostname:github.com", stat.dimension
+  end
+
+  test "aggregate_daily with referrer_hostname correctly aggregates all page views in a visit" do
+    create_test_page_views_with_referrer_for_day(@time_bucket.to_date, "github.com")
+
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension: "referrer_hostname:github.com")
+
+    assert_equal 1, result[:created]
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    # Should have 6 page views even though only first one has referrer_hostname set
+    assert_equal 6, stat.pageviews
+    assert_equal 1, stat.visits
+  end
+
+  test "aggregate_weekly with referrer_hostname dimension creates referrer dimension stats" do
+    week_start = @time_bucket.to_date.beginning_of_week(:monday)
+    create_test_page_views_with_referrer_for_week(week_start, "twitter.com")
+
+    result = @service.aggregate_weekly(week_start, dimension: "referrer_hostname:twitter.com")
+
+    assert_equal 1, result[:created]
+    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    assert_not_nil stat
+    assert_equal "referrer_hostname:twitter.com", stat.dimension
   end
 
   private
@@ -585,6 +661,340 @@ class AggregationServiceTest < ActiveSupport::TestCase
         visitor_digest: visitor.digest,
         hostname: "example.com",
         pathname: "/page1",
+        created_at: base_time + 5.days + i.hours,
+        new_visit: false,
+        new_session: false,
+        is_unique: false,
+        bounced: i.even?,
+        duration: 20
+      )
+    end
+  end
+
+  def create_test_page_views_with_referrer(time_bucket, referrer_hostname)
+    visitor = Visitor.create!(
+      digest: "visitor_digest_referrer_1",
+      property_id: @site.id,
+      browser: :chrome,
+      device_type: :desktop,
+      country: "US",
+      salt_version: @site.salt_version
+    )
+
+    # First page view with referrer_hostname set (new_visit=true)
+    PageView.create!(
+      digest: "pv_referrer_1",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: referrer_hostname,
+      created_at: time_bucket + 5.minutes,
+      new_visit: true,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    # Second page view without referrer_hostname (new_visit=false)
+    PageView.create!(
+      digest: "pv_referrer_2",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: time_bucket + 15.minutes,
+      new_visit: false,
+      new_session: false,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    # Third page view without referrer_hostname (new_visit=false)
+    PageView.create!(
+      digest: "pv_referrer_3",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: time_bucket + 25.minutes,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+  end
+
+  def create_test_page_views_with_direct_traffic(time_bucket)
+    visitor = Visitor.create!(
+      digest: "visitor_digest_direct_1",
+      property_id: @site.id,
+      browser: :chrome,
+      device_type: :desktop,
+      country: "US",
+      salt_version: @site.salt_version
+    )
+
+    # First page view with no referrer_hostname (direct traffic)
+    PageView.create!(
+      digest: "pv_direct_1",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: time_bucket + 5.minutes,
+      new_visit: true,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    # Second page view without referrer_hostname
+    PageView.create!(
+      digest: "pv_direct_2",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: time_bucket + 15.minutes,
+      new_visit: false,
+      new_session: false,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    # Third page view without referrer_hostname
+    PageView.create!(
+      digest: "pv_direct_3",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: time_bucket + 25.minutes,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+  end
+
+  def create_test_page_views_with_referrer_for_day(date, referrer_hostname)
+    visitor = Visitor.find_or_create_by!(digest: "visitor_digest_referrer_daily") do |v|
+      v.property_id = @site.id
+      v.browser = :chrome
+      v.device_type = :desktop
+      v.country = "US"
+      v.salt_version = @site.salt_version
+    end
+
+    base_time = date.to_datetime
+
+    PageView.create!(
+      digest: "pv_referrer_daily_1",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: referrer_hostname,
+      created_at: base_time + 2.hours,
+      new_visit: true,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_daily_2",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 3.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_daily_3",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 4.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_daily_4",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 10.hours,
+      new_visit: false,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_daily_5",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 11.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_daily_6",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 12.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+  end
+
+  def create_test_page_views_with_referrer_for_week(week_start, referrer_hostname)
+    visitor = Visitor.find_or_create_by!(digest: "visitor_digest_referrer_weekly") do |v|
+      v.property_id = @site.id
+      v.browser = :chrome
+      v.device_type = :desktop
+      v.country = "US"
+      v.salt_version = @site.salt_version
+    end
+
+    base_time = week_start.to_datetime
+
+    PageView.create!(
+      digest: "pv_referrer_weekly_1",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: referrer_hostname,
+      created_at: base_time + 1.day + 2.hours,
+      new_visit: true,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_weekly_2",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 1.day + 3.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_weekly_3",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 2.days + 4.hours,
+      new_visit: false,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_weekly_4",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 2.days + 5.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_weekly_5",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 3.days + 6.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_weekly_6",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 3.days + 7.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+
+    PageView.create!(
+      digest: "pv_referrer_weekly_7",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      referrer_hostname: nil,
+      created_at: base_time + 4.days + 8.hours,
+      new_visit: false,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    7.times do |i|
+      PageView.create!(
+        digest: "pv_referrer_weekly_extra_#{i}",
+        visitor_digest: visitor.digest,
+        hostname: "example.com",
+        pathname: "/page1",
+        referrer_hostname: nil,
         created_at: base_time + 5.days + i.hours,
         new_visit: false,
         new_session: false,

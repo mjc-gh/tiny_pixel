@@ -23,6 +23,7 @@ Each record is uniquely identified by `(site_id, hostname, pathname, dimension, 
   - `"country:<value>"` - Aggregated by country (e.g., `"country:US"`, `"country:GB"`)
   - `"browser:<value>"` - Aggregated by browser (e.g., `"browser:chrome"`, `"browser:firefox"`)
   - `"device_type:<value>"` - Aggregated by device type (e.g., `"device_type:mobile"`, `"device_type:desktop"`)
+  - `"referrer_hostname:<value>"` - Aggregated by referrer hostname (e.g., `"referrer_hostname:google.com"`, `"referrer_hostname:direct"`)
 
 ### Metrics
 
@@ -105,6 +106,16 @@ HourlyPageStat.for_site(123).for_dimension_type("country")
 DailyPageStat.for_site(123).global.for_date_range(Date.today - 7.days, Date.today)
 ```
 
+### Get referrer-specific stats
+```ruby
+HourlyPageStat.for_site(123).for_dimension("referrer_hostname:google.com")
+```
+
+### Get all referrer breakdowns
+```ruby
+HourlyPageStat.for_site(123).for_dimension_type("referrer_hostname")
+```
+
 ## Dimension Format
 
 Dimensions use a hierarchical string format to support flexible aggregation dimensions:
@@ -137,6 +148,7 @@ Supported dimension types:
 - `"country:<value>"` - Groups by visitor country
 - `"browser:<value>"` - Groups by visitor browser
 - `"device_type:<value>"` - Groups by visitor device type
+- `"referrer_hostname:<value>"` - Groups by external referrer source hostname
 
 ### Class Methods for Dimension Handling
 
