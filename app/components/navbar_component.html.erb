@@ -1,22 +1,22 @@
 <nav class="fixed top-0 left-0 right-0 bg-surface border-b border-border z-50" data-controller="mobile-menu">
   <div class="container mx-auto px-5">
     <div class="flex justify-between items-center h-16">
-      <%= link_to "tiny_pixel", root_path, class: "font-bold text-xl text-text-primary" %>
+      <%= link_to "tiny_pixel", root_path, class: "font-bold text-xl text-content-primary" %>
 
       <!-- Desktop navigation (hidden on mobile) -->
       <div class="hidden md:flex items-center space-x-6">
         <% if signed_in? %>
-          <%= link_to "Sites", sites_path, class: "text-text-secondary hover:text-text-primary" %>
-          <%= link_to "Profile", profile_path, class: "text-text-secondary hover:text-text-primary" %>
-          <%= link_to "Logout", logout_path, data: { turbo_method: :delete }, class: "text-text-secondary hover:text-text-primary" %>
+          <%= link_to "Sites", sites_path, class: "text-content-secondary hover:text-content-primary" %>
+          <%= link_to "Profile", profile_path, class: "text-content-secondary hover:text-content-primary" %>
+          <%= link_to "Logout", logout_path, data: { turbo_method: :delete }, class: "text-content-secondary hover:text-content-primary" %>
         <% else %>
-          <%= link_to "Login", login_path, class: "text-text-secondary hover:text-text-primary" %>
-          <%= link_to "Sign Up", sign_up_path, class: "text-text-secondary hover:text-text-primary" %>
+          <%= link_to "Login", login_path, class: "text-content-secondary hover:text-content-primary" %>
+          <%= link_to "Sign Up", sign_up_path, class: "text-content-secondary hover:text-content-primary" %>
         <% end %>
 
         <!-- Theme toggle button -->
         <div data-controller="theme">
-          <button type="button" class="p-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-hover" data-action="theme#toggle">
+          <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="theme#toggle">
             <!-- Sun icon (shown when in dark mode, click to switch to light) -->
             <svg data-theme-target="lightIcon" class="hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
@@ -33,7 +33,7 @@
       <div class="flex md:hidden items-center space-x-2">
         <!-- Theme toggle button (mobile) -->
         <div data-controller="theme">
-          <button type="button" class="p-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-hover" data-action="theme#toggle">
+          <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="theme#toggle">
             <svg data-theme-target="lightIcon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
             </svg>
@@ -44,7 +44,7 @@
         </div>
 
         <!-- Hamburger button -->
-        <button type="button" class="p-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-hover" data-action="mobile-menu#toggle">
+        <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="mobile-menu#toggle">
           <svg data-mobile-menu-target="openIcon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
@@ -60,12 +60,12 @@
   <div data-mobile-menu-target="menu" class="hidden md:hidden border-t border-border bg-surface">
     <div class="container mx-auto px-5 py-4 space-y-3">
       <% if signed_in? %>
-        <%= link_to "Sites", sites_path, class: "block py-2 text-text-secondary hover:text-text-primary", data: { action: "click->mobile-menu#close" } %>
-        <%= link_to "Profile", profile_path, class: "block py-2 text-text-secondary hover:text-text-primary", data: { action: "click->mobile-menu#close" } %>
-        <%= link_to "Logout", logout_path, data: { turbo_method: :delete, action: "click->mobile-menu#close" }, class: "block py-2 text-text-secondary hover:text-text-primary" %>
+        <%= link_to "Sites", sites_path, class: "block py-2 text-content-secondary hover:text-content-primary", data: { action: "click->mobile-menu#close" } %>
+        <%= link_to "Profile", profile_path, class: "block py-2 text-content-secondary hover:text-content-primary", data: { action: "click->mobile-menu#close" } %>
+        <%= link_to "Logout", logout_path, data: { turbo_method: :delete, action: "click->mobile-menu#close" }, class: "block py-2 text-content-secondary hover:text-content-primary" %>
       <% else %>
-        <%= link_to "Login", login_path, class: "block py-2 text-text-secondary hover:text-text-primary", data: { action: "click->mobile-menu#close" } %>
-        <%= link_to "Sign Up", sign_up_path, class: "block py-2 text-text-secondary hover:text-text-primary", data: { action: "click->mobile-menu#close" } %>
+        <%= link_to "Login", login_path, class: "block py-2 text-content-secondary hover:text-content-primary", data: { action: "click->mobile-menu#close" } %>
+        <%= link_to "Sign Up", sign_up_path, class: "block py-2 text-content-secondary hover:text-content-primary", data: { action: "click->mobile-menu#close" } %>
       <% end %>
     </div>
   </div>

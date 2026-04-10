@@ -12,11 +12,11 @@
   --color-border: #e5e7eb;
   --color-border-light: #f3f4f6;
 
-  /* Text colors */
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-text-muted: #6b7280;
-  --color-text-label: #374151;
+   /* Text colors */
+   --color-content-primary: #111827;
+   --color-content-secondary: #4b5563;
+   --color-content-muted: #6b7280;
+   --color-content-label: #374151;
 
   /* Primary action colors */
   --color-primary: #2563eb;
@@ -50,11 +50,11 @@
   --color-border: #374151;
   --color-border-light: #4b5563;
 
-  /* Text colors */
-  --color-text-primary: #f9fafb;
-  --color-text-secondary: #9ca3af;
-  --color-text-muted: #6b7280;
-  --color-text-label: #d1d5db;
+   /* Text colors */
+   --color-content-primary: #f9fafb;
+   --color-content-secondary: #9ca3af;
+   --color-content-muted: #6b7280;
+   --color-content-label: #d1d5db;
 
   /* Primary action colors */
   --color-primary: #3b82f6;

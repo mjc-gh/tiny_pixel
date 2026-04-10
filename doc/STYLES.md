@@ -85,7 +85,7 @@ Slideovers use the native HTML `<dialog>` element with the `tailwindcss-stimulus
 - **Dialog**: `slideover h-full max-h-full m-0 w-96 p-8 bg-surface`
 - **Width**: Fixed width of `w-96` (384px), full height with `h-full max-h-full`
 - **Header**: Flex layout with title and close button in top-right
-- **Close button**: `text-text-secondary hover:text-text-primary transition-colors`
+- **Close button**: `text-content-secondary hover:text-content-primary transition-colors`
 - **Animation**: Use `slide-in-from-right` keyframe animation (250ms ease)
 
 ### Slide-In Animation
@@ -117,7 +117,7 @@ dialog.slideover[open] {
   <dialog data-slideover-target="dialog" class="slideover h-full max-h-full m-0 w-96 p-8 bg-surface backdrop:bg-black/80">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-lg font-bold">Title</h2>
-      <button type="button" data-action="slideover#close" class="text-text-secondary hover:text-text-primary">
+      <button type="button" data-action="slideover#close" class="text-content-secondary hover:text-content-primary">
         <!-- x-mark icon -->
       </button>
     </div>

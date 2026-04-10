@@ -1,10 +1,10 @@
 <div class="w-full max-w-2xl mx-auto space-y-6">
-  <h1 class="text-2xl font-bold text-text-primary"><%=t ".profile" %></h1>
+  <h1 class="text-2xl font-bold text-content-primary"><%=t ".profile" %></h1>
 
   <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
     <%= form_with model: current_user, url: profile_email_path, class: "space-y-4" do |form| %>
       <fieldset>
-        <legend class="text-lg font-semibold text-text-primary mb-4"><%=t ".change_email_address" %></legend>
+        <legend class="text-lg font-semibold text-content-primary mb-4"><%=t ".change_email_address" %></legend>
 
         <% if current_user.unconfirmed_email? %>
           <div class="bg-warning-bg border border-warning-border rounded-md p-4 mb-4">
@@ -22,13 +22,13 @@
           </div>
         <% end %>
 
-        <p class="text-sm text-text-secondary mb-2"><%=t ".current_email_address", email: current_user.email %></p>
-        <p class="text-sm text-text-muted mb-4"><%=t ".confirmation_instructions" %></p>
+        <p class="text-sm text-content-secondary mb-2"><%=t ".current_email_address", email: current_user.email %></p>
+        <p class="text-sm text-content-muted mb-4"><%=t ".confirmation_instructions" %></p>
 
         <div class="space-y-4">
           <div>
-            <%= form.label :unconfirmed_email, t(".new_email"), class: "block text-sm font-medium text-text-label mb-1" %>
-            <%= form.email_field :unconfirmed_email, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+            <%= form.label :unconfirmed_email, t(".new_email"), class: "block text-sm font-medium text-content-label mb-1" %>
+            <%= form.email_field :unconfirmed_email, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
           </div>
 
           <div>
@@ -42,7 +42,7 @@
   <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
     <%= form_with model: current_user, url: profile_password_path, class: "space-y-4" do |form| %>
       <fieldset>
-        <legend class="text-lg font-semibold text-text-primary mb-4"><%=t ".change_password" %></legend>
+        <legend class="text-lg font-semibold text-content-primary mb-4"><%=t ".change_password" %></legend>
 
         <% if form.object.errors.any? %>
           <div class="bg-danger-bg border border-danger-border rounded-md p-4 mb-4">
@@ -56,18 +56,18 @@
 
         <div class="space-y-4">
           <div>
-            <%= form.label :password_challenge, class: "block text-sm font-medium text-text-label mb-1" %>
-            <%= form.password_field :password_challenge, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+            <%= form.label :password_challenge, class: "block text-sm font-medium text-content-label mb-1" %>
+            <%= form.password_field :password_challenge, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
           </div>
 
           <div>
-            <%= form.label :password, t(".new_password"), class: "block text-sm font-medium text-text-label mb-1" %>
-            <%= form.password_field :password, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+            <%= form.label :password, t(".new_password"), class: "block text-sm font-medium text-content-label mb-1" %>
+            <%= form.password_field :password, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
           </div>
 
           <div>
-            <%= form.label :password_confirmation, class: "block text-sm font-medium text-text-label mb-1" %>
-            <%= form.password_field :password_confirmation, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+            <%= form.label :password_confirmation, class: "block text-sm font-medium text-content-label mb-1" %>
+            <%= form.password_field :password_confirmation, required: true, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
           </div>
 
           <div>

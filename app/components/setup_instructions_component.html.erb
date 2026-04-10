@@ -2,8 +2,8 @@
   <dialog data-slideover-target="dialog" class="slideover h-full max-h-full m-0 w-96 p-8 bg-surface backdrop:bg-black/80">
     <!-- Header with close button -->
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-lg font-bold text-text-primary"><%= t("sites.instructions.title") %></h2>
-      <button type="button" data-action="slideover#close" class="text-text-secondary hover:text-text-primary transition-colors p-1" aria-label="Close">
+      <h2 class="text-lg font-bold text-content-primary"><%= t("sites.instructions.title") %></h2>
+      <button type="button" data-action="slideover#close" class="text-content-secondary hover:text-content-primary transition-colors p-1" aria-label="Close">
         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -11,18 +11,18 @@
     </div>
 
     <!-- Description -->
-    <p class="text-text-secondary mb-6"><%= t("sites.instructions.description") %></p>
+    <p class="text-content-secondary mb-6"><%= t("sites.instructions.description") %></p>
 
     <!-- Tracking snippet section -->
     <div class="mb-6" data-controller="clipboard">
-      <label class="block text-sm font-medium text-text-primary mb-2"><%= t("sites.instructions.snippet_label") %></label>
+      <label class="block text-sm font-medium text-content-primary mb-2"><%= t("sites.instructions.snippet_label") %></label>
       <div class="bg-surface-hover border border-border rounded p-4 mb-3 font-mono text-sm overflow-x-auto" data-clipboard-target="source">
         <%= tracking_snippet %>
       </div>
       <button type="button" 
               data-action="clipboard#copy"
               data-clipboard-target="button"
-              class="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors text-sm">
+              class="px-4 py-2 bg-primary text-white rounded hover:bg-primary-hover transition-colors text-sm">
         <%= t("sites.instructions.copy") %>
       </button>
     </div>
@@ -31,7 +31,7 @@
     <div class="flex justify-end gap-3">
       <button autofocus type="button" 
               data-action="slideover#close"
-              class="px-4 py-2 text-text-secondary hover:text-text-primary transition-colors">
+              class="px-4 py-2 text-content-secondary hover:text-content-primary transition-colors">
         <%= t("sites.instructions.close") %>
       </button>
     </div>
