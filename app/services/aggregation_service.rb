@@ -4,18 +4,6 @@ class AggregationService
   LOOKBACK_HOURS = 48
 
   class << self
-    def aggregate_hourly_for_site(site, time_bucket)
-      new(site).aggregate_hourly(time_bucket)
-    end
-
-    def aggregate_daily_for_site(site, date)
-      new(site).aggregate_daily(date)
-    end
-
-    def aggregate_weekly_for_site(site, week_start)
-      new(site).aggregate_weekly(week_start)
-    end
-
     def aggregate_all_sites(lookback_hours: LOOKBACK_HOURS)
       Site.find_each do |site|
         new(site).aggregate_recent(lookback_hours: lookback_hours)

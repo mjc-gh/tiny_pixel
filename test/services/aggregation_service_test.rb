@@ -174,31 +174,6 @@ class AggregationServiceTest < ActiveSupport::TestCase
     assert WeeklyPageStat.exists?
   end
 
-  test "class method aggregate_hourly_for_site delegates to instance" do
-    create_test_page_views(@time_bucket)
-
-    result = AggregationService.aggregate_hourly_for_site(@site, @time_bucket)
-
-    assert_equal 1, result[:created]
-  end
-
-  test "class method aggregate_daily_for_site delegates to instance" do
-    create_test_page_views_for_day(@time_bucket.to_date)
-
-    result = AggregationService.aggregate_daily_for_site(@site, @time_bucket.to_date)
-
-    assert_equal 1, result[:created]
-  end
-
-  test "class method aggregate_weekly_for_site delegates to instance" do
-    week_start = @time_bucket.to_date.beginning_of_week(:monday)
-    create_test_page_views_for_week(week_start)
-
-    result = AggregationService.aggregate_weekly_for_site(@site, week_start)
-
-    assert_equal 1, result[:created]
-  end
-
   test "class method aggregate_all_sites processes all sites" do
     recent_time = Time.current.beginning_of_hour - 1.hour
     create_test_page_views(recent_time)
