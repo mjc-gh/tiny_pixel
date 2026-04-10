@@ -35,6 +35,8 @@ module Sites
         base_query = base_query.where(hostname: current_hostname) if current_hostname.present?
       end
 
+      base_query = apply_date_range_filter(base_query)
+
       stats = {}
 
       if @display_hostname

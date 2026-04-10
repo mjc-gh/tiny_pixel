@@ -1,4 +1,4 @@
-<div class="space-y-6" data-controller="pathname-filter" data-pathname-filter-site-value="<%= @site.id %>" data-pathname-filter-interval-value="<%= current_interval %>">
+<div class="space-y-6" data-controller="pathname-filter" data-pathname-filter-site-value="<%= @site.id %>" data-pathname-filter-interval-value="<%= current_interval %>" data-pathname-filter-start-date-value="<%= current_start_date&.iso8601 %>" data-pathname-filter-end-date-value="<%= current_end_date&.iso8601 %>">
   <div>
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
@@ -6,8 +6,9 @@
         <p class="text-sm text-content-secondary"><%= @site.property_id %></p>
       </div>
        <div class="flex items-center gap-4">
-          <%= render IntervalSelectorComponent.new(current_interval: current_interval, site: @site, pathname: current_pathname, hostname: current_hostname) %>
-           <%= link_to site_instructions_path(@site), title: t("sites.instructions.title"), data: { turbo_frame: "modals", action: "slideover#open" }, class: "text-content-secondary hover:text-content-primary transition-colors" do %>
+           <%= render IntervalSelectorComponent.new(current_interval: current_interval, site: @site, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date, end_date: current_end_date) %>
+           <%= render DateRangeSelectorComponent.new(start_date: current_start_date, end_date: current_end_date, site: @site) %>
+            <%= link_to site_instructions_path(@site), title: t("sites.instructions.title"), data: { turbo_frame: "modals", action: "slideover#open" }, class: "text-content-secondary hover:text-content-primary transition-colors" do %>
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
             </svg>
@@ -44,7 +45,7 @@
 
   <section>
     <div class="border border-border rounded-lg p-4 bg-surface">
-      <turbo-frame id="pathname_stats" src="<%= site_pathnames_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname) %>" loading="lazy">
+      <turbo-frame id="pathname_stats" src="<%= site_pathnames_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601) %>" loading="lazy" data-pathname-filter-target="pathnamesFrame">
         <p class="text-content-muted">Loading pathname summary...</p>
       </turbo-frame>
     </div>
@@ -53,7 +54,7 @@
   <div class="gap-y-8 gap-x-4 grid grid-cols-1 md:grid-cols-2">
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-        <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname) %>" loading="lazy" data-pathname-filter-target="pageViewsFrame">
+        <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601) %>" loading="lazy" data-pathname-filter-target="pageViewsFrame">
           <p class="text-content-muted">Loading page views...</p>
         </turbo-frame>
       </div>
@@ -61,7 +62,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-        <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname) %>" loading="lazy" data-pathname-filter-target="visitorsFrame">
+        <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601) %>" loading="lazy" data-pathname-filter-target="visitorsFrame">
           <p class="text-content-muted">Loading visitors...</p>
         </turbo-frame>
       </div>
@@ -69,7 +70,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-        <turbo-frame id="avg_duration_stats" src="<%= site_avg_duration_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname) %>" loading="lazy" data-pathname-filter-target="avgDurationFrame">
+        <turbo-frame id="avg_duration_stats" src="<%= site_avg_duration_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601) %>" loading="lazy" data-pathname-filter-target="avgDurationFrame">
           <p class="text-content-muted">Loading avg duration...</p>
         </turbo-frame>
       </div>
@@ -77,7 +78,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-        <turbo-frame id="bounce_rate_stats" src="<%= site_bounce_rate_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname) %>" loading="lazy" data-pathname-filter-target="bounceRateFrame">
+        <turbo-frame id="bounce_rate_stats" src="<%= site_bounce_rate_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601) %>" loading="lazy" data-pathname-filter-target="bounceRateFrame">
           <p class="text-content-muted">Loading bounce rate...</p>
         </turbo-frame>
       </div>

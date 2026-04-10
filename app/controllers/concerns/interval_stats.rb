@@ -8,7 +8,8 @@ module IntervalStats
   PER_PAGE = 20
 
   included do
-    helper_method :current_interval, :current_pathname, :current_hostname, :stats_time_column
+    helper_method :current_interval, :current_pathname, :current_hostname, :stats_time_column,
+                  :current_start_date, :current_end_date
   end
 
   def current_interval
@@ -24,6 +25,14 @@ module IntervalStats
 
   def current_hostname
     @current_hostname ||= params[:hostname]
+  end
+
+  def current_start_date
+    @current_start_date ||= parse_date_param(:start_date)
+  end
+
+  def current_end_date
+    @current_end_date ||= parse_date_param(:end_date)
   end
 
   def stats_model
@@ -57,5 +66,19 @@ module IntervalStats
     else
       :date
     end
+  end
+
+  def apply_date_range_filter(scope)
+    return scope unless current_start_date && current_end_date
+    scope.for_date_range(current_start_date, current_end_date)
+  end
+
+  private
+
+  def parse_date_param(param_name)
+    return nil if params[param_name].blank?
+    Date.parse(params[param_name])
+  rescue Date::Error
+    nil
   end
 end

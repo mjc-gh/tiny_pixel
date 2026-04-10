@@ -17,6 +17,7 @@ module Sites
       scope = stats_model.for_site(@site.id).global
       scope = scope.for_pathname(current_pathname) if current_pathname.present?
       scope = scope.where(hostname: current_hostname) if current_hostname.present?
+      scope = apply_date_range_filter(scope)
 
       @chart_data = {
         "Page Views" => scope.group(stats_time_column).sum(:pageviews),

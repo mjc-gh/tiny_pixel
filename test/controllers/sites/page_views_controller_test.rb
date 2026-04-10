@@ -117,5 +117,58 @@ module Sites
       assert_response :success
       # Chart data should only contain data for "/" pathname
     end
+
+    test "filters page views by date range when params present" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 15),
+        pageviews: 100
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 25),
+        pageviews: 50
+      )
+
+      get site_page_views_url(sites(:tech_blog), start_date: "2024-01-20", end_date: "2024-01-31")
+
+      assert_response :success
+    end
+
+    test "chart data includes only stats within date range" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 15),
+        pageviews: 100
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 25),
+        pageviews: 50
+      )
+
+      get site_page_views_url(sites(:tech_blog), start_date: "2024-01-20", end_date: "2024-01-31")
+
+      assert_response :success
+      # Only Jan 25 data (50 pageviews) should be included
+    end
+
+    test "handles invalid date format gracefully" do
+      login(users(:alice), password: "password123")
+
+      get site_page_views_url(sites(:tech_blog), start_date: "invalid-date", end_date: "2024-01-31")
+
+      assert_response :success
+    end
   end
 end

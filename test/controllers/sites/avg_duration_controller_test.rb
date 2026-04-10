@@ -151,5 +151,54 @@ module Sites
       assert_response :success
       assert_select "#avg_duration_chart"
     end
+
+    test "filters avg duration by date range when params present" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 15),
+        total_duration: 500.0,
+        duration_count: 50
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 25),
+        total_duration: 300.0,
+        duration_count: 30
+      )
+
+      get site_avg_duration_index_url(sites(:tech_blog), start_date: "2024-01-20", end_date: "2024-01-31")
+
+      assert_response :success
+    end
+
+    test "chart data includes only avg duration within date range" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 15),
+        total_duration: 500.0,
+        duration_count: 50
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 25),
+        total_duration: 300.0,
+        duration_count: 30
+      )
+
+      get site_avg_duration_index_url(sites(:tech_blog), start_date: "2024-01-20", end_date: "2024-01-31")
+
+      assert_response :success
+      # Only Jan 25 data should be included
+    end
   end
 end

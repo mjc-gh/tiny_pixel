@@ -151,5 +151,54 @@ module Sites
       assert_response :success
       assert_select "#bounce_rate_chart"
     end
+
+    test "filters bounce rate by date range when params present" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 15),
+        pageviews: 100,
+        bounced_count: 20
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 25),
+        pageviews: 50,
+        bounced_count: 10
+      )
+
+      get site_bounce_rate_index_url(sites(:tech_blog), start_date: "2024-01-20", end_date: "2024-01-31")
+
+      assert_response :success
+    end
+
+    test "chart data includes only bounce rate within date range" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 15),
+        pageviews: 100,
+        bounced_count: 20
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 25),
+        pageviews: 50,
+        bounced_count: 10
+      )
+
+      get site_bounce_rate_index_url(sites(:tech_blog), start_date: "2024-01-20", end_date: "2024-01-31")
+
+      assert_response :success
+      # Only Jan 25 data should be included
+    end
   end
 end

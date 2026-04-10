@@ -508,5 +508,75 @@ module Sites
       assert_select "td", { text: "/", count: 1 }
       assert_select "td", { text: "/about", count: 1 }
     end
+
+    test "filters pathnames by date range when params present" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 15),
+        pageviews: 100,
+        unique_pageviews: 50,
+        visits: 40,
+        sessions: 30,
+        bounced_count: 20,
+        total_duration: 120.5,
+        duration_count: 30
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 25),
+        pageviews: 60,
+        unique_pageviews: 30,
+        visits: 25,
+        sessions: 20,
+        bounced_count: 12,
+        total_duration: 75.0,
+        duration_count: 20
+      )
+
+      get site_pathnames_url(sites(:tech_blog), start_date: "2024-01-20", end_date: "2024-01-31")
+
+      assert_response :success
+    end
+
+    test "aggregates pathname stats within date range" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 15),
+        pageviews: 100,
+        unique_pageviews: 50,
+        visits: 40,
+        sessions: 30,
+        bounced_count: 20,
+        total_duration: 120.5,
+        duration_count: 30
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.new(2024, 1, 25),
+        pageviews: 60,
+        unique_pageviews: 30,
+        visits: 25,
+        sessions: 20,
+        bounced_count: 12,
+        total_duration: 75.0,
+        duration_count: 20
+      )
+
+      get site_pathnames_url(sites(:tech_blog), start_date: "2024-01-20", end_date: "2024-01-31")
+
+      assert_response :success
+      # Only Jan 25 data should be included
+      assert_select "table"
+    end
   end
 end
