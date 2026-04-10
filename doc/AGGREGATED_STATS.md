@@ -182,40 +182,149 @@ service.aggregate_all_dimensions_weekly(week_start)
 - `AggregationService.dimension_expression_for_type(type)` - Returns SQL column expression for dimension type
 - `AggregationService.SUPPORTED_DIMENSION_TYPES` - List of supported dimension types
 
+## Dimension Pattern & Architecture
+
+### Two-Column Storage Pattern
+
+tiny_pixel uses a two-column storage pattern for dimensions to enable clean, efficient queries:
+
+- **`dimension_type`** (string, not null): The dimension category (`"global"`, `"country"`, `"browser"`, `"device_type"`, `"referrer_hostname"`)
+- **`dimension_value`** (string, nullable): The specific value (`nil` for `"global"`, or the actual value like `"US"`, `"chrome"`)
+
+**Benefits over single composite column:**
+- Direct equality queries: `WHERE dimension_type = 'country'` instead of `LIKE 'country:%'`
+- Proper database indexing on `dimension_type` for filtering performance
+- Type safety: No string parsing required
+- Unique constraints include both columns: `(site_id, hostname, pathname, dimension_type, dimension_value, time_bucket)`
+
+### Scope Signature Pattern
+
+All dimension scopes follow a consistent pattern:
+
+```ruby
+# Filter by specific type+value pair (most specific)
+scope.for_dimension("country", "US")
+
+# Filter by all values of a type (less specific)
+scope.for_dimension_type("country")
+
+# Filter to global stats only (special case)
+scope.global  # equivalent to for_dimension_type("global")
+```
+
+These scopes support chaining with other scopes (e.g., `for_site`, `for_date_range`, `for_pathname`).
+
+### Aggregation Methods
+
+The `AggregationService` provides methods at multiple levels of specificity:
+
+```ruby
+service = AggregationService.new(site)
+
+# Aggregate a specific dimension type with all its values
+service.aggregate_hourly(time_bucket, dimension_type: "country")
+
+# Aggregate all supported dimension types at once
+service.aggregate_all_dimensions_hourly(time_bucket)  # global + country + browser + device_type + referrer_hostname
+```
+
+The `aggregate_all_dimensions_*` methods are the primary entry points for production use, as they ensure complete dimension coverage.
+
 ## Adding New Dimensions
 
 To add a new aggregation dimension, follow this implementation checklist:
 
 ### 1. Determine Dimension Type
-- **Visitor-based** (stored on `visitors` table): country, browser, device_type
-  - Uses standard SQL grouping in `fetch_raw_stats_standard`
-  - Add case to `dimension_expression_for_type` returning the column expression (e.g., `"visitors.country"`)
-- **PageView-based** (stored on `page_views` table): referrer_hostname
-  - Requires special handling if value isn't populated on all page views
-  - Use `fetch_raw_stats_with_window_function` with a CTE and `FIRST_VALUE` window function
-  - Add case to `dimension_expression_for_type` returning the column name (e.g., `"referrer_hostname"`)
+
+Decide whether the dimension value comes from the `visitors` table (visitor-based) or `page_views` table (pageview-based):
+
+**Visitor-based** (country, browser, device_type):
+- Value is stored on every page view via the `visitors` table
+- Uses standard SQL grouping in `fetch_raw_stats_standard`
+- No special handling needed for missing values
+
+**PageView-based** (referrer_hostname):
+- Value may be missing on some page views (e.g., internal navigation)
+- Requires propagating first value across all page views in a visit
+- Use `fetch_raw_stats_with_window_function` with a CTE and `FIRST_VALUE` window function
+- Map NULL values to a default (e.g., `'direct'` for referrers without a referrer_hostname)
 
 ### 2. Update `AggregationService`
-- Add dimension case to `dimension_expression_for_type` method
-- If visitor-based: standard implementation handles it automatically
-- If pageView-based with missing values: implement corresponding `fetch_raw_stats_with_*` method
-  - Use `FIRST_VALUE(...) OVER (PARTITION BY visitor_digest ORDER BY created_at)` to propagate first value across visit
-  - Map NULL values to a default (e.g., `'direct'` for referrers)
 
-### 3. Add Comprehensive Tests
+1. Add case to `dimension_expression_for_type(type)`:
+   ```ruby
+   when "my_new_dimension"
+     "visitors.my_column"  # or "page_views.column" for pageview-based
+   ```
+
+2. If visitor-based: No additional changes needed, standard implementation handles it automatically
+
+3. If pageview-based with missing values:
+   - Implement `fetch_raw_stats_with_window_function_for_my_dimension(start_time, end_time, dimension_expression)` method
+   - Use window function to propagate the first non-NULL value: `FIRST_VALUE(NULLIF(column, '')) OVER (PARTITION BY visitor_digest ORDER BY created_at)`
+   - Map NULL results to a sensible default
+
+### 3. Update Models
+
+1. Add to `SUPPORTED_DIMENSION_TYPES` constant in `AggregationService`
+2. Dimensions are automatically handled by existing scopes (`for_dimension`, `for_dimension_type`)
+
+### 4. Add Comprehensive Tests
+
 - Create test helper method to generate sample data with the new dimension
 - Test all three granularities: hourly, daily, weekly
-- Test that aggregation includes all related rows (e.g., all page views in a visit for pageView-based dimensions)
-- Test edge cases: NULL values, empty values, direct traffic equivalents
-- Verify the dimension value format matches `"type:value"` convention
+  ```ruby
+  result = @service.aggregate_hourly(@time_bucket, dimension_type: "my_new_dimension")
+  stat = HourlyPageStat.find_by(dimension_type: "my_new_dimension", dimension_value: "expected_value")
+  assert_not_nil stat
+  ```
+- Test that aggregation includes all related rows (especially for pageview-based dimensions)
+- Test edge cases: NULL values, empty values, defaults
+- Test the `aggregate_all_dimensions_hourly` method includes your new dimension
 
-### 4. Update Documentation
-- Add dimension to the dimensions list in this file with format examples
-- Add to supported dimension types in "Aggregation Service" section
-- Add query examples showing how to retrieve this dimension
+### 5. Update Documentation
 
-### Example Implementation Reference
-See commit `6ce7d68` for the `referrer_hostname` dimension implementation:
-- Window function approach: `app/services/aggregation_service.rb:157-198`
-- Test patterns: `test/services/aggregation_service_test.rb` - referrer_hostname tests
-- Documentation: `doc/AGGREGATED_STATS.md:26, 151`
+- Add dimension to the dimensions list with format examples (line 21-32)
+- Add to `SUPPORTED_DIMENSION_TYPES` section (line 173-178)
+- Add query examples showing how to retrieve this dimension (add after line 122)
+- Update this section if your dimension has special considerations
+
+### Example Implementation References
+
+- **Visitor-based (country)**: Standard pattern, minimal code needed
+- **PageView-based (referrer_hostname)**: See commit `6ce7d68`
+  - Window function: `app/services/aggregation_service.rb` lines 147-184
+  - Tests: `test/services/aggregation_service_test.rb` - referrer_hostname tests
+  - Complex aggregation handling: all page views in a visit get the first page's referrer
+
+## Database Schema Migrations for Dimensions
+
+When modifying the dimension storage strategy:
+
+### Migration Pattern
+
+1. **Add new columns** with sensible defaults
+2. **Data migration**: Parse and transform existing data
+   ```ruby
+   # For composite string parsing:
+   execute(<<~SQL)
+     UPDATE table_name
+     SET new_column_type = SUBSTR(old_column, 1, INSTR(old_column, ':') - 1),
+         new_column_value = SUBSTR(old_column, INSTR(old_column, ':') + 1)
+     WHERE old_column LIKE '%:%'
+   SQL
+   ```
+3. **Update indexes**:
+   - Remove old unique indexes before dropping columns
+   - Add new unique indexes with new column structure
+   - Add separate index on frequently-filtered columns (e.g., `dimension_type`)
+4. **Remove old columns** after data migration complete
+5. **Update models** to reflect new schema
+
+### Testing Migrations
+
+- Run `db:migrate:reset` to verify migration works from scratch
+- Test in both development and test environments
+- Clear Rails schema cache: `rm -f tmp/schema_cache.db`
+- Verify all records migrated: `HourlyPageStat.count` before/after
+- Run full test suite after migration: `rails test`
