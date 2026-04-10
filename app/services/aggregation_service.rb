@@ -2,6 +2,7 @@
 
 class AggregationService
   LOOKBACK_HOURS = 48
+  SUPPORTED_DIMENSION_TYPES = %w[global country browser device_type referrer_hostname].freeze
 
   class << self
     def aggregate_all_sites(lookback_hours: LOOKBACK_HOURS)
@@ -24,13 +25,6 @@ class AggregationService
         nil
       end
     end
-
-    def format_dimension_value(dimension, raw_value)
-      return "global" if dimension == "global"
-
-      dimension_type = dimension.split(":").first
-      "#{dimension_type}:#{raw_value}"
-    end
   end
 
   def initialize(site)
@@ -46,36 +40,60 @@ class AggregationService
     aggregate_weekly_range(start_time.to_date, end_time.to_date)
   end
 
-  def aggregate_hourly(time_bucket, dimension: "global")
+  def aggregate_hourly(time_bucket, dimension_type: "global")
     time_bucket = round_to_hour(time_bucket)
     bucket_end = time_bucket + 1.hour
 
-    raw_stats = fetch_raw_stats(time_bucket, bucket_end, dimension: dimension)
+    raw_stats = fetch_raw_stats(time_bucket, bucket_end, dimension_type: dimension_type)
     return { created: 0, updated: 0 } if raw_stats.empty?
 
-    upsert_hourly_stats(time_bucket, raw_stats, dimension: dimension)
+    upsert_hourly_stats(time_bucket, raw_stats, dimension_type: dimension_type)
   end
 
-  def aggregate_daily(date, dimension: "global")
+  def aggregate_daily(date, dimension_type: "global")
     date = date.to_date
     start_time = date.beginning_of_day
     end_time = (date + 1.day).beginning_of_day
 
-    raw_stats = fetch_raw_stats(start_time, end_time, dimension: dimension)
+    raw_stats = fetch_raw_stats(start_time, end_time, dimension_type: dimension_type)
     return { created: 0, updated: 0 } if raw_stats.empty?
 
-    upsert_daily_stats(date, raw_stats, dimension: dimension)
+    upsert_daily_stats(date, raw_stats, dimension_type: dimension_type)
   end
 
-  def aggregate_weekly(week_start, dimension: "global")
+  def aggregate_weekly(week_start, dimension_type: "global")
     week_start = normalize_week_start(week_start)
     start_time = week_start.beginning_of_day
     end_time = (week_start + 7.days).beginning_of_day
 
-    raw_stats = fetch_raw_stats(start_time, end_time, dimension: dimension)
+    raw_stats = fetch_raw_stats(start_time, end_time, dimension_type: dimension_type)
     return { created: 0, updated: 0 } if raw_stats.empty?
 
-    upsert_weekly_stats(week_start, raw_stats, dimension: dimension)
+    upsert_weekly_stats(week_start, raw_stats, dimension_type: dimension_type)
+  end
+
+  def aggregate_all_dimensions_hourly(time_bucket)
+    aggregate_hourly(time_bucket, dimension_type: "global")
+
+    %w[country browser device_type referrer_hostname].each do |dim_type|
+      aggregate_hourly(time_bucket, dimension_type: dim_type)
+    end
+  end
+
+  def aggregate_all_dimensions_daily(date)
+    aggregate_daily(date, dimension_type: "global")
+
+    %w[country browser device_type referrer_hostname].each do |dim_type|
+      aggregate_daily(date, dimension_type: dim_type)
+    end
+  end
+
+  def aggregate_all_dimensions_weekly(week_start)
+    aggregate_weekly(week_start, dimension_type: "global")
+
+    %w[country browser device_type referrer_hostname].each do |dim_type|
+      aggregate_weekly(week_start, dimension_type: dim_type)
+    end
   end
 
   private
@@ -84,14 +102,14 @@ class AggregationService
     current = round_to_hour(start_time)
 
     while current < end_time
-      aggregate_hourly(current)
+      aggregate_all_dimensions_hourly(current)
       current += 1.hour
     end
   end
 
   def aggregate_daily_range(start_date, end_date)
     (start_date..end_date).each do |date|
-      aggregate_daily(date)
+      aggregate_all_dimensions_daily(date)
     end
   end
 
@@ -99,13 +117,12 @@ class AggregationService
     week_starts = (start_date..end_date).map { |d| normalize_week_start(d) }.uniq
 
     week_starts.each do |week_start|
-      aggregate_weekly(week_start)
+      aggregate_all_dimensions_weekly(week_start)
     end
   end
 
-  def fetch_raw_stats(start_time, end_time, dimension: "global")
-    dimension_type = dimension == "global" ? nil : dimension.split(":").first
-    dimension_expression = self.class.dimension_expression_for_type(dimension_type) if dimension_type
+  def fetch_raw_stats(start_time, end_time, dimension_type: "global")
+    dimension_expression = self.class.dimension_expression_for_type(dimension_type) if dimension_type != "global"
 
     # For referrer_hostname, we need special handling with a window function
     if dimension_type == "referrer_hostname"
@@ -183,18 +200,19 @@ class AggregationService
     result.map { |row| OpenStruct.new(row.to_h) }
   end
 
-  def upsert_hourly_stats(time_bucket, raw_stats, dimension: "global")
+  def upsert_hourly_stats(time_bucket, raw_stats, dimension_type: "global")
     created = 0
     updated = 0
 
     raw_stats.each do |stat|
-      dimension_value = self.class.format_dimension_value(dimension, stat.dimension_value)
+      dimension_value = dimension_type == "global" ? nil : stat.dimension_value
 
       record = HourlyPageStat.find_or_initialize_by(
         site_id: @site.id,
         hostname: stat.hostname,
         pathname: stat.pathname,
-        dimension: dimension_value,
+        dimension_type: dimension_type,
+        dimension_value: dimension_value,
         time_bucket: time_bucket
       )
 
@@ -219,18 +237,19 @@ class AggregationService
     { created: created, updated: updated }
   end
 
-  def upsert_daily_stats(date, stats, dimension: "global")
+  def upsert_daily_stats(date, stats, dimension_type: "global")
     created = 0
     updated = 0
 
     stats.each do |stat|
-      dimension_value = self.class.format_dimension_value(dimension, stat.dimension_value)
+      dimension_value = dimension_type == "global" ? nil : stat.dimension_value
 
       record = DailyPageStat.find_or_initialize_by(
         site_id: @site.id,
         hostname: stat.hostname,
         pathname: stat.pathname,
-        dimension: dimension_value,
+        dimension_type: dimension_type,
+        dimension_value: dimension_value,
         date: date
       )
 
@@ -255,18 +274,19 @@ class AggregationService
     { created: created, updated: updated }
   end
 
-  def upsert_weekly_stats(week_start, stats, dimension: "global")
+  def upsert_weekly_stats(week_start, stats, dimension_type: "global")
     created = 0
     updated = 0
 
     stats.each do |stat|
-      dimension_value = self.class.format_dimension_value(dimension, stat.dimension_value)
+      dimension_value = dimension_type == "global" ? nil : stat.dimension_value
 
       record = WeeklyPageStat.find_or_initialize_by(
         site_id: @site.id,
         hostname: stat.hostname,
         pathname: stat.pathname,
-        dimension: dimension_value,
+        dimension_type: dimension_type,
+        dimension_value: dimension_value,
         week_start: week_start
       )
 

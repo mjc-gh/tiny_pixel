@@ -5,7 +5,8 @@
 #
 #  id               :integer          not null, primary key
 #  bounced_count    :integer          default(0), not null
-#  dimension        :string           default("global"), not null
+#  dimension_type   :string           default("global"), not null
+#  dimension_value  :string
 #  duration_count   :integer          default(0), not null
 #  hostname         :string           not null
 #  pageviews        :integer          default(0), not null
@@ -21,10 +22,10 @@
 #
 # Indexes
 #
-#  idx_weekly_page_stats_dimension       (dimension)
+#  idx_weekly_page_stats_dimension_type  (dimension_type)
 #  idx_weekly_page_stats_site_host_week  (site_id,hostname,week_start)
 #  idx_weekly_page_stats_site_week       (site_id,week_start)
-#  idx_weekly_page_stats_unique          (site_id,hostname,pathname,dimension,week_start) UNIQUE
+#  idx_weekly_page_stats_unique          (site_id,hostname,pathname,dimension_type,dimension_value,week_start) UNIQUE
 #  index_weekly_page_stats_on_site_id    (site_id)
 #
 # Foreign Keys

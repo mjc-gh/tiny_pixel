@@ -148,18 +148,18 @@ service = AggregationService.new(site)
 (aggregated_start_date..aggregated_end_date).each do |date|
   24.times do |hour|
     time_bucket = Time.zone.local(date.year, date.month, date.day, hour)
-    service.aggregate_hourly(time_bucket)
+    service.aggregate_all_dimensions_hourly(time_bucket)
   end
 end
 
 # Aggregate daily stats
 (aggregated_start_date..aggregated_end_date).each do |date|
-  service.aggregate_daily(date)
+  service.aggregate_all_dimensions_daily(date)
 end
 
 # Aggregate weekly stats
 week_starts = (aggregated_start_date..aggregated_end_date).map { |d| d.beginning_of_week(:monday) }.uniq
-week_starts.each { |week_start| service.aggregate_weekly(week_start) }
+week_starts.each { |week_start| service.aggregate_all_dimensions_weekly(week_start) }
 
 hourly_count = site.hourly_page_stats.count
 daily_count = site.daily_page_stats.count
@@ -249,17 +249,17 @@ multi_service = AggregationService.new(multi_site)
 (aggregated_start_date..aggregated_end_date).each do |date|
   24.times do |hour|
     time_bucket = Time.zone.local(date.year, date.month, date.day, hour)
-    multi_service.aggregate_hourly(time_bucket)
+    multi_service.aggregate_all_dimensions_hourly(time_bucket)
   end
 end
 
 # Aggregate daily stats
 (aggregated_start_date..aggregated_end_date).each do |date|
-  multi_service.aggregate_daily(date)
+  multi_service.aggregate_all_dimensions_daily(date)
 end
 
 # Aggregate weekly stats
-week_starts.each { |week_start| multi_service.aggregate_weekly(week_start) }
+week_starts.each { |week_start| multi_service.aggregate_all_dimensions_weekly(week_start) }
 
 multi_hourly_count = multi_site.hourly_page_stats.count
 multi_daily_count = multi_site.daily_page_stats.count

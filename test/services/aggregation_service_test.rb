@@ -186,80 +186,87 @@ class AggregationServiceTest < ActiveSupport::TestCase
   test "aggregate_hourly with global dimension creates global stats" do
     create_test_page_views(@time_bucket)
 
-    result = @service.aggregate_hourly(@time_bucket, dimension: "global")
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "global")
 
     assert_equal 1, result[:created]
-    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "global")
     assert_not_nil stat
-    assert_equal "global", stat.dimension
+    assert_equal "global", stat.dimension_type
+    assert_nil stat.dimension_value
   end
 
   test "aggregate_daily with global dimension creates global stats" do
     create_test_page_views_for_day(@time_bucket.to_date)
 
-    result = @service.aggregate_daily(@time_bucket.to_date, dimension: "global")
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension_type: "global")
 
     assert_equal 1, result[:created]
-    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "global")
     assert_not_nil stat
-    assert_equal "global", stat.dimension
+    assert_equal "global", stat.dimension_type
+    assert_nil stat.dimension_value
   end
 
   test "aggregate_weekly with global dimension creates global stats" do
     week_start = @time_bucket.to_date.beginning_of_week(:monday)
     create_test_page_views_for_week(week_start)
 
-    result = @service.aggregate_weekly(week_start, dimension: "global")
+    result = @service.aggregate_weekly(week_start, dimension_type: "global")
 
     assert_equal 1, result[:created]
-    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "global")
     assert_not_nil stat
-    assert_equal "global", stat.dimension
+    assert_equal "global", stat.dimension_type
+    assert_nil stat.dimension_value
   end
 
   test "aggregate_hourly with country dimension creates country dimension stats" do
     create_test_page_views(@time_bucket)
 
-    result = @service.aggregate_hourly(@time_bucket, dimension: "country:US")
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "country")
 
     assert_equal 1, result[:created]
-    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "country")
     assert_not_nil stat
-    assert_equal "country:US", stat.dimension
+    assert_equal "country", stat.dimension_type
+    assert_equal "US", stat.dimension_value
   end
 
   test "aggregate_daily with country dimension creates country dimension stats" do
     create_test_page_views_for_day(@time_bucket.to_date)
 
-    result = @service.aggregate_daily(@time_bucket.to_date, dimension: "country:US")
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension_type: "country")
 
     assert_equal 1, result[:created]
-    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "country")
     assert_not_nil stat
-    assert_equal "country:US", stat.dimension
+    assert_equal "country", stat.dimension_type
+    assert_equal "US", stat.dimension_value
   end
 
   test "aggregate_weekly with country dimension creates country dimension stats" do
     week_start = @time_bucket.to_date.beginning_of_week(:monday)
     create_test_page_views_for_week(week_start)
 
-    result = @service.aggregate_weekly(week_start, dimension: "country:US")
+    result = @service.aggregate_weekly(week_start, dimension_type: "country")
 
     assert_equal 1, result[:created]
-    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "country")
     assert_not_nil stat
-    assert_equal "country:US", stat.dimension
+    assert_equal "country", stat.dimension_type
+    assert_equal "US", stat.dimension_value
   end
 
-  test "aggregation still works with backward compatibility (no dimension parameter)" do
+  test "aggregation with default dimension creates global stats" do
     create_test_page_views(@time_bucket)
 
     result = @service.aggregate_hourly(@time_bucket)
 
     assert_equal 1, result[:created]
-    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "global")
     assert_not_nil stat
-    assert_equal "global", stat.dimension
+    assert_equal "global", stat.dimension_type
+    assert_nil stat.dimension_value
   end
 
   test "dimension_expression_for_type returns correct SQL for country" do
@@ -292,48 +299,27 @@ class AggregationServiceTest < ActiveSupport::TestCase
     assert_equal "referrer_hostname", expr
   end
 
-  test "format_dimension_value returns 'global' when dimension is 'global'" do
-    formatted = AggregationService.format_dimension_value("global", "any_value")
 
-    assert_equal "global", formatted
-  end
-
-  test "format_dimension_value formats dimension correctly for country" do
-    formatted = AggregationService.format_dimension_value("country:US", "US")
-
-    assert_equal "country:US", formatted
-  end
-
-  test "format_dimension_value formats dimension correctly for browser" do
-    formatted = AggregationService.format_dimension_value("browser:chrome", "1")
-
-    assert_equal "browser:1", formatted
-  end
-
-  test "format_dimension_value formats dimension correctly for device_type" do
-    formatted = AggregationService.format_dimension_value("device_type:mobile", "2")
-
-    assert_equal "device_type:2", formatted
-  end
 
   test "aggregate_hourly with referrer_hostname dimension creates referrer dimension stats" do
     create_test_page_views_with_referrer(@time_bucket, "google.com")
 
-    result = @service.aggregate_hourly(@time_bucket, dimension: "referrer_hostname:google.com")
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "referrer_hostname")
 
     assert_equal 1, result[:created]
-    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "referrer_hostname", dimension_value: "google.com")
     assert_not_nil stat
-    assert_equal "referrer_hostname:google.com", stat.dimension
+    assert_equal "referrer_hostname", stat.dimension_type
+    assert_equal "google.com", stat.dimension_value
   end
 
   test "aggregate_hourly with referrer_hostname correctly aggregates all page views in a visit" do
     create_test_page_views_with_referrer(@time_bucket, "google.com")
 
-    result = @service.aggregate_hourly(@time_bucket, dimension: "referrer_hostname:google.com")
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "referrer_hostname")
 
     assert_equal 1, result[:created]
-    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "referrer_hostname", dimension_value: "google.com")
     # Should have 3 page views even though only first one has referrer_hostname set
     assert_equal 3, stat.pageviews
     assert_equal 1, stat.visits
@@ -342,33 +328,35 @@ class AggregationServiceTest < ActiveSupport::TestCase
   test "aggregate_hourly with referrer_hostname handles direct traffic (NULL referrer)" do
     create_test_page_views_with_direct_traffic(@time_bucket)
 
-    result = @service.aggregate_hourly(@time_bucket, dimension: "referrer_hostname:direct")
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "referrer_hostname")
 
     assert_equal 1, result[:created]
-    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "referrer_hostname", dimension_value: "direct")
     assert_not_nil stat
-    assert_equal "referrer_hostname:direct", stat.dimension
+    assert_equal "referrer_hostname", stat.dimension_type
+    assert_equal "direct", stat.dimension_value
     assert_equal 3, stat.pageviews
   end
 
   test "aggregate_daily with referrer_hostname dimension creates referrer dimension stats" do
     create_test_page_views_with_referrer_for_day(@time_bucket.to_date, "github.com")
 
-    result = @service.aggregate_daily(@time_bucket.to_date, dimension: "referrer_hostname:github.com")
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension_type: "referrer_hostname")
 
     assert_equal 1, result[:created]
-    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "referrer_hostname", dimension_value: "github.com")
     assert_not_nil stat
-    assert_equal "referrer_hostname:github.com", stat.dimension
+    assert_equal "referrer_hostname", stat.dimension_type
+    assert_equal "github.com", stat.dimension_value
   end
 
   test "aggregate_daily with referrer_hostname correctly aggregates all page views in a visit" do
     create_test_page_views_with_referrer_for_day(@time_bucket.to_date, "github.com")
 
-    result = @service.aggregate_daily(@time_bucket.to_date, dimension: "referrer_hostname:github.com")
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension_type: "referrer_hostname")
 
     assert_equal 1, result[:created]
-    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "referrer_hostname", dimension_value: "github.com")
     # Should have 6 page views even though only first one has referrer_hostname set
     assert_equal 6, stat.pageviews
     assert_equal 1, stat.visits
@@ -378,12 +366,13 @@ class AggregationServiceTest < ActiveSupport::TestCase
     week_start = @time_bucket.to_date.beginning_of_week(:monday)
     create_test_page_views_with_referrer_for_week(week_start, "twitter.com")
 
-    result = @service.aggregate_weekly(week_start, dimension: "referrer_hostname:twitter.com")
+    result = @service.aggregate_weekly(week_start, dimension_type: "referrer_hostname")
 
     assert_equal 1, result[:created]
-    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1")
+    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "referrer_hostname", dimension_value: "twitter.com")
     assert_not_nil stat
-    assert_equal "referrer_hostname:twitter.com", stat.dimension
+    assert_equal "referrer_hostname", stat.dimension_type
+    assert_equal "twitter.com", stat.dimension_value
   end
 
   private

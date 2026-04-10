@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_09_093209) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_10_120237) do
   create_table "aggregation_logs", force: :cascade do |t|
     t.string "aggregation_type", null: false
     t.datetime "completed_at"
@@ -28,7 +28,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_093209) do
     t.integer "bounced_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.date "date", null: false
-    t.string "dimension", default: "global", null: false
+    t.string "dimension_type", default: "global", null: false
+    t.string "dimension_value"
     t.integer "duration_count", default: 0, null: false
     t.string "hostname", null: false
     t.integer "pageviews", default: 0, null: false
@@ -39,17 +40,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_093209) do
     t.integer "unique_pageviews", default: 0, null: false
     t.datetime "updated_at", null: false
     t.integer "visits", default: 0, null: false
-    t.index ["dimension"], name: "idx_daily_page_stats_dimension"
+    t.index ["dimension_type"], name: "idx_daily_page_stats_dimension_type"
     t.index ["site_id", "date"], name: "idx_daily_page_stats_site_date"
     t.index ["site_id", "hostname", "date"], name: "idx_daily_page_stats_site_host_date"
-    t.index ["site_id", "hostname", "pathname", "dimension", "date"], name: "idx_daily_page_stats_unique", unique: true
+    t.index ["site_id", "hostname", "pathname", "dimension_type", "dimension_value", "date"], name: "idx_daily_page_stats_unique", unique: true
     t.index ["site_id"], name: "index_daily_page_stats_on_site_id"
   end
 
   create_table "hourly_page_stats", force: :cascade do |t|
     t.integer "bounced_count", default: 0, null: false
     t.datetime "created_at", null: false
-    t.string "dimension", default: "global", null: false
+    t.string "dimension_type", default: "global", null: false
+    t.string "dimension_value"
     t.integer "duration_count", default: 0, null: false
     t.string "hostname", null: false
     t.integer "pageviews", default: 0, null: false
@@ -61,8 +63,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_093209) do
     t.integer "unique_pageviews", default: 0, null: false
     t.datetime "updated_at", null: false
     t.integer "visits", default: 0, null: false
-    t.index ["dimension"], name: "idx_hourly_page_stats_dimension"
-    t.index ["site_id", "hostname", "pathname", "dimension", "time_bucket"], name: "idx_hourly_page_stats_unique", unique: true
+    t.index ["dimension_type"], name: "idx_hourly_page_stats_dimension_type"
+    t.index ["site_id", "hostname", "pathname", "dimension_type", "dimension_value", "time_bucket"], name: "idx_hourly_page_stats_unique", unique: true
     t.index ["site_id", "hostname", "time_bucket"], name: "idx_hourly_page_stats_site_host_time"
     t.index ["site_id", "time_bucket"], name: "idx_hourly_page_stats_site_time"
     t.index ["site_id"], name: "index_hourly_page_stats_on_site_id"
@@ -106,7 +108,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_093209) do
   create_table "weekly_page_stats", force: :cascade do |t|
     t.integer "bounced_count", default: 0, null: false
     t.datetime "created_at", null: false
-    t.string "dimension", default: "global", null: false
+    t.string "dimension_type", default: "global", null: false
+    t.string "dimension_value"
     t.integer "duration_count", default: 0, null: false
     t.string "hostname", null: false
     t.integer "pageviews", default: 0, null: false
@@ -118,8 +121,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_093209) do
     t.datetime "updated_at", null: false
     t.integer "visits", default: 0, null: false
     t.date "week_start", null: false
-    t.index ["dimension"], name: "idx_weekly_page_stats_dimension"
-    t.index ["site_id", "hostname", "pathname", "dimension", "week_start"], name: "idx_weekly_page_stats_unique", unique: true
+    t.index ["dimension_type"], name: "idx_weekly_page_stats_dimension_type"
+    t.index ["site_id", "hostname", "pathname", "dimension_type", "dimension_value", "week_start"], name: "idx_weekly_page_stats_unique", unique: true
     t.index ["site_id", "hostname", "week_start"], name: "idx_weekly_page_stats_site_host_week"
     t.index ["site_id", "week_start"], name: "idx_weekly_page_stats_site_week"
     t.index ["site_id"], name: "index_weekly_page_stats_on_site_id"

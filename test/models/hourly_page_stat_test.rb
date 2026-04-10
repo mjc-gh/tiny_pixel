@@ -100,44 +100,49 @@ class HourlyPageStatTest < ActiveSupport::TestCase
     assert_equal ["b.com", "a.com", "c.com"], stats.pluck(:hostname)
   end
 
-  test "global scope filters by dimension = 'global'" do
+  test "global scope filters by dimension_type = 'global'" do
     HourlyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test",
       time_bucket: @time_bucket,
-      dimension: "global"
+      dimension_type: "global"
     )
     HourlyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test2",
       time_bucket: @time_bucket,
-      dimension: "country:US"
+      dimension_type: "country",
+      dimension_value: "US"
     )
 
     assert_equal 1, HourlyPageStat.global.count
-    assert_equal "global", HourlyPageStat.global.first.dimension
+    assert_equal "global", HourlyPageStat.global.first.dimension_type
   end
 
-  test "for_dimension scope filters by specific dimension" do
+  test "for_dimension scope filters by specific dimension type and value" do
     HourlyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test",
       time_bucket: @time_bucket,
-      dimension: "country:US"
+      dimension_type: "country",
+      dimension_value: "US"
     )
     HourlyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test2",
       time_bucket: @time_bucket,
-      dimension: "country:GB"
+      dimension_type: "country",
+      dimension_value: "GB"
     )
 
-    assert_equal 1, HourlyPageStat.for_dimension("country:US").count
-    assert_equal "country:US", HourlyPageStat.for_dimension("country:US").first.dimension
+    assert_equal 1, HourlyPageStat.for_dimension("country", "US").count
+    result = HourlyPageStat.for_dimension("country", "US").first
+    assert_equal "country", result.dimension_type
+    assert_equal "US", result.dimension_value
   end
 
   test "for_dimension_type scope filters by dimension type" do
@@ -146,21 +151,24 @@ class HourlyPageStatTest < ActiveSupport::TestCase
       hostname: "example.com",
       pathname: "/test",
       time_bucket: @time_bucket,
-      dimension: "country:US"
+      dimension_type: "country",
+      dimension_value: "US"
     )
     HourlyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test2",
       time_bucket: @time_bucket,
-      dimension: "country:GB"
+      dimension_type: "country",
+      dimension_value: "GB"
     )
     HourlyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test3",
       time_bucket: @time_bucket,
-      dimension: "browser:chrome"
+      dimension_type: "browser",
+      dimension_value: "chrome"
     )
 
     assert_equal 2, HourlyPageStat.for_dimension_type("country").count

@@ -100,44 +100,49 @@ class WeeklyPageStatTest < ActiveSupport::TestCase
     assert_equal ["b.com", "a.com", "c.com"], stats.pluck(:hostname)
   end
 
-  test "global scope filters by dimension = 'global'" do
+  test "global scope filters by dimension_type = 'global'" do
     WeeklyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test",
       week_start: @week_start,
-      dimension: "global"
+      dimension_type: "global"
     )
     WeeklyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test2",
       week_start: @week_start,
-      dimension: "country:US"
+      dimension_type: "country",
+      dimension_value: "US"
     )
 
     assert_equal 1, WeeklyPageStat.global.count
-    assert_equal "global", WeeklyPageStat.global.first.dimension
+    assert_equal "global", WeeklyPageStat.global.first.dimension_type
   end
 
-  test "for_dimension scope filters by specific dimension" do
+  test "for_dimension scope filters by specific dimension type and value" do
     WeeklyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test",
       week_start: @week_start,
-      dimension: "country:US"
+      dimension_type: "country",
+      dimension_value: "US"
     )
     WeeklyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test2",
       week_start: @week_start,
-      dimension: "country:GB"
+      dimension_type: "country",
+      dimension_value: "GB"
     )
 
-    assert_equal 1, WeeklyPageStat.for_dimension("country:US").count
-    assert_equal "country:US", WeeklyPageStat.for_dimension("country:US").first.dimension
+    assert_equal 1, WeeklyPageStat.for_dimension("country", "US").count
+    result = WeeklyPageStat.for_dimension("country", "US").first
+    assert_equal "country", result.dimension_type
+    assert_equal "US", result.dimension_value
   end
 
   test "for_dimension_type scope filters by dimension type" do
@@ -146,21 +151,24 @@ class WeeklyPageStatTest < ActiveSupport::TestCase
       hostname: "example.com",
       pathname: "/test",
       week_start: @week_start,
-      dimension: "country:US"
+      dimension_type: "country",
+      dimension_value: "US"
     )
     WeeklyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test2",
       week_start: @week_start,
-      dimension: "country:GB"
+      dimension_type: "country",
+      dimension_value: "GB"
     )
     WeeklyPageStat.create!(
       site: @site,
       hostname: "example.com",
       pathname: "/test3",
       week_start: @week_start,
-      dimension: "browser:chrome"
+      dimension_type: "browser",
+      dimension_value: "chrome"
     )
 
     assert_equal 2, WeeklyPageStat.for_dimension_type("country").count

@@ -12,18 +12,24 @@ tiny_pixel aggregates page analytics into three time-based models: hourly, daily
 
 ## Common Fields
 
-Each record is uniquely identified by `(site_id, hostname, pathname, dimension, time_bucket/date/week_start)`.
+Each record is uniquely identified by `(site_id, hostname, pathname, dimension_type, dimension_value, time_bucket/date/week_start)`.
 
 ### Dimensions
 - **site_id** - Foreign key to the site
 - **hostname** - The page's hostname
 - **pathname** - The page's path
-- **dimension** - Aggregation dimension (string, non-nullable, default: `"global"`)
+- **dimension_type** - Aggregation dimension type (string, non-nullable, default: `"global"`)
   - `"global"` - Aggregated across all dimension values (default for all records)
-  - `"country:<value>"` - Aggregated by country (e.g., `"country:US"`, `"country:GB"`)
-  - `"browser:<value>"` - Aggregated by browser (e.g., `"browser:chrome"`, `"browser:firefox"`)
-  - `"device_type:<value>"` - Aggregated by device type (e.g., `"device_type:mobile"`, `"device_type:desktop"`)
-  - `"referrer_hostname:<value>"` - Aggregated by referrer hostname (e.g., `"referrer_hostname:google.com"`, `"referrer_hostname:direct"`)
+  - `"country"` - Aggregated by country
+  - `"browser"` - Aggregated by browser
+  - `"device_type"` - Aggregated by device type
+  - `"referrer_hostname"` - Aggregated by referrer hostname
+- **dimension_value** - The specific value for the dimension type (string, nullable)
+  - `nil` for `dimension_type: "global"`
+  - Country codes for `dimension_type: "country"` (e.g., `"US"`, `"GB"`)
+  - Browser names for `dimension_type: "browser"` (e.g., `"chrome"`, `"firefox"`)
+  - Device types for `dimension_type: "device_type"` (e.g., `"mobile"`, `"desktop"`)
+  - Hostnames for `dimension_type: "referrer_hostname"` (e.g., `"google.com"`, `"direct"`)
 
 ### Metrics
 
@@ -76,9 +82,9 @@ All three models provide identical scopes:
 - `for_pathname(pathname)` - Filter by pathname
 
 ### Dimension Scopes
-- `global` - Filter to global stats only (dimension = `"global"`)
-- `for_dimension(dimension)` - Filter by specific dimension (e.g., `for_dimension("country:US")`)
-- `for_dimension_type(type)` - Filter by dimension type (e.g., `for_dimension_type("country")` returns all `country:*` records)
+- `global` - Filter to global stats only (dimension_type = `"global"`)
+- `for_dimension(type, value)` - Filter by specific dimension type and value (e.g., `for_dimension("country", "US")`)
+- `for_dimension_type(type)` - Filter by dimension type (e.g., `for_dimension_type("country")` returns all records with dimension_type = `"country"`)
 
 ### Ordering Scopes
 - `ordered_by_pageviews` - Order by pageviews descending
@@ -91,9 +97,9 @@ All three models provide identical scopes:
 HourlyPageStat.for_site(123).global
 ```
 
-### Get country-specific stats
+### Get country-specific stats (USA)
 ```ruby
-HourlyPageStat.for_site(123).for_dimension("country:US")
+HourlyPageStat.for_site(123).for_dimension("country", "US")
 ```
 
 ### Get all country breakdowns
@@ -108,7 +114,7 @@ DailyPageStat.for_site(123).global.for_date_range(Date.today - 7.days, Date.toda
 
 ### Get referrer-specific stats
 ```ruby
-HourlyPageStat.for_site(123).for_dimension("referrer_hostname:google.com")
+HourlyPageStat.for_site(123).for_dimension("referrer_hostname", "google.com")
 ```
 
 ### Get all referrer breakdowns
@@ -116,44 +122,65 @@ HourlyPageStat.for_site(123).for_dimension("referrer_hostname:google.com")
 HourlyPageStat.for_site(123).for_dimension_type("referrer_hostname")
 ```
 
-## Dimension Format
+## Schema Design
 
-Dimensions use a hierarchical string format to support flexible aggregation dimensions:
-- **Type prefix** (before colon): `country`, `browser`, `device_type`, or `global`
-- **Value** (after colon): The specific value for that dimension type
+Dimensions are now stored in two separate columns for proper filtering and indexing:
 
-This format allows:
-- Easy filtering: `WHERE dimension LIKE 'country:%'` matches all country breakdowns
-- Type safety: Parse the prefix to validate dimension types
-- Future extensibility: Add new dimension types without schema changes
-- Simple default: All records default to `"global"` for backward compatibility
+### Before (Legacy)
+```sql
+CREATE UNIQUE INDEX idx_hourly_page_stats_unique ON hourly_page_stats
+  (site_id, hostname, pathname, dimension, time_bucket);
+```
+- Single column stored composite values: `"global"`, `"country:US"`, `"browser:chrome"`
+- Required string parsing: `dimension.split(":")`
+- LIKE queries for type filtering: `WHERE dimension LIKE 'country:%'`
+
+### After (Current)
+```sql
+CREATE UNIQUE INDEX idx_hourly_page_stats_unique ON hourly_page_stats
+  (site_id, hostname, pathname, dimension_type, dimension_value, time_bucket);
+```
+- Two separate columns for type and value
+- Direct equality queries: `WHERE dimension_type = 'country'`
+- Proper indexing on `dimension_type` for efficient filtering
+- `dimension_value = nil` for global stats
 
 ## Aggregation Service
 
-The `AggregationService` supports dimension-based aggregation:
+The `AggregationService` supports dimension-based aggregation. It includes helper methods to aggregate all supported dimensions automatically.
 
-### Basic Aggregation (Global Stats)
+### Basic Aggregation (Global Stats Only)
 ```ruby
-AggregationService.aggregate_hourly_for_site(site, time_bucket)
+service = AggregationService.new(site)
+service.aggregate_hourly(time_bucket, dimension_type: "global")
 ```
 
 ### Dimension-Specific Aggregation
 ```ruby
 service = AggregationService.new(site)
-service.aggregate_hourly(time_bucket, dimension: "country:US")
+service.aggregate_hourly(time_bucket, dimension_type: "country")
 ```
 
-Supported dimension types:
+### Aggregate All Dimensions at Once
+```ruby
+service = AggregationService.new(site)
+# Aggregates global + country + browser + device_type + referrer_hostname
+service.aggregate_all_dimensions_hourly(time_bucket)
+service.aggregate_all_dimensions_daily(date)
+service.aggregate_all_dimensions_weekly(week_start)
+```
+
+### Supported Dimension Types
 - `"global"` - Aggregates across all dimension values (default)
-- `"country:<value>"` - Groups by visitor country
-- `"browser:<value>"` - Groups by visitor browser
-- `"device_type:<value>"` - Groups by visitor device type
-- `"referrer_hostname:<value>"` - Groups by external referrer source hostname
+- `"country"` - Groups by visitor country
+- `"browser"` - Groups by visitor browser
+- `"device_type"` - Groups by visitor device type
+- `"referrer_hostname"` - Groups by external referrer source hostname
 
 ### Class Methods for Dimension Handling
 
 - `AggregationService.dimension_expression_for_type(type)` - Returns SQL column expression for dimension type
-- `AggregationService.format_dimension_value(dimension, raw_value)` - Formats dimension value for storage
+- `AggregationService.SUPPORTED_DIMENSION_TYPES` - List of supported dimension types
 
 ## Adding New Dimensions
 
