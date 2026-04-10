@@ -154,3 +154,41 @@ Supported dimension types:
 
 - `AggregationService.dimension_expression_for_type(type)` - Returns SQL column expression for dimension type
 - `AggregationService.format_dimension_value(dimension, raw_value)` - Formats dimension value for storage
+
+## Adding New Dimensions
+
+To add a new aggregation dimension, follow this implementation checklist:
+
+### 1. Determine Dimension Type
+- **Visitor-based** (stored on `visitors` table): country, browser, device_type
+  - Uses standard SQL grouping in `fetch_raw_stats_standard`
+  - Add case to `dimension_expression_for_type` returning the column expression (e.g., `"visitors.country"`)
+- **PageView-based** (stored on `page_views` table): referrer_hostname
+  - Requires special handling if value isn't populated on all page views
+  - Use `fetch_raw_stats_with_window_function` with a CTE and `FIRST_VALUE` window function
+  - Add case to `dimension_expression_for_type` returning the column name (e.g., `"referrer_hostname"`)
+
+### 2. Update `AggregationService`
+- Add dimension case to `dimension_expression_for_type` method
+- If visitor-based: standard implementation handles it automatically
+- If pageView-based with missing values: implement corresponding `fetch_raw_stats_with_*` method
+  - Use `FIRST_VALUE(...) OVER (PARTITION BY visitor_digest ORDER BY created_at)` to propagate first value across visit
+  - Map NULL values to a default (e.g., `'direct'` for referrers)
+
+### 3. Add Comprehensive Tests
+- Create test helper method to generate sample data with the new dimension
+- Test all three granularities: hourly, daily, weekly
+- Test that aggregation includes all related rows (e.g., all page views in a visit for pageView-based dimensions)
+- Test edge cases: NULL values, empty values, direct traffic equivalents
+- Verify the dimension value format matches `"type:value"` convention
+
+### 4. Update Documentation
+- Add dimension to the dimensions list in this file with format examples
+- Add to supported dimension types in "Aggregation Service" section
+- Add query examples showing how to retrieve this dimension
+
+### Example Implementation Reference
+See commit `6ce7d68` for the `referrer_hostname` dimension implementation:
+- Window function approach: `app/services/aggregation_service.rb:157-198`
+- Test patterns: `test/services/aggregation_service_test.rb` - referrer_hostname tests
+- Documentation: `doc/AGGREGATED_STATS.md:26, 151`
