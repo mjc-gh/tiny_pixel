@@ -39,58 +39,68 @@ export default class extends Controller {
     this.updateFrameSources(this.pathnameValue || null, this.hostnameValue || null)
   }
 
-  updateFrameSources(pathname, hostname) {
-    const baseParams = `interval=${this.intervalValue}`
-    const pathnameParam = pathname ? `&pathname=${encodeURIComponent(pathname)}` : ""
-    const hostnameParam = hostname ? `&hostname=${encodeURIComponent(hostname)}` : ""
-    const startDateParam = this.startDateValue ? `&start_date=${this.startDateValue}` : ""
-    const endDateParam = this.endDateValue ? `&end_date=${this.endDateValue}` : ""
+  buildParams(pathname, hostname) {
+    const params = new URLSearchParams()
+    params.set("interval", this.intervalValue)
+    if (pathname) params.set("pathname", pathname)
+    if (hostname) params.set("hostname", hostname)
+    if (this.startDateValue) params.set("start_date", this.startDateValue)
+    if (this.endDateValue) params.set("end_date", this.endDateValue)
+    return params
+  }
 
-    const allParams = `${baseParams}${pathnameParam}${hostnameParam}${startDateParam}${endDateParam}`
+  updateFrameSource(target, params) {
+    if (target) {
+      const baseUrl = target.src.split("?")[0]
+      target.src = `${baseUrl}?${params.toString()}`
+    }
+  }
+
+  updateFrameSources(pathname, hostname) {
+    const params = this.buildParams(pathname, hostname)
 
     if (this.hasPageViewsFrameTarget) {
-      const pageViewsUrl = this.pageViewsFrameTarget.src.split("?")[0]
-      this.pageViewsFrameTarget.src = `${pageViewsUrl}?${allParams}`
+      this.updateFrameSource(this.pageViewsFrameTarget, params)
     }
 
     if (this.hasVisitorsFrameTarget) {
-      const visitorsUrl = this.visitorsFrameTarget.src.split("?")[0]
-      this.visitorsFrameTarget.src = `${visitorsUrl}?${allParams}`
+      this.updateFrameSource(this.visitorsFrameTarget, params)
     }
 
     if (this.hasAvgDurationFrameTarget) {
-      const avgDurationUrl = this.avgDurationFrameTarget.src.split("?")[0]
-      this.avgDurationFrameTarget.src = `${avgDurationUrl}?${allParams}`
+      this.updateFrameSource(this.avgDurationFrameTarget, params)
     }
 
     if (this.hasBounceRateFrameTarget) {
-      const bounceRateUrl = this.bounceRateFrameTarget.src.split("?")[0]
-      this.bounceRateFrameTarget.src = `${bounceRateUrl}?${allParams}`
+      this.updateFrameSource(this.bounceRateFrameTarget, params)
     }
 
     if (this.hasPathnamesFrameTarget) {
-      const pathnamesUrl = this.pathnamesFrameTarget.src.split("?")[0]
-      this.pathnamesFrameTarget.src = `${pathnamesUrl}?${allParams}`
+      this.updateFrameSource(this.pathnamesFrameTarget, params)
     }
 
     if (this.hasCountriesFrameTarget) {
-      const countriesUrl = this.countriesFrameTarget.src.split("?")[0]
-      this.countriesFrameTarget.src = `${countriesUrl}?${allParams}&dimension_type=country`
+      const countryParams = new URLSearchParams(params)
+      countryParams.set("dimension_type", "country")
+      this.updateFrameSource(this.countriesFrameTarget, countryParams)
     }
 
     if (this.hasBrowsersFrameTarget) {
-      const browsersUrl = this.browsersFrameTarget.src.split("?")[0]
-      this.browsersFrameTarget.src = `${browsersUrl}?${allParams}&dimension_type=browser`
+      const browserParams = new URLSearchParams(params)
+      browserParams.set("dimension_type", "browser")
+      this.updateFrameSource(this.browsersFrameTarget, browserParams)
     }
 
     if (this.hasDevicesFrameTarget) {
-      const devicesUrl = this.devicesFrameTarget.src.split("?")[0]
-      this.devicesFrameTarget.src = `${devicesUrl}?${allParams}&dimension_type=device_type`
+      const deviceParams = new URLSearchParams(params)
+      deviceParams.set("dimension_type", "device_type")
+      this.updateFrameSource(this.devicesFrameTarget, deviceParams)
     }
 
     if (this.hasReferrersFrameTarget) {
-      const referrersUrl = this.referrersFrameTarget.src.split("?")[0]
-      this.referrersFrameTarget.src = `${referrersUrl}?${allParams}&dimension_type=referrer_hostname`
+      const referrerParams = new URLSearchParams(params)
+      referrerParams.set("dimension_type", "referrer_hostname")
+      this.updateFrameSource(this.referrersFrameTarget, referrerParams)
     }
   }
 
@@ -180,4 +190,3 @@ export default class extends Controller {
     Turbo.visit(newURL, { action: "advance" })
   }
 }
-

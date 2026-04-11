@@ -64,15 +64,15 @@ class DateRangeSelectorComponentTest < ViewComponent::TestCase
     site = sites(:my_blog)
     render_inline(DateRangeSelectorComponent.new(start_date: nil, end_date: nil, site: site))
 
-    assert_selector "input[data-pathname-filter-target='startDate']"
-    assert_selector "input[data-pathname-filter-target='endDate']"
+    assert_selector "input[data-site-dashboard-target='startDate']"
+    assert_selector "input[data-site-dashboard-target='endDate']"
   end
 
   def test_has_change_action_for_date_inputs
     site = sites(:my_blog)
     render_inline(DateRangeSelectorComponent.new(start_date: nil, end_date: nil, site: site))
 
-    assert_selector "input[data-action='change->pathname-filter#updateDateRange']", count: 2
+    assert_selector "input[data-action='change->site-dashboard#updateDateRange']", count: 2
   end
 
   def test_renders_with_nil_dates

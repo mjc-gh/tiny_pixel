@@ -390,7 +390,7 @@ module Sites
       assert_response :success
       # Stats should be aggregated - only one "/" row with combined values
       body = response.body
-      slash_count = body.scan("<td class=\"px-4 py-3 text-sm text-text-primary font-medium\">/<\/td>").count
+      slash_count = body.scan("<td class=\"px-4 py-3 text-sm text-content-primary font-medium\">/<\/td>").count
       assert_equal 1, slash_count, "Expected only one aggregated / row"
     end
 

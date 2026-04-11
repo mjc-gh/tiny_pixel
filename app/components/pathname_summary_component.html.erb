@@ -17,7 +17,7 @@
       </thead>
       <tbody class="bg-background divide-y divide-border">
         <% @stats.each do |stat| %>
-          <tr class="cursor-pointer hover:bg-surface-hover transition-colors" data-action="click->pathname-filter#selectPathname" data-pathname="<%= stat.pathname %>" data-hostname="<%= stat.hostname %>">
+          <tr class="cursor-pointer hover:bg-surface-hover transition-colors" data-action="click->site-dashboard#selectPathname" data-pathname="<%= stat.pathname %>" data-hostname="<%= stat.hostname %>">
             <% if @display_hostname %>
               <td class="px-4 py-3 text-sm text-content-primary"><%= stat.hostname %></td>
             <% end %>
