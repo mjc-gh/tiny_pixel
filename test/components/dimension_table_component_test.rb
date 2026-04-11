@@ -1,0 +1,437 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class DimensionTableComponentTest < ViewComponent::TestCase
+  def create_paginated_collection(stats, current_page: 1, total_pages: 1)
+    collection = stats.dup
+    collection.define_singleton_method(:current_page) { current_page }
+    collection.define_singleton_method(:total_pages) { total_pages }
+    collection.define_singleton_method(:previous_page) { current_page > 1 ? current_page - 1 : nil }
+    collection.define_singleton_method(:next_page) { current_page < total_pages ? current_page + 1 : nil }
+    collection
+  end
+
+  def test_renders_countries_label
+    stats = create_paginated_collection([])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_text "Countries"
+  end
+
+  def test_renders_browsers_label
+    stats = create_paginated_collection([])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "browser",
+      frame_id: "browser_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_text "Browsers"
+  end
+
+  def test_renders_device_types_label
+    stats = create_paginated_collection([])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "device_type",
+      frame_id: "device_type_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_text "Device Types"
+  end
+
+  def test_renders_referrers_label
+    stats = create_paginated_collection([])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "referrer_hostname",
+      frame_id: "referrer_hostname_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_text "Referrers"
+  end
+
+  def test_renders_table_with_headers
+    stats = create_paginated_collection([])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "table"
+    assert_selector "thead"
+    assert_selector "th", text: /Country|Page Views|Sessions/
+  end
+
+  def test_renders_dimension_values_in_table
+    stat = { dimension_value: "US", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "US"
+  end
+
+  def test_renders_pageviews_count
+    stat = { dimension_value: "US", pageviews: 1000, sessions: 500 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "1,000"
+  end
+
+  def test_renders_sessions_count
+    stat = { dimension_value: "US", pageviews: 100, sessions: 500 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "500"
+  end
+
+  def test_renders_unknown_for_blank_dimension_value
+    stat = { dimension_value: "", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Unknown"
+  end
+
+  def test_renders_unknown_for_nil_dimension_value
+    stat = { dimension_value: nil, pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Unknown"
+  end
+
+  def test_renders_multiple_dimension_values
+    stats_data = [
+      { dimension_value: "US", pageviews: 100, sessions: 50 },
+      { dimension_value: "GB", pageviews: 80, sessions: 40 },
+      { dimension_value: "CA", pageviews: 60, sessions: 30 }
+    ]
+    stats = create_paginated_collection(stats_data)
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "US"
+    assert_selector "td", text: "GB"
+    assert_selector "td", text: "CA"
+  end
+
+  def test_renders_pagination_component
+    stats_data = (1..6).map { |i| { dimension_value: "C#{i}", pageviews: 100 - i, sessions: 50 - i } }
+    stats = create_paginated_collection(stats_data, current_page: 1, total_pages: 2)
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "nav[aria-label='Pagination']"
+  end
+
+  def test_renders_page_headers_correctly
+    stat = { dimension_value: "chrome", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "browser",
+      frame_id: "browser_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "th", text: "Browser"
+    assert_selector "th", text: "Page Views"
+    assert_selector "th", text: "Sessions"
+  end
+
+  def test_renders_device_type_page_headers_correctly
+    stat = { dimension_value: "mobile", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "device_type",
+      frame_id: "device_type_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "th", text: "Device Type"
+  end
+
+  def test_renders_referrer_hostname_page_headers_correctly
+    stat = { dimension_value: "google.com", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "referrer_hostname",
+      frame_id: "referrer_hostname_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "th", text: "Referrer"
+  end
+
+  def test_formats_large_numbers_with_delimiters
+    stat = { dimension_value: "US", pageviews: 1000000, sessions: 500000 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "1,000,000"
+    assert_selector "td", text: "500,000"
+  end
+
+  def test_renders_empty_table_with_no_stats
+    stats = create_paginated_collection([])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "country",
+      frame_id: "country_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "table"
+    assert_selector "thead"
+    assert_no_selector "tbody tr"
+  end
+
+  def test_formats_browser_enum_chrome
+    stat = { dimension_value: "1", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "browser",
+      frame_id: "browser_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Chrome"
+  end
+
+  def test_formats_browser_enum_firefox
+    stat = { dimension_value: "4", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "browser",
+      frame_id: "browser_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Firefox"
+  end
+
+  def test_formats_browser_enum_other
+    stat = { dimension_value: "999", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "browser",
+      frame_id: "browser_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Other"
+  end
+
+  def test_formats_device_type_enum_desktop
+    stat = { dimension_value: "1", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "device_type",
+      frame_id: "device_type_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Desktop"
+  end
+
+  def test_formats_device_type_enum_mobile
+    stat = { dimension_value: "2", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "device_type",
+      frame_id: "device_type_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Mobile"
+  end
+
+  def test_formats_device_type_enum_crawler
+    stat = { dimension_value: "9", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "device_type",
+      frame_id: "device_type_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Crawler"
+  end
+
+  def test_formats_device_type_enum_other
+    stat = { dimension_value: "10", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "device_type",
+      frame_id: "device_type_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Other"
+  end
+
+  def test_handles_unknown_browser_enum_value
+    stat = { dimension_value: "555", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "browser",
+      frame_id: "browser_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Unknown"
+  end
+
+  def test_handles_unknown_device_type_enum_value
+    stat = { dimension_value: "555", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      dimension_type: "device_type",
+      frame_id: "device_type_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_selector "td", text: "Unknown"
+  end
+end

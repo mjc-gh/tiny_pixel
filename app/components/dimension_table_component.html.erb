@@ -1,0 +1,45 @@
+<div class="space-y-4">
+  <div>
+    <h3 class="text-sm font-semibold text-content-primary"><%= dimension_label %></h3>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-border">
+          <th class="text-left px-4 py-2 text-content-secondary font-medium">
+            <%= dimension_label.singularize %>
+          </th>
+          <th class="text-right px-4 py-2 text-content-secondary font-medium">
+            Page Views
+          </th>
+          <th class="text-right px-4 py-2 text-content-secondary font-medium">
+            Sessions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @stats.each do |stat| %>
+          <tr class="border-b border-border hover:bg-surface-hover transition-colors">
+            <td class="px-4 py-3 text-content-primary">
+              <%= dimension_display_name(stat[:dimension_value]) %>
+            </td>
+            <td class="px-4 py-3 text-right text-content-primary">
+              <%= number_with_delimiter(stat[:pageviews]) %>
+            </td>
+            <td class="px-4 py-3 text-right text-content-primary">
+              <%= number_with_delimiter(stat[:sessions]) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%= render PaginationComponent.new(
+    collection: @stats,
+    base_path: @base_path,
+    frame_id: @frame_id,
+    params: @params
+  ) %>
+</div>

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["pageViewsFrame", "visitorsFrame", "avgDurationFrame", "bounceRateFrame", "filterIndicator", "startDate", "endDate", "pathnamesFrame"]
+  static targets = ["pageViewsFrame", "visitorsFrame", "avgDurationFrame", "bounceRateFrame", "filterIndicator", "startDate", "endDate", "pathnamesFrame", "countriesFrame", "browsersFrame", "devicesFrame", "referrersFrame"]
   static values = { pathname: String, hostname: String, site: String, interval: String, startDate: String, endDate: String }
 
   selectPathname(event) {
@@ -71,6 +71,26 @@ export default class extends Controller {
     if (this.hasPathnamesFrameTarget) {
       const pathnamesUrl = this.pathnamesFrameTarget.src.split("?")[0]
       this.pathnamesFrameTarget.src = `${pathnamesUrl}?${allParams}`
+    }
+
+    if (this.hasCountriesFrameTarget) {
+      const countriesUrl = this.countriesFrameTarget.src.split("?")[0]
+      this.countriesFrameTarget.src = `${countriesUrl}?${allParams}&dimension_type=country`
+    }
+
+    if (this.hasBrowsersFrameTarget) {
+      const browsersUrl = this.browsersFrameTarget.src.split("?")[0]
+      this.browsersFrameTarget.src = `${browsersUrl}?${allParams}&dimension_type=browser`
+    }
+
+    if (this.hasDevicesFrameTarget) {
+      const devicesUrl = this.devicesFrameTarget.src.split("?")[0]
+      this.devicesFrameTarget.src = `${devicesUrl}?${allParams}&dimension_type=device_type`
+    }
+
+    if (this.hasReferrersFrameTarget) {
+      const referrersUrl = this.referrersFrameTarget.src.split("?")[0]
+      this.referrersFrameTarget.src = `${referrersUrl}?${allParams}&dimension_type=referrer_hostname`
     }
   }
 

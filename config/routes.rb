@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       resources :visitors, only: [:index]
       resources :avg_duration, only: [:index]
       resources :bounce_rate, only: [:index]
+      resources :dimensions, only: [:index]
     end
   end
   # Pixel ingestion ingestion
