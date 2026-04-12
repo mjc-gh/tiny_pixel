@@ -272,19 +272,22 @@ class AggregationServiceTest < ActiveSupport::TestCase
   test "dimension_expression_for_type returns correct SQL for country" do
     expr = AggregationService.dimension_expression_for_type("country")
 
-    assert_equal "visitors.country", expr
+    assert_kind_of Arel::Nodes::SqlLiteral, expr
+    assert_equal "visitors.country", expr.to_s
   end
 
   test "dimension_expression_for_type returns correct SQL for browser" do
     expr = AggregationService.dimension_expression_for_type("browser")
 
-    assert_equal "visitors.browser", expr
+    assert_kind_of Arel::Nodes::SqlLiteral, expr
+    assert_equal "visitors.browser", expr.to_s
   end
 
   test "dimension_expression_for_type returns correct SQL for device_type" do
     expr = AggregationService.dimension_expression_for_type("device_type")
 
-    assert_equal "visitors.device_type", expr
+    assert_kind_of Arel::Nodes::SqlLiteral, expr
+    assert_equal "visitors.device_type", expr.to_s
   end
 
   test "dimension_expression_for_type returns nil for unknown dimension" do
@@ -296,7 +299,8 @@ class AggregationServiceTest < ActiveSupport::TestCase
   test "dimension_expression_for_type returns correct handling for referrer_hostname" do
     expr = AggregationService.dimension_expression_for_type("referrer_hostname")
 
-    assert_equal "referrer_hostname", expr
+    assert_kind_of Arel::Nodes::SqlLiteral, expr
+    assert_equal "referrer_hostname", expr.to_s
   end
 
 

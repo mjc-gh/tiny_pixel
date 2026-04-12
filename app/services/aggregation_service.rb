@@ -4,6 +4,21 @@ class AggregationService
   LOOKBACK_HOURS = 48
   SUPPORTED_DIMENSION_TYPES = %w[global country browser device_type referrer_hostname].freeze
 
+  DIMENSION_EXPRESSIONS = {
+    "country" => Arel.sql("visitors.country"),
+    "browser" => Arel.sql("visitors.browser"),
+    "device_type" => Arel.sql("visitors.device_type"),
+    "referrer_hostname" => Arel.sql("referrer_hostname")
+  }.freeze
+
+  DIMENSION_SELECT_EXPRESSIONS = {
+    "global" => Arel.sql("'global' AS dimension_value"),
+    "country" => Arel.sql("visitors.country AS dimension_value"),
+    "browser" => Arel.sql("visitors.browser AS dimension_value"),
+    "device_type" => Arel.sql("visitors.device_type AS dimension_value"),
+    "referrer_hostname" => Arel.sql("referrer_hostname AS dimension_value")
+  }.freeze
+
   class << self
     def aggregate_all_sites(lookback_hours: LOOKBACK_HOURS)
       Site.find_each do |site|
@@ -12,18 +27,7 @@ class AggregationService
     end
 
     def dimension_expression_for_type(dimension_type)
-      case dimension_type
-      when "country"
-        "visitors.country"
-      when "browser"
-        "visitors.browser"
-      when "device_type"
-        "visitors.device_type"
-      when "referrer_hostname"
-        "referrer_hostname"
-      else
-        nil
-      end
+      DIMENSION_EXPRESSIONS[dimension_type]
     end
   end
 
@@ -142,15 +146,17 @@ class AggregationService
     group_columns = [:hostname, :pathname]
 
     if dimension_expression
-      group_columns << Arel.sql(dimension_expression)
+      group_columns << dimension_expression
     end
+
+    dimension_select = DIMENSION_SELECT_EXPRESSIONS[dimension_type] || DIMENSION_SELECT_EXPRESSIONS["global"]
 
     query
       .group(*group_columns)
       .select(
         "page_views.hostname AS hostname",
         "page_views.pathname AS pathname",
-        dimension_expression ? "#{dimension_expression} AS dimension_value" : "'global' AS dimension_value",
+        dimension_select,
         "COUNT(*) AS pageviews",
         "COUNT(DISTINCT CASE WHEN page_views.new_visit = 1 THEN page_views.visitor_digest END) AS visits",
         "COUNT(DISTINCT CASE WHEN page_views.new_session = 1 THEN page_views.visitor_digest END) AS sessions",
