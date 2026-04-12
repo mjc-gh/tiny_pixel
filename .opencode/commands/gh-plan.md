@@ -28,6 +28,7 @@ Fetch GitHub issue #$1 and refine it with a detailed implementation plan.
    - Files to be created or modified
    - Any database migrations required
    - Test coverage requirements
+   - Always create a decisive plan without any options or alternatives; ask the user questions if needed
 
 5. Format the refined issue with:
    - Original issue description preserved at the top
@@ -43,4 +44,4 @@ Fetch GitHub issue #$1 and refine it with a detailed implementation plan.
 - Preserve the original issue content; append the plan below it
 - Keep checklist items specific and actionable
 - Reference specific files and line numbers where helpful
-- Follow the project conventions in AGENTS.md
+- Always follow the project conventions
