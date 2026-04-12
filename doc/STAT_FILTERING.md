@@ -1,115 +1,106 @@
 # Stat Filtering Pattern
 
-tiny_pixel implements a consistent filtering pattern across all stat display controllers. This pattern allows users to filter dashboard charts by pathname, hostname (when enabled), and date range.
+tiny_pixel implements a consistent filtering pattern across all stat display controllers. This pattern allows users to filter dashboard charts by pathname, hostname (when enabled), date range, and dimension values (country, browser, device type, referrer).
 
 ## Overview
 
 The filtering system works through a three-layer pipeline:
 
 1. **Frontend (Stimulus + Components)** - User selects filters via UI (table clicks, date inputs)
-2. **URL Parameters** - Stimulus updates turbo-frame URLs with query params
-3. **Backend (Controllers)** - Controllers filter database queries based on params
+2. **URL Parameters** - Stimulus navigates with Turbo.visit, passing all filter params in URL
+3. **Backend (Controllers)** - Servers receive request, render page with filtered data in turbo frames
 
 Supported filters:
 - **Pathname** - Filter by page path (e.g., `/`, `/about`)
 - **Hostname** - Filter by domain (when `display_hostname: true` on site)
 - **Date Range** - Filter by start and end dates using HTML5 date inputs
+- **Dimension** - Filter by dimension type and value (country, browser, device_type, referrer_hostname)
 
 ## Architecture
 
-### Frontend: Stimulus Filter Controller
+### Frontend: Stimulus Dashboard Controller
 
-**File:** `app/javascript/controllers/pathname_filter_controller.js`
+**File:** `app/javascript/controllers/site_dashboard_controller.js`
 
-The Stimulus controller manages user interactions and URL updates:
+The Stimulus controller manages filter state and URL navigation. All filter state is stored as Stimulus values and persisted in turbo frame URLs. Supported state values include `pathname`, `hostname`, `startDate`, `endDate`, `dimensionType`, and `dimensionValue`.
 
-- **selectPathname()** - Called when user clicks a pathname row
-  - Extracts `pathname` and `hostname` from row `data-*` attributes
-  - Updates frame URLs with both values as query parameters
-  - Shows filter indicator displaying active filter
-
+Key methods:
+- **selectPathname(event)** - Called when user clicks a pathname row
+- **selectDimension(event)** - Called when user clicks a dimension table row
 - **updateDateRange()** - Called when user changes date inputs
-  - Extracts `startDate` and `endDate` from date input values
-  - Updates frame URLs with both values as query parameters
-  - Updates browser URL with Turbo.visit
-
-- **clearFilter()** - Resets all filters
-  - Clears pathname and hostname values
-  - Updates frame URLs to remove filter parameters
-  - Hides filter indicator
-
-- **updateFrameSources()** - Updates all turbo-frame URLs
-  - Builds query string: `?interval=daily&pathname=...&hostname=...&start_date=...&end_date=...`
-  - Updates all stat chart frames: page_views, visitors, avg_duration, bounce_rate, pathname_stats
-
-- **updateBrowserURL()** - Updates browser URL with current filters
-  - Persists filters in query parameters for URL sharing and page refresh
+- **clearPathnameFilter()** - Clears pathname/hostname filters, preserves dimension filters
+- **clearDimensionFilter()** - Clears dimension filters, preserves pathname filters
+- **visit()** - Centralized navigation method that builds URL with all filter state and calls `Turbo.visit()`
 
 ### Backend: IntervalStats Concern
 
 **File:** `app/controllers/concerns/interval_stats.rb`
 
-Provides filter helper methods available to all stat controllers:
-
-```ruby
-helper_method :current_interval, :current_pathname, :current_hostname, :stats_time_column,
-              :current_start_date, :current_end_date
-
-def current_pathname
-  @current_pathname ||= params[:pathname]
-end
-
-def current_hostname
-  @current_hostname ||= params[:hostname]
-end
-
-def current_start_date
-  @current_start_date ||= parse_date_param(:start_date)
-end
-
-def current_end_date
-  @current_end_date ||= parse_date_param(:end_date)
-end
-
-def apply_date_range_filter(scope)
-  return scope unless current_start_date && current_end_date
-  scope.for_date_range(current_start_date, current_end_date)
-end
-
-private
-
-def parse_date_param(param_name)
-  return nil if params[param_name].blank?
-  Date.parse(params[param_name])
-rescue Date::Error
-  nil
-end
-```
+Provides filter helper methods available to all stat controllers. Helper methods include:
+- `current_pathname` - Extracts pathname filter from params
+- `current_hostname` - Extracts hostname filter from params
+- `current_dimension_type` - Extracts dimension type with validation
+- `current_dimension_value` - Extracts dimension value from params
+- `current_start_date` / `current_end_date` - Parse date params
+- `apply_date_range_filter(scope)` - Applies date range to query scope
 
 ### Backend: Stat Controllers
 
-All stat controllers (`PageViewsController`, `VisitorsController`, `AvgDurationController`, `BounceRateController`, `PathnamesController`) follow the same filtering pattern:
+**Files:** `app/controllers/sites/page_views_controller.rb`, `visitors_controller.rb`, `avg_duration_controller.rb`, `bounce_rate_controller.rb`, `pathnames_controller.rb`
 
-```ruby
-def index
-  scope = stats_model.for_site(@site.id)
-  scope = scope.for_pathname(current_pathname) if current_pathname.present?
-  scope = scope.where(hostname: current_hostname) if current_hostname.present?
-  scope = apply_date_range_filter(scope)  # New date range filter
-  
-  @chart_data = {
-    "Page Views" => scope.group(stats_time_column).sum(:pageviews),
-    "Unique Page Views" => scope.group(stats_time_column).sum(:unique_pageviews)
-  }
-end
-```
+All stat controllers follow the same filtering pattern:
 
-**Date Range Filtering Notes:**
-- All three stat models (`HourlyPageStat`, `DailyPageStat`, `WeeklyPageStat`) have a `for_date_range` scope
-- The scope accepts `start_date` and `end_date` parameters
-- For hourly stats, dates are converted to time_bucket datetime comparison
-- For daily/weekly stats, dates are matched directly
-- Invalid date formats are handled gracefully (parsed with `Date.parse`, returns nil on error)
+1. Start with base scope filtered by site: `stats_model.for_site(@site.id)`
+2. Select dimension scope or global scope based on dimension filter presence
+3. Apply pathname, hostname, and date range filters sequentially
+4. Group results and return chart data
+
+**Important Scope Pattern:**
+- Stats have two top-level scopes: `.global` (for aggregated stats) and `.for_dimension(type, value)` (for dimension-specific stats)
+- When a dimension filter is applied, use `.for_dimension()` instead of `.global`
+- Other filters (pathname, hostname, date range) are applied on top of whichever scope is selected
+
+**Filter Combination:**
+- Multiple filters work together: pathname + hostname + dimension + date range
+- Users can combine pathname filters with dimension filters to drill down further
+- Dimension tables show breakdowns within the filtered set (e.g., countries filtered by browser=Chrome)
+
+## Dimension Filtering
+
+Dimension filtering allows users to filter the entire dashboard by clicking on dimension values in the four dimension breakdown tables (Countries, Browsers, Device Types, Referrers).
+
+### Supported Dimensions
+
+- **country** - Filter by country code or name
+- **browser** - Filter by browser (enum: 1=Chrome, 2=Edge, 3=Safari, 4=Firefox, 5=Opera, 999=Other)
+- **device_type** - Filter by device (enum: 1=Desktop, 2=Mobile, 9=Crawler, 10=Other)
+- **referrer_hostname** - Filter by referrer domain (e.g., "google.com")
+
+### Enum Value Formatting
+
+Browser and device type dimensions use enum integers in the database but display user-friendly names in the UI. The helper method `format_dimension_value()` in `app/helpers/application_helper.rb` handles conversion for:
+- Filter indicator badges
+- Dimension breakdown tables
+- All user-facing dimension displays
+
+### Dimension Selection UI
+
+**DimensionTableComponent** (`app/components/dimension_table_component.html.erb`):
+- Each table row has `data-action="click->site-dashboard#selectDimension"`
+- Data attributes: `data-dimension-type` and `data-dimension-value`
+- Selected row is highlighted with background color and bold text
+- Component receives `selected_dimension_value` to check which row matches current filter
+
+### Multiple Filter Support
+
+Users can combine filters:
+- **Pathname + Dimension**: View page "/about" filtered by browser "Chrome"
+- **Dimension + Dimension**: Not directly supported (dimension tables group by their own type)
+- All combinations: pathname + hostname + dimension + date range
+
+Each filter type has independent clear buttons in the filter indicator UI:
+- "Clear Pathname Filter" - keeps dimension filters
+- "Clear Dimension Filter" - keeps pathname filters
 
 ## When Hostname Filtering is Available
 
@@ -138,67 +129,25 @@ Date range filtering is always available on the dashboard. Users can select a st
 
 ## Adding New Stat Filters
 
-To add a new filterable dimension:
+### Pattern for Simple Filters
 
-1. **Add a param accessor** to `IntervalStats` concern:
-   ```ruby
-   def current_my_dimension
-     @current_my_dimension ||= params[:my_dimension]
-   end
-   ```
+To add a new simple filter:
 
-2. **Add to helper_method declaration** so it's available in views:
-   ```ruby
-   helper_method :current_interval, :current_pathname, :current_hostname, :stats_time_column,
-                 :current_start_date, :current_end_date, :current_my_dimension
-   ```
+1. Add a param accessor to `app/controllers/concerns/interval_stats.rb`
+2. Add to the `helper_method` declaration in `IntervalStats`
+3. Update filter logic in stat controllers to apply the filter to the query scope
+4. Add corresponding Stimulus value to `app/javascript/controllers/site_dashboard_controller.js`
+5. Add Stimulus method to handle user selection and call `visit()`
+6. Update view URLs to include the new parameter in turbo frame src
+7. Add `data-*` attributes to table rows
 
-3. **Update filter logic** in stat controllers:
-   ```ruby
-   scope = scope.where(my_dimension: current_my_dimension) if current_my_dimension.present?
-   ```
+### Pattern for Enum-Based Filters
 
-4. **Update Stimulus controller** to capture and pass the dimension:
-   ```javascript
-   const myDimension = event.currentTarget.dataset.myDimension
-   const myDimensionParam = myDimension ? `&my_dimension=${encodeURIComponent(myDimension)}` : ""
-   ```
+For filters with enum values that need friendly display names:
 
-5. **Update view URLs** to include the new parameter:
-   ```erb
-   site_page_views_path(@site, interval: current_interval, my_dimension: current_my_dimension)
-   ```
-
-6. **Add data attributes** to table rows or summary components to capture the dimension
-
-## Implementation Checklist for Date Range Filtering
-
-The following files were modified to implement date range filtering (see issue #90):
-
-### Backend
-- ✓ `app/controllers/concerns/interval_stats.rb` - Added date helpers and apply method
-- ✓ `app/controllers/sites/page_views_controller.rb` - Applied date filter
-- ✓ `app/controllers/sites/visitors_controller.rb` - Applied date filter
-- ✓ `app/controllers/sites/avg_duration_controller.rb` - Applied date filter
-- ✓ `app/controllers/sites/bounce_rate_controller.rb` - Applied date filter
-- ✓ `app/controllers/sites/pathnames_controller.rb` - Applied date filter
-
-### Frontend Components
-- ✓ `app/components/date_range_selector_component.rb` - New component
-- ✓ `app/components/date_range_selector_component.html.erb` - Component template
-- ✓ `app/components/interval_selector_component.rb` - Updated to preserve date params
-- ✓ `app/javascript/controllers/pathname_filter_controller.js` - Added date support
-
-### Views
-- ✓ `app/views/sites/show.html.erb` - Integrated date selector and params
-
-### Tests
-- ✓ `test/controllers/sites/page_views_controller_test.rb` - Added date filtering tests
-- ✓ `test/controllers/sites/visitors_controller_test.rb` - Added date filtering tests
-- ✓ `test/controllers/sites/avg_duration_controller_test.rb` - Added date filtering tests
-- ✓ `test/controllers/sites/bounce_rate_controller_test.rb` - Added date filtering tests
-- ✓ `test/controllers/sites/pathnames_controller_test.rb` - Added date filtering tests
-- ✓ `test/components/date_range_selector_component_test.rb` - New component tests
+1. Follow the simple filter pattern above
+2. Create a helper method in `app/helpers/application_helper.rb` for enum formatting
+3. Use the helper in views and components to display user-friendly names
 
 ## Testing
 

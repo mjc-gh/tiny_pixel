@@ -38,9 +38,20 @@
 ## References
 
 - **Stats Models**: See `@doc/AGGREGATED_STATS.md` for `HourlyPageStat`, `DailyPageStat`, `WeeklyPageStat`
-- **Stat Filtering**: See `@doc/STAT_FILTERING.md` for filtering pattern used in dashboard controllers
+- **Stat Filtering**: See `@doc/STAT_FILTERING.md` for pathname, hostname, date range, and dimension filtering patterns used in dashboard controllers
 - **Tracking Script**: See `@doc/TRACKING_SCRIPT.md` for implementation details of `pkg/tiny_pixel.js`
 - **UI Styles**: See `@doc/STYLES.md` for guidelines on CSS, Tailwind, and icons
 - **ViewComponents**: See `@app/components`
 - **Stack**: Minitest, simplecov, RuboCop-Rails, Brakeman
 - **Databases**: SQLite (primary + ingestion)
+
+## Stimulus Controller Patterns
+
+The dashboard uses a centralized `Turbo.visit()` pattern in the Stimulus controller:
+
+1. **State Management**: All filter state stored as Stimulus values
+2. **Navigation**: All user actions call `visit()` method which navigates with Turbo
+3. **Server Rendering**: Server receives request with all filter params in URL
+4. **Frame Re-rendering**: Turbo automatically re-renders all turbo-frames with new content
+
+This pattern eliminates manual frame source manipulation and simplifies the frontend logic significantly.
