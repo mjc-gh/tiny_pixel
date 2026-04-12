@@ -11,7 +11,7 @@ module Sites
     end
 
     test "authenticated users can access show" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_instructions_url(sites(:tech_blog))
 
@@ -19,7 +19,7 @@ module Sites
     end
 
     test "returns turbo frame with instructions" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_instructions_url(sites(:tech_blog))
 
@@ -27,7 +27,7 @@ module Sites
     end
 
     test "renders setup instructions component" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_instructions_url(sites(:tech_blog))
 
@@ -36,7 +36,7 @@ module Sites
     end
 
     test "includes tracking snippet with property_id" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       site = sites(:tech_blog)
 
       get site_instructions_url(site)
@@ -46,7 +46,7 @@ module Sites
     end
 
     test "includes tracking snippet with server parameter" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_instructions_url(sites(:tech_blog))
 
@@ -55,7 +55,7 @@ module Sites
     end
 
     test "returns 404 for unauthorized site" do
-      login(users(:bob), password: "password123")
+      login(users(:bob))
 
       get site_instructions_url(sites(:tech_blog))
 
@@ -63,7 +63,7 @@ module Sites
     end
 
     test "allows bob to access instructions for my_blog where he is a member" do
-      login(users(:bob), password: "password123")
+      login(users(:bob))
 
       get site_instructions_url(sites(:my_blog))
 
@@ -71,7 +71,7 @@ module Sites
     end
 
     test "includes copy button in response" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_instructions_url(sites(:tech_blog))
 
@@ -80,7 +80,7 @@ module Sites
     end
 
     test "includes close button in response" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_instructions_url(sites(:tech_blog))
 

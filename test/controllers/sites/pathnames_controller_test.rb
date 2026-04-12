@@ -11,7 +11,7 @@ module Sites
     end
 
     test "authenticated users can access index" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_pathnames_url(sites(:tech_blog))
 
@@ -19,7 +19,7 @@ module Sites
     end
 
     test "returns turbo frame with stats" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_pathnames_url(sites(:tech_blog))
 
@@ -27,7 +27,7 @@ module Sites
     end
 
     test "displays pathname stats with daily interval" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -50,7 +50,7 @@ module Sites
     end
 
     test "aggregates stats by pathname" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -88,7 +88,7 @@ module Sites
     end
 
     test "displays pathname stats with hourly interval" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       HourlyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -109,7 +109,7 @@ module Sites
     end
 
     test "displays pathname stats with weekly interval" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       WeeklyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -130,7 +130,7 @@ module Sites
     end
 
     test "returns 404 for unauthorized site" do
-      login(users(:bob), password: "password123")
+      login(users(:bob))
 
       get site_pathnames_url(sites(:tech_blog))
 
@@ -138,7 +138,7 @@ module Sites
     end
 
     test "allows bob to access my_blog where he is a member" do
-      login(users(:bob), password: "password123")
+      login(users(:bob))
 
       get site_pathnames_url(sites(:my_blog))
 
@@ -146,7 +146,7 @@ module Sites
     end
 
     test "sorts pathnames by pageviews descending" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -185,7 +185,7 @@ module Sites
     end
 
     test "calculates bounce rate correctly" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -208,7 +208,7 @@ module Sites
     end
 
     test "calculates avg duration correctly" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -231,7 +231,7 @@ module Sites
     end
 
     test "handles pagination" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       # Create 25 pathnames to test pagination (more than PER_PAGE which is 20)
       25.times do |i|
@@ -260,7 +260,7 @@ module Sites
     end
 
     test "shows no data message when no stats available" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_pathnames_url(sites(:tech_blog), interval: "daily")
 
@@ -269,7 +269,7 @@ module Sites
     end
 
     test "does not display hostname column when display_hostname is false" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       sites(:tech_blog).update!(display_hostname: false)
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -293,7 +293,7 @@ module Sites
     end
 
     test "displays hostname column when display_hostname is true" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       sites(:tech_blog).update!(display_hostname: true)
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -318,7 +318,7 @@ module Sites
     end
 
     test "groups stats by hostname and pathname when display_hostname is true" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       sites(:tech_blog).update!(display_hostname: true)
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -356,7 +356,7 @@ module Sites
     end
 
     test "groups stats by pathname only when display_hostname is false" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       sites(:tech_blog).update!(display_hostname: false)
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -395,7 +395,7 @@ module Sites
     end
 
     test "returns single row when filtering by pathname" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       sites(:tech_blog).update!(display_hostname: false)
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -433,7 +433,7 @@ module Sites
     end
 
     test "returns single row when filtering by pathname and hostname" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       sites(:tech_blog).update!(display_hostname: true)
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -472,7 +472,7 @@ module Sites
     end
 
     test "returns all pathnames when no filter param" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       sites(:tech_blog).update!(display_hostname: false)
       DailyPageStat.create!(
         site: sites(:tech_blog),
@@ -510,7 +510,7 @@ module Sites
     end
 
     test "filters pathnames by date range when params present" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -544,7 +544,7 @@ module Sites
     end
 
     test "aggregates pathname stats within date range" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",

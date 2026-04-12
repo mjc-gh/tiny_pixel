@@ -34,4 +34,8 @@ end
 
 class ActionDispatch::IntegrationTest
   include ReviseAuth::Test::Helpers
+
+  def login(user, password: "password123")
+    super user, password:
+  end
 end

@@ -11,7 +11,7 @@ module Sites
     end
 
     test "authenticated users can access index" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_page_views_url(sites(:tech_blog))
 
@@ -19,7 +19,7 @@ module Sites
     end
 
     test "returns turbo frame with stats" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_page_views_url(sites(:tech_blog))
 
@@ -27,7 +27,7 @@ module Sites
     end
 
     test "displays page views data with daily interval" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -42,7 +42,7 @@ module Sites
     end
 
     test "displays page views data with hourly interval" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_page_views_url(sites(:tech_blog), interval: "hourly")
 
@@ -50,7 +50,7 @@ module Sites
     end
 
     test "displays page views data with weekly interval" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_page_views_url(sites(:tech_blog), interval: "weekly")
 
@@ -58,7 +58,7 @@ module Sites
     end
 
     test "returns 404 for unauthorized site" do
-      login(users(:bob), password: "password123")
+      login(users(:bob))
 
       get site_page_views_url(sites(:tech_blog))
 
@@ -66,7 +66,7 @@ module Sites
     end
 
     test "allows bob to access my_blog where he is a member" do
-      login(users(:bob), password: "password123")
+      login(users(:bob))
 
       get site_page_views_url(sites(:my_blog))
 
@@ -74,7 +74,7 @@ module Sites
     end
 
     test "filters page views by pathname when param present" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -96,7 +96,7 @@ module Sites
     end
 
     test "chart data includes only filtered pathname" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -119,7 +119,7 @@ module Sites
     end
 
     test "filters page views by date range when params present" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -141,7 +141,7 @@ module Sites
     end
 
     test "chart data includes only stats within date range" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -164,7 +164,7 @@ module Sites
     end
 
     test "handles invalid date format gracefully" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_page_views_url(sites(:tech_blog), start_date: "invalid-date", end_date: "2024-01-31")
 
@@ -172,7 +172,7 @@ module Sites
     end
 
     test "filters stats by valid dimension type and value" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -189,7 +189,7 @@ module Sites
     end
 
     test "ignores invalid dimension type" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_page_views_url(sites(:tech_blog), dimension_type: "invalid_dimension", dimension_value: "test")
 
@@ -198,7 +198,7 @@ module Sites
     end
 
     test "combines pathname and dimension filters" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",

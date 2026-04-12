@@ -10,7 +10,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "authenticated users can access index" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get sites_url
 
@@ -18,7 +18,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "displays user sites" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get sites_url
 
@@ -27,7 +27,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "does not display other users sites" do
-    login(users(:bob), password: "password123")
+    login(users(:bob))
 
     get sites_url
 
@@ -51,7 +51,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "authenticated users can access show" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get site_url(sites(:my_blog))
 
@@ -59,7 +59,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show displays site name" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get site_url(sites(:my_blog))
 
@@ -67,7 +67,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show displays turbo frames for stats sections" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get site_url(sites(:my_blog))
 
@@ -78,7 +78,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show displays interval selector" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get site_url(sites(:my_blog))
 
@@ -86,7 +86,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show accepts interval parameter" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get site_url(sites(:my_blog), interval: "hourly")
 
@@ -94,7 +94,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show defaults to daily interval" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get site_url(sites(:my_blog))
 
@@ -102,7 +102,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show returns 404 for unauthorized site" do
-    login(users(:bob), password: "password123")
+    login(users(:bob))
 
     get site_url(sites(:tech_blog))
 
@@ -110,7 +110,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show allows bob to access my_blog where he is a member" do
-    login(users(:bob), password: "password123")
+    login(users(:bob))
 
     get site_url(sites(:my_blog))
 
@@ -124,7 +124,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "authenticated users can access edit for their sites" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get edit_site_url(sites(:my_blog))
 
@@ -132,7 +132,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit displays current site settings" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     get edit_site_url(sites(:my_blog))
 
@@ -147,7 +147,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update saves valid salt_duration changes" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
     original_duration = sites(:my_blog).salt_duration
 
     patch site_url(sites(:my_blog)), params: { site: { salt_duration: "weekly" } }
@@ -158,7 +158,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update saves valid display_hostname changes" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
     original_display_hostname = sites(:my_blog).display_hostname
 
     patch site_url(sites(:my_blog)), params: { site: { display_hostname: !original_display_hostname } }
@@ -168,7 +168,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update returns 404 for unauthorized site" do
-    login(users(:bob), password: "password123")
+    login(users(:bob))
 
     patch site_url(sites(:tech_blog)), params: { site: { salt_duration: "monthly" } }
 
@@ -176,7 +176,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update redirects to site show page on success" do
-    login(users(:alice), password: "password123")
+    login(users(:alice))
 
     patch site_url(sites(:my_blog)), params: { site: { salt_duration: "monthly" } }
 

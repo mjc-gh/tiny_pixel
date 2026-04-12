@@ -11,7 +11,7 @@ module Sites
     end
 
     test "authenticated users can access index" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_dimensions_url(sites(:tech_blog), type: "country")
 
@@ -19,7 +19,7 @@ module Sites
     end
 
     test "returns 404 for invalid dimension type" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_dimensions_url(sites(:tech_blog), type: "invalid_type")
 
@@ -27,7 +27,7 @@ module Sites
     end
 
     test "returns turbo frame with country dimension stats" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_dimensions_url(sites(:tech_blog), type: "country")
 
@@ -35,7 +35,7 @@ module Sites
     end
 
     test "returns turbo frame with browser dimension stats" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_dimensions_url(sites(:tech_blog), type: "browser")
 
@@ -43,7 +43,7 @@ module Sites
     end
 
     test "returns turbo frame with device_type dimension stats" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_dimensions_url(sites(:tech_blog), type: "device_type")
 
@@ -51,7 +51,7 @@ module Sites
     end
 
     test "returns turbo frame with referrer_hostname dimension stats" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_dimensions_url(sites(:tech_blog), type: "referrer_hostname")
 
@@ -59,7 +59,7 @@ module Sites
     end
 
     test "returns 404 for unauthorized site" do
-      login(users(:bob), password: "password123")
+      login(users(:bob))
 
       get site_dimensions_url(sites(:tech_blog), type: "country")
 
@@ -67,7 +67,7 @@ module Sites
     end
 
     test "allows bob to access my_blog where he is a member" do
-      login(users(:bob), password: "password123")
+      login(users(:bob))
 
       get site_dimensions_url(sites(:my_blog), type: "country")
 
@@ -75,7 +75,7 @@ module Sites
     end
 
     test "displays dimension data with daily interval" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -96,7 +96,7 @@ module Sites
     end
 
     test "displays dimension data with hourly interval" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_dimensions_url(sites(:tech_blog), type: "country", interval: "hourly")
 
@@ -104,7 +104,7 @@ module Sites
     end
 
     test "displays dimension data with weekly interval" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       get site_dimensions_url(sites(:tech_blog), type: "country", interval: "weekly")
 
@@ -112,7 +112,7 @@ module Sites
     end
 
     test "filters dimension data by pathname when param present" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -140,7 +140,7 @@ module Sites
     end
 
     test "filters dimension data by hostname when param present" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -168,7 +168,7 @@ module Sites
     end
 
     test "filters dimension data by date range when params present" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -196,7 +196,7 @@ module Sites
     end
 
     test "paginates results to 5 per page" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       10.times do |i|
         DailyPageStat.create!(
@@ -217,7 +217,7 @@ module Sites
     end
 
     test "displays pagination when more than 5 results" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       6.times do |i|
         DailyPageStat.create!(
@@ -239,7 +239,7 @@ module Sites
     end
 
     test "respects page parameter for pagination" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
 
       10.times do |i|
         DailyPageStat.create!(
@@ -260,7 +260,7 @@ module Sites
     end
 
     test "aggregates stats by dimension value" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -291,7 +291,7 @@ module Sites
     end
 
     test "orders results by page views descending" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
@@ -320,7 +320,7 @@ module Sites
     end
 
     test "applies selected dimension value to dimension breakdown table for correct type" do
-      login(users(:alice), password: "password123")
+      login(users(:alice))
       DailyPageStat.create!(
         site: sites(:tech_blog),
         hostname: "example.com",
