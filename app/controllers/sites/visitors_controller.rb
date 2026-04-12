@@ -2,7 +2,7 @@
 
 module Sites
   class VisitorsController < ApplicationController
-    include IntervalStats
+    include FilterStats
 
     before_action :authenticate_user!
     before_action :set_site

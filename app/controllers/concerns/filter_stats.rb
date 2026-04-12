@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module IntervalStats
+module FilterStats
   extend ActiveSupport::Concern
 
   VALID_INTERVALS = %w[hourly daily weekly].freeze

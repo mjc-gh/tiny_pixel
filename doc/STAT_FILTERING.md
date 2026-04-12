@@ -32,9 +32,9 @@ Key methods:
 - **clearDimensionFilter()** - Clears dimension filters, preserves pathname filters
 - **visit()** - Centralized navigation method that builds URL with all filter state and calls `Turbo.visit()`
 
-### Backend: IntervalStats Concern
+### Backend: FilterStats Concern
 
-**File:** `app/controllers/concerns/interval_stats.rb`
+**File:** `app/controllers/concerns/filter_stats.rb`
 
 Provides filter helper methods available to all stat controllers. Helper methods include:
 - `current_pathname` - Extracts pathname filter from params
@@ -121,7 +121,7 @@ Date range filtering is always available on the dashboard. Users can select a st
 - `IntervalSelectorComponent` - Updated to preserve date params when switching intervals
 
 **Backend Integration:**
-- `IntervalStats` concern - Provides `current_start_date`, `current_end_date`, and `apply_date_range_filter` helpers
+- `FilterStats` concern - Provides `current_start_date`, `current_end_date`, and `apply_date_range_filter` helpers
 - All stat controllers - Apply `apply_date_range_filter` to their query scopes
 - Stat models - Have `for_date_range` scopes defined for each interval type
 
@@ -133,8 +133,8 @@ Date range filtering is always available on the dashboard. Users can select a st
 
 To add a new simple filter:
 
-1. Add a param accessor to `app/controllers/concerns/interval_stats.rb`
-2. Add to the `helper_method` declaration in `IntervalStats`
+1. Add a param accessor to `app/controllers/concerns/filter_stats.rb`
+2. Add to the `helper_method` declaration in `FilterStats`
 3. Update filter logic in stat controllers to apply the filter to the query scope
 4. Add corresponding Stimulus value to `app/javascript/controllers/site_dashboard_controller.js`
 5. Add Stimulus method to handle user selection and call `visit()`

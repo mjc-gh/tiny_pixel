@@ -2,7 +2,7 @@
 
 module Sites
   class DimensionsController < ApplicationController
-    include IntervalStats
+    include FilterStats
 
     DIMENSION_PER_PAGE = 5
 

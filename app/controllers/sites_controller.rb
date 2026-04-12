@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SitesController < ApplicationController
-  include IntervalStats
+  include FilterStats
 
   before_action :authenticate_user!
   before_action :set_site, only: [:show, :edit, :update]
