@@ -2,15 +2,18 @@
   <div class="border border-border rounded-lg p-4 bg-surface">
     <%= render DimensionTableComponent.new(
       stats: @stats,
-      dimension_type: @dimension_type,
+      type: @type,
       frame_id: @frame_id,
       site: @site,
       base_path: site_dimensions_path(@site),
+      selected_dimension_value: @type == current_dimension_type ? current_dimension_value : nil,
       params: {
-        dimension_type: @dimension_type,
+        type: @dimension_type,
         interval: current_interval,
         pathname: current_pathname,
         hostname: current_hostname,
+        dimension_type: current_dimension_type,
+        dimension_value: current_dimension_value,
         start_date: current_start_date&.iso8601,
         end_date: current_end_date&.iso8601
       }.compact

@@ -170,5 +170,53 @@ module Sites
 
       assert_response :success
     end
+
+    test "filters stats by valid dimension type and value" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        dimension_type: "country",
+        dimension_value: "US",
+        pageviews: 100
+      )
+
+      get site_page_views_url(sites(:tech_blog), dimension_type: "country", dimension_value: "US")
+
+      assert_response :success
+    end
+
+    test "ignores invalid dimension type" do
+      login(users(:alice), password: "password123")
+
+      get site_page_views_url(sites(:tech_blog), dimension_type: "invalid_dimension", dimension_value: "test")
+
+      assert_response :success
+      # Invalid dimension type should be ignored
+    end
+
+    test "combines pathname and dimension filters" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/about",
+        date: Date.current,
+        dimension_type: "browser",
+        dimension_value: "1",
+        pageviews: 75
+      )
+
+      get site_page_views_url(
+        sites(:tech_blog),
+        pathname: "/about",
+        dimension_type: "browser",
+        dimension_value: "1"
+      )
+
+      assert_response :success
+    end
   end
 end

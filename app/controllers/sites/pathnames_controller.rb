@@ -27,7 +27,14 @@ module Sites
     private
 
     def build_pathname_stats
-      base_query = stats_model.for_site(@site.id).global
+      base_query = stats_model.for_site(@site.id)
+
+      # If dimension filter is applied, use dimension scope; otherwise use global scope
+      if current_dimension_type.present? && current_dimension_value.present?
+        base_query = base_query.for_dimension(current_dimension_type, current_dimension_value)
+      else
+        base_query = base_query.global
+      end
 
       # Filter by pathname and optional hostname
       if current_pathname.present?

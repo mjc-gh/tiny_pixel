@@ -34,4 +34,9 @@ class Visitor < AnalyticsRecord
     opera: 5,
     other: 999,
   }, scopes: false, prefix: true
+
+  class << self
+    def browser_values = @browser_values ||= Visitor.browsers.invert.freeze
+    def device_type_values = @device_type_values ||= Visitor.device_types.invert.freeze
+  end
 end

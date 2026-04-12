@@ -5,7 +5,7 @@ require "test_helper"
 module Sites
   class DimensionsControllerTest < ActionDispatch::IntegrationTest
     test "redirects unauthenticated users to login" do
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country")
+      get site_dimensions_url(sites(:tech_blog), type: "country")
 
       assert_redirected_to login_path
     end
@@ -13,7 +13,7 @@ module Sites
     test "authenticated users can access index" do
       login(users(:alice), password: "password123")
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country")
+      get site_dimensions_url(sites(:tech_blog), type: "country")
 
       assert_response :success
     end
@@ -21,7 +21,7 @@ module Sites
     test "returns 404 for invalid dimension type" do
       login(users(:alice), password: "password123")
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "invalid_type")
+      get site_dimensions_url(sites(:tech_blog), type: "invalid_type")
 
       assert_response :bad_request
     end
@@ -29,7 +29,7 @@ module Sites
     test "returns turbo frame with country dimension stats" do
       login(users(:alice), password: "password123")
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country")
+      get site_dimensions_url(sites(:tech_blog), type: "country")
 
       assert_select "turbo-frame#country_stats"
     end
@@ -37,7 +37,7 @@ module Sites
     test "returns turbo frame with browser dimension stats" do
       login(users(:alice), password: "password123")
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "browser")
+      get site_dimensions_url(sites(:tech_blog), type: "browser")
 
       assert_select "turbo-frame#browser_stats"
     end
@@ -45,7 +45,7 @@ module Sites
     test "returns turbo frame with device_type dimension stats" do
       login(users(:alice), password: "password123")
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "device_type")
+      get site_dimensions_url(sites(:tech_blog), type: "device_type")
 
       assert_select "turbo-frame#device_type_stats"
     end
@@ -53,7 +53,7 @@ module Sites
     test "returns turbo frame with referrer_hostname dimension stats" do
       login(users(:alice), password: "password123")
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "referrer_hostname")
+      get site_dimensions_url(sites(:tech_blog), type: "referrer_hostname")
 
       assert_select "turbo-frame#referrer_hostname_stats"
     end
@@ -61,7 +61,7 @@ module Sites
     test "returns 404 for unauthorized site" do
       login(users(:bob), password: "password123")
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country")
+      get site_dimensions_url(sites(:tech_blog), type: "country")
 
       assert_response :not_found
     end
@@ -69,7 +69,7 @@ module Sites
     test "allows bob to access my_blog where he is a member" do
       login(users(:bob), password: "password123")
 
-      get site_dimensions_url(sites(:my_blog), dimension_type: "country")
+      get site_dimensions_url(sites(:my_blog), type: "country")
 
       assert_response :success
     end
@@ -87,7 +87,7 @@ module Sites
         sessions: 50
       )
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country", interval: "daily")
+      get site_dimensions_url(sites(:tech_blog), type: "country", interval: "daily")
 
       assert_response :success
       assert_select "td", text: "US"
@@ -98,7 +98,7 @@ module Sites
     test "displays dimension data with hourly interval" do
       login(users(:alice), password: "password123")
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country", interval: "hourly")
+      get site_dimensions_url(sites(:tech_blog), type: "country", interval: "hourly")
 
       assert_response :success
     end
@@ -106,7 +106,7 @@ module Sites
     test "displays dimension data with weekly interval" do
       login(users(:alice), password: "password123")
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country", interval: "weekly")
+      get site_dimensions_url(sites(:tech_blog), type: "country", interval: "weekly")
 
       assert_response :success
     end
@@ -134,7 +134,7 @@ module Sites
         sessions: 40
       )
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country", pathname: "/")
+      get site_dimensions_url(sites(:tech_blog), type: "country", pathname: "/")
 
       assert_response :success
     end
@@ -162,7 +162,7 @@ module Sites
         sessions: 40
       )
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country", hostname: "example.com")
+      get site_dimensions_url(sites(:tech_blog), type: "country", hostname: "example.com")
 
       assert_response :success
     end
@@ -190,7 +190,7 @@ module Sites
         sessions: 40
       )
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country", start_date: "2024-01-20", end_date: "2024-01-31")
+      get site_dimensions_url(sites(:tech_blog), type: "country", start_date: "2024-01-20", end_date: "2024-01-31")
 
       assert_response :success
     end
@@ -211,7 +211,7 @@ module Sites
         )
       end
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country", page: 1)
+      get site_dimensions_url(sites(:tech_blog), type: "country", page: 1)
 
       assert_response :success
     end
@@ -232,7 +232,7 @@ module Sites
         )
       end
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country")
+      get site_dimensions_url(sites(:tech_blog), type: "country")
 
       assert_response :success
       assert_select "nav[aria-label='Pagination']"
@@ -254,7 +254,7 @@ module Sites
         )
       end
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country", page: 2)
+      get site_dimensions_url(sites(:tech_blog), type: "country", page: 2)
 
       assert_response :success
     end
@@ -282,7 +282,7 @@ module Sites
         sessions: 25
       )
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country")
+      get site_dimensions_url(sites(:tech_blog), type: "country")
 
       assert_response :success
       # Stats for same dimension_value should be aggregated
@@ -313,10 +313,44 @@ module Sites
         sessions: 50
       )
 
-      get site_dimensions_url(sites(:tech_blog), dimension_type: "country")
+      get site_dimensions_url(sites(:tech_blog), type: "country")
 
       assert_response :success
       # GB should appear before US since it has more pageviews
+    end
+
+    test "applies selected dimension value to dimension breakdown table for correct type" do
+      login(users(:alice), password: "password123")
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        dimension_type: "country",
+        dimension_value: "US",
+        pageviews: 100,
+        sessions: 50
+      )
+      DailyPageStat.create!(
+        site: sites(:tech_blog),
+        hostname: "example.com",
+        pathname: "/",
+        date: Date.current,
+        dimension_type: "browser",
+        dimension_value: "1",
+        pageviews: 100,
+        sessions: 50
+      )
+
+      get site_dimensions_url(sites(:tech_blog), type: "country", dimension_type: "country", dimension_value: "US")
+
+      assert_response :success
+      assert_select "td.text-primary", "US"
+
+      get site_dimensions_url(sites(:tech_blog), type: "browser", dimension_type: "country", dimension_value: "US")
+
+      assert_response :success
+      assert_select "td.text-primary", count: 0
     end
   end
 end

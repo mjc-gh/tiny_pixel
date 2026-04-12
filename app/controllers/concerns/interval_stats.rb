@@ -4,12 +4,14 @@ module IntervalStats
   extend ActiveSupport::Concern
 
   VALID_INTERVALS = %w[hourly daily weekly].freeze
+  VALID_DIMENSION_TYPES = %w[country browser device_type referrer_hostname].freeze
+
   DEFAULT_INTERVAL = "daily"
   PER_PAGE = 20
 
   included do
     helper_method :current_interval, :current_pathname, :current_hostname, :stats_time_column,
-                  :current_start_date, :current_end_date
+                  :current_start_date, :current_end_date, :current_dimension_type, :current_dimension_value
   end
 
   def current_interval
@@ -25,6 +27,14 @@ module IntervalStats
 
   def current_hostname
     @current_hostname ||= params[:hostname]
+  end
+
+  def current_dimension_type
+    @current_dimension_type ||= params[:dimension_type] if valid_filter_dimension_type?
+  end
+
+  def current_dimension_value
+    @current_dimension_value ||= params[:dimension_value]
   end
 
   def current_start_date
@@ -74,6 +84,10 @@ module IntervalStats
   end
 
   private
+
+  def valid_filter_dimension_type?
+    VALID_DIMENSION_TYPES.include?(params[:dimension_type])
+  end
 
   def parse_date_param(param_name)
     return nil if params[param_name].blank?

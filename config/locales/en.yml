@@ -33,6 +33,20 @@ en:
     save: "Save"
     back: "Back"
     settings: "Settings"
+  visitors:
+    browsers:
+      chrome: "Chrome"
+      edge: "Edge"
+      safari: "Safari"
+      firefox: "Firefox"
+      opera: "Opera"
+      other: "Other"
+    device_types:
+      desktop: Desktop
+      mobile: Mobile
+      crawler: Web Crawler
+      other: Other
+    unknown_value: Unknown
   sites:
     edit:
       title: "Site Settings"
@@ -53,3 +67,4 @@ en:
       snippet_label: "Tracking Script"
       copy: "Copy to clipboard"
       close: "Close"
+

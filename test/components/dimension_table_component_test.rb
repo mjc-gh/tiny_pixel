@@ -18,7 +18,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -33,7 +33,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "browser",
+      type: "browser",
       frame_id: "browser_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -48,7 +48,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "device_type",
+      type: "device_type",
       frame_id: "device_type_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -63,7 +63,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "referrer_hostname",
+      type: "referrer_hostname",
       frame_id: "referrer_hostname_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -78,7 +78,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -96,7 +96,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -112,7 +112,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -128,7 +128,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -144,7 +144,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -160,7 +160,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -180,7 +180,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -198,7 +198,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -214,7 +214,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "browser",
+      type: "browser",
       frame_id: "browser_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -232,7 +232,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "device_type",
+      type: "device_type",
       frame_id: "device_type_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -248,7 +248,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "referrer_hostname",
+      type: "referrer_hostname",
       frame_id: "referrer_hostname_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -264,7 +264,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -280,7 +280,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "country",
+      type: "country",
       frame_id: "country_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -298,7 +298,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "browser",
+      type: "browser",
       frame_id: "browser_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -314,7 +314,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "browser",
+      type: "browser",
       frame_id: "browser_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -330,7 +330,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "browser",
+      type: "browser",
       frame_id: "browser_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -346,7 +346,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "device_type",
+      type: "device_type",
       frame_id: "device_type_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -362,7 +362,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "device_type",
+      type: "device_type",
       frame_id: "device_type_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -378,7 +378,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "device_type",
+      type: "device_type",
       frame_id: "device_type_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -394,7 +394,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "device_type",
+      type: "device_type",
       frame_id: "device_type_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -410,7 +410,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "browser",
+      type: "browser",
       frame_id: "browser_stats",
       site: site,
       base_path: "/sites/1/dimensions"
@@ -426,7 +426,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     render_inline(DimensionTableComponent.new(
       stats: stats,
-      dimension_type: "device_type",
+      type: "device_type",
       frame_id: "device_type_stats",
       site: site,
       base_path: "/sites/1/dimensions"
