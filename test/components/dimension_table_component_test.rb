@@ -425,4 +425,20 @@ class DimensionTableComponentTest < ViewComponent::TestCase
 
     assert_selector "td", text: "Unknown"
   end
+
+  def test_renders_unknown_dimension_type_label
+    stat = { dimension_value: "value", pageviews: 100, sessions: 50 }
+    stats = create_paginated_collection([stat])
+    site = sites(:tech_blog)
+
+    render_inline(DimensionTableComponent.new(
+      stats: stats,
+      type: "custom_dimension",
+      frame_id: "custom_dimension_stats",
+      site: site,
+      base_path: "/sites/1/dimensions"
+    ))
+
+    assert_text "Custom dimension"
+  end
 end

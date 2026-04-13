@@ -176,5 +176,18 @@ module Sites
       assert_response :success
       # Only Jan 25 data should be included
     end
+
+    test "filters bounce rate by dimension type and value" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        pageviews: 100,
+        bounced_count: 20
+      )
+
+      get site_bounce_rate_index_url(sites(:tech_blog), dimension_type: "country", dimension_value: "US")
+
+      assert_response :success
+    end
   end
 end

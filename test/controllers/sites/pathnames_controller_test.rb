@@ -266,5 +266,14 @@ module Sites
        # Only Jan 25 data should be included
        assert_select "table"
      end
+
+    test "filters pathnames by dimension type and value" do
+      login(users(:alice))
+      create_daily_stat(sites(:tech_blog))
+
+      get site_pathnames_url(sites(:tech_blog), dimension_type: "country", dimension_value: "US")
+
+      assert_response :success
+    end
   end
 end

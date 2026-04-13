@@ -150,5 +150,18 @@ module Sites
       assert_response :success
       # Only Jan 25 data should be included
     end
+
+    test "filters visitors by dimension type and value" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        visits: 50,
+        sessions: 40
+      )
+
+      get site_visitors_url(sites(:tech_blog), dimension_type: "country", dimension_value: "US")
+
+      assert_response :success
+    end
   end
 end

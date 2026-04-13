@@ -90,4 +90,10 @@ class ReferrerParserTest < ActiveSupport::TestCase
     assert_equal "example.com", result[:hostname]
     assert_equal "/test", result[:pathname]
   end
+
+  test "handles invalid URI with invalid characters" do
+    result = ReferrerParser.parse("ht!tp://exa mple.com/page")
+    assert_nil result[:hostname]
+    assert_nil result[:pathname]
+  end
 end

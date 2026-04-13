@@ -176,5 +176,18 @@ module Sites
       assert_response :success
       # Only Jan 25 data should be included
     end
+
+    test "filters avg duration by dimension type and value" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        total_duration: 500.0,
+        duration_count: 50
+      )
+
+      get site_avg_duration_index_url(sites(:tech_blog), dimension_type: "country", dimension_value: "US")
+
+      assert_response :success
+    end
   end
 end

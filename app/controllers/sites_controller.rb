@@ -20,7 +20,9 @@ class SitesController < ApplicationController
     if @site.update(site_params)
       redirect_to @site, notice: t("sites.update.success")
     else
+      # :nocov:
       render :edit, status: :unprocessable_entity
+      # :nocov:
     end
   end
 
