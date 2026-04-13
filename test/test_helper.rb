@@ -37,7 +37,7 @@ module ActiveSupport
     end
 
     parallelize_teardown do |_worker|
-      SimpleCov.result
+      SimpleCov.result if const_defined?(:SimpleCov)
     end
 
     # Run tests in parallel with specified workers
