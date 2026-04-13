@@ -76,7 +76,7 @@ jobs:
           bundler-cache: true
 
       - name: Set up Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
 
       - name: Run Rails tests
         env:
