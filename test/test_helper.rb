@@ -11,8 +11,11 @@ if ENV["COVERAGE"].present?
   require "simplecov"
   require "simplecov-console"
 
-  SimpleCov.start do
+  SimpleCov.start(:rails) do
     minimum_coverage 100
+
+    add_filter "vendor"
+    add_filter "test"
   end
 
   SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
@@ -27,6 +30,15 @@ end
 
 module ActiveSupport
   class TestCase
+    # SimpleCov set up for parallel tests
+    parallelize_setup do |_worker|
+      SimpleCov.command_name "Job::#{Process.pid}" if const_defined?(:SimpleCov)
+    end
+
+    parallelize_teardown do |_worker|
+      SimpleCov.result
+    end
+
     # Run tests in parallel with specified workers
     parallelize(workers: :number_of_processors)
 
