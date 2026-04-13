@@ -28,11 +28,8 @@ module Sites
 
     test "displays avg duration data with daily interval" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat(
+        sites(:tech_blog),
         pageviews: 100,
         bounced_count: 20,
         total_duration: 500.0,
@@ -78,21 +75,16 @@ module Sites
 
     test "filters avg duration data by pathname when param present" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat(
+        sites(:tech_blog),
         pageviews: 100,
         bounced_count: 20,
         total_duration: 500.0,
         duration_count: 50
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
+      create_daily_stat(
+        sites(:tech_blog),
         pathname: "/about",
-        date: Date.current,
         pageviews: 50,
         bounced_count: 10,
         total_duration: 250.0,
@@ -106,21 +98,16 @@ module Sites
 
     test "chart data includes only filtered pathname" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat(
+        sites(:tech_blog),
         pageviews: 100,
         bounced_count: 20,
         total_duration: 500.0,
         duration_count: 50
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
+      create_daily_stat(
+        sites(:tech_blog),
         pathname: "/about",
-        date: Date.current,
         pageviews: 50,
         bounced_count: 10,
         total_duration: 250.0,
@@ -135,11 +122,8 @@ module Sites
 
     test "renders avg duration chart" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat(
+        sites(:tech_blog),
         pageviews: 100,
         bounced_count: 20,
         total_duration: 500.0,
@@ -154,18 +138,14 @@ module Sites
 
     test "filters avg duration by date range when params present" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 15),
         total_duration: 500.0,
         duration_count: 50
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 25),
         total_duration: 300.0,
         duration_count: 30
@@ -178,18 +158,14 @@ module Sites
 
     test "chart data includes only avg duration within date range" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 15),
         total_duration: 500.0,
         duration_count: 50
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 25),
         total_duration: 300.0,
         duration_count: 30

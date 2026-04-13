@@ -33,57 +33,37 @@ class HourlyPageStatTest < ActiveSupport::TestCase
   end
 
   test "for_site scope filters by site_id" do
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      time_bucket: @time_bucket
-    )
+    create_hourly_stat(@site, pathname: "/test", time_bucket: @time_bucket)
 
     assert_equal 1, HourlyPageStat.for_site(@site.id).count
     assert_equal 0, HourlyPageStat.for_site(999).count
   end
 
   test "for_date_range scope filters by time_bucket" do
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      time_bucket: @time_bucket
-    )
+    create_hourly_stat(@site, pathname: "/test", time_bucket: @time_bucket)
 
     assert_equal 1, HourlyPageStat.for_date_range(@time_bucket - 1.hour, @time_bucket + 1.hour).count
     assert_equal 0, HourlyPageStat.for_date_range(@time_bucket + 2.hours, @time_bucket + 3.hours).count
   end
 
   test "for_hostname scope filters by hostname" do
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      time_bucket: @time_bucket
-    )
+    create_hourly_stat(@site, pathname: "/test", time_bucket: @time_bucket)
 
     assert_equal 1, HourlyPageStat.for_hostname("example.com").count
     assert_equal 0, HourlyPageStat.for_hostname("other.com").count
   end
 
   test "for_pathname scope filters by pathname" do
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      time_bucket: @time_bucket
-    )
+    create_hourly_stat(@site, pathname: "/test", time_bucket: @time_bucket)
 
     assert_equal 1, HourlyPageStat.for_pathname("/test").count
     assert_equal 0, HourlyPageStat.for_pathname("/other").count
   end
 
   test "ordered_by_pageviews orders descending" do
-    HourlyPageStat.create!(site: @site, hostname: "a.com", pathname: "/", time_bucket: @time_bucket, pageviews: 10)
-    HourlyPageStat.create!(site: @site, hostname: "b.com", pathname: "/", time_bucket: @time_bucket, pageviews: 50)
-    HourlyPageStat.create!(site: @site, hostname: "c.com", pathname: "/", time_bucket: @time_bucket, pageviews: 25)
+    create_hourly_stat(@site, hostname: "a.com", time_bucket: @time_bucket, pageviews: 10)
+    create_hourly_stat(@site, hostname: "b.com", time_bucket: @time_bucket, pageviews: 50)
+    create_hourly_stat(@site, hostname: "c.com", time_bucket: @time_bucket, pageviews: 25)
 
     stats = HourlyPageStat.ordered_by_pageviews
 
@@ -91,9 +71,9 @@ class HourlyPageStatTest < ActiveSupport::TestCase
   end
 
   test "ordered_by_time orders descending" do
-    HourlyPageStat.create!(site: @site, hostname: "a.com", pathname: "/", time_bucket: @time_bucket)
-    HourlyPageStat.create!(site: @site, hostname: "b.com", pathname: "/", time_bucket: @time_bucket + 1.hour)
-    HourlyPageStat.create!(site: @site, hostname: "c.com", pathname: "/", time_bucket: @time_bucket - 1.hour)
+    create_hourly_stat(@site, hostname: "a.com", time_bucket: @time_bucket)
+    create_hourly_stat(@site, hostname: "b.com", time_bucket: @time_bucket + 1.hour)
+    create_hourly_stat(@site, hostname: "c.com", time_bucket: @time_bucket - 1.hour)
 
     stats = HourlyPageStat.ordered_by_time
 
@@ -101,43 +81,16 @@ class HourlyPageStatTest < ActiveSupport::TestCase
   end
 
   test "global scope filters by dimension_type = 'global'" do
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      time_bucket: @time_bucket,
-      dimension_type: "global"
-    )
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test2",
-      time_bucket: @time_bucket,
-      dimension_type: "country",
-      dimension_value: "US"
-    )
+    create_hourly_stat(@site, pathname: "/test", time_bucket: @time_bucket, dimension_type: "global")
+    create_hourly_stat(@site, pathname: "/test2", time_bucket: @time_bucket, dimension_type: "country", dimension_value: "US")
 
     assert_equal 1, HourlyPageStat.global.count
     assert_equal "global", HourlyPageStat.global.first.dimension_type
   end
 
   test "for_dimension scope filters by specific dimension type and value" do
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      time_bucket: @time_bucket,
-      dimension_type: "country",
-      dimension_value: "US"
-    )
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test2",
-      time_bucket: @time_bucket,
-      dimension_type: "country",
-      dimension_value: "GB"
-    )
+    create_hourly_stat(@site, pathname: "/test", time_bucket: @time_bucket, dimension_type: "country", dimension_value: "US")
+    create_hourly_stat(@site, pathname: "/test2", time_bucket: @time_bucket, dimension_type: "country", dimension_value: "GB")
 
     assert_equal 1, HourlyPageStat.for_dimension("country", "US").count
     result = HourlyPageStat.for_dimension("country", "US").first
@@ -146,30 +99,9 @@ class HourlyPageStatTest < ActiveSupport::TestCase
   end
 
   test "for_dimension_type scope filters by dimension type" do
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      time_bucket: @time_bucket,
-      dimension_type: "country",
-      dimension_value: "US"
-    )
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test2",
-      time_bucket: @time_bucket,
-      dimension_type: "country",
-      dimension_value: "GB"
-    )
-    HourlyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test3",
-      time_bucket: @time_bucket,
-      dimension_type: "browser",
-      dimension_value: "chrome"
-    )
+    create_hourly_stat(@site, pathname: "/test", time_bucket: @time_bucket, dimension_type: "country", dimension_value: "US")
+    create_hourly_stat(@site, pathname: "/test2", time_bucket: @time_bucket, dimension_type: "country", dimension_value: "GB")
+    create_hourly_stat(@site, pathname: "/test3", time_bucket: @time_bucket, dimension_type: "browser", dimension_value: "chrome")
 
     assert_equal 2, HourlyPageStat.for_dimension_type("country").count
     assert_equal 1, HourlyPageStat.for_dimension_type("browser").count

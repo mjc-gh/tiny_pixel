@@ -76,11 +76,8 @@ module Sites
 
     test "displays dimension data with daily interval" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         dimension_type: "country",
         dimension_value: "US",
         pageviews: 100,
@@ -113,21 +110,16 @@ module Sites
 
     test "filters dimension data by pathname when param present" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         dimension_type: "country",
         dimension_value: "US",
         pageviews: 100,
         sessions: 50
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         pathname: "/about",
-        date: Date.current,
         dimension_type: "country",
         dimension_value: "GB",
         pageviews: 80,
@@ -141,21 +133,16 @@ module Sites
 
     test "filters dimension data by hostname when param present" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         dimension_type: "country",
         dimension_value: "US",
         pageviews: 100,
         sessions: 50
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         hostname: "other.com",
-        pathname: "/",
-        date: Date.current,
         dimension_type: "country",
         dimension_value: "GB",
         pageviews: 80,
@@ -169,20 +156,16 @@ module Sites
 
     test "filters dimension data by date range when params present" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 15),
         dimension_type: "country",
         dimension_value: "US",
         pageviews: 100,
         sessions: 50
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 25),
         dimension_type: "country",
         dimension_value: "GB",
@@ -199,11 +182,8 @@ module Sites
       login(users(:alice))
 
       10.times do |i|
-        DailyPageStat.create!(
-          site: sites(:tech_blog),
-          hostname: "example.com",
-          pathname: "/",
-          date: Date.current,
+        create_daily_stat_with_dimension(
+          sites(:tech_blog),
           dimension_type: "country",
           dimension_value: "C#{i}",
           pageviews: 100 - i,
@@ -220,11 +200,8 @@ module Sites
       login(users(:alice))
 
       6.times do |i|
-        DailyPageStat.create!(
-          site: sites(:tech_blog),
-          hostname: "example.com",
-          pathname: "/",
-          date: Date.current,
+        create_daily_stat_with_dimension(
+          sites(:tech_blog),
           dimension_type: "country",
           dimension_value: "C#{i}",
           pageviews: 100 - i,
@@ -242,11 +219,8 @@ module Sites
       login(users(:alice))
 
       10.times do |i|
-        DailyPageStat.create!(
-          site: sites(:tech_blog),
-          hostname: "example.com",
-          pathname: "/",
-          date: Date.current,
+        create_daily_stat_with_dimension(
+          sites(:tech_blog),
           dimension_type: "country",
           dimension_value: "C#{i}",
           pageviews: 100 - i,
@@ -261,19 +235,16 @@ module Sites
 
     test "aggregates stats by dimension value" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 15),
         dimension_type: "country",
         dimension_value: "US",
         pageviews: 100,
         sessions: 50
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         pathname: "/about",
         date: Date.new(2024, 1, 15),
         dimension_type: "country",
@@ -292,21 +263,15 @@ module Sites
 
     test "orders results by page views descending" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         dimension_type: "country",
         dimension_value: "US",
         pageviews: 50,
         sessions: 25
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         dimension_type: "country",
         dimension_value: "GB",
         pageviews: 100,
@@ -321,21 +286,15 @@ module Sites
 
     test "applies selected dimension value to dimension breakdown table for correct type" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         dimension_type: "country",
         dimension_value: "US",
         pageviews: 100,
         sessions: 50
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat_with_dimension(
+        sites(:tech_blog),
         dimension_type: "browser",
         dimension_value: "1",
         pageviews: 100,

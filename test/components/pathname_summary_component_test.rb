@@ -7,16 +7,6 @@ class PathnameSummaryComponentTest < ViewComponent::TestCase
     @site = sites(:tech_blog)
   end
 
-  def create_paginated_collection(current_page: 1, total_pages: 3, items: nil)
-    stat = build_pageview_stat(pathname: "/", pageviews: 100)
-    collection = items || [stat]
-    collection.define_singleton_method(:current_page) { current_page }
-    collection.define_singleton_method(:total_pages) { total_pages }
-    collection.define_singleton_method(:previous_page) { current_page > 1 ? current_page - 1 : nil }
-    collection.define_singleton_method(:next_page) { current_page < total_pages ? current_page + 1 : nil }
-    collection
-  end
-
   def create_stat(hostname: "example.com", pathname: "/", pageviews: 100)
     DailyPageStat.create!(
       site: @site,
@@ -171,7 +161,7 @@ class PathnameSummaryComponentTest < ViewComponent::TestCase
 
   test "renders pagination when stats has pagination metadata" do
     stat = build_pageview_stat(pathname: "/", pageviews: 100)
-    pagination = create_paginated_collection(current_page: 1, total_pages: 3)
+    pagination = create_paginated_collection([stat], current_page: 1, total_pages: 3)
 
     render_inline(PathnameSummaryComponent.new(
       stats: pagination,
@@ -188,7 +178,7 @@ class PathnameSummaryComponentTest < ViewComponent::TestCase
 
   test "does not render pagination without frame_id" do
     stat = build_pageview_stat(pathname: "/", pageviews: 100)
-    pagination = create_paginated_collection(current_page: 1, total_pages: 3)
+    pagination = create_paginated_collection([stat], current_page: 1, total_pages: 3)
 
     render_inline(PathnameSummaryComponent.new(
       stats: pagination,

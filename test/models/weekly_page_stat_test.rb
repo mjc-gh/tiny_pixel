@@ -33,57 +33,37 @@ class WeeklyPageStatTest < ActiveSupport::TestCase
   end
 
   test "for_site scope filters by site_id" do
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      week_start: @week_start
-    )
+    create_weekly_stat(@site, pathname: "/test", week_start: @week_start)
 
     assert_equal 1, WeeklyPageStat.for_site(@site.id).count
     assert_equal 0, WeeklyPageStat.for_site(999).count
   end
 
   test "for_date_range scope filters by week_start" do
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      week_start: @week_start
-    )
+    create_weekly_stat(@site, pathname: "/test", week_start: @week_start)
 
     assert_equal 1, WeeklyPageStat.for_date_range(@week_start - 1.week, @week_start + 1.week).count
     assert_equal 0, WeeklyPageStat.for_date_range(@week_start + 2.weeks, @week_start + 3.weeks).count
   end
 
   test "for_hostname scope filters by hostname" do
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      week_start: @week_start
-    )
+    create_weekly_stat(@site, pathname: "/test", week_start: @week_start)
 
     assert_equal 1, WeeklyPageStat.for_hostname("example.com").count
     assert_equal 0, WeeklyPageStat.for_hostname("other.com").count
   end
 
   test "for_pathname scope filters by pathname" do
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      week_start: @week_start
-    )
+    create_weekly_stat(@site, pathname: "/test", week_start: @week_start)
 
     assert_equal 1, WeeklyPageStat.for_pathname("/test").count
     assert_equal 0, WeeklyPageStat.for_pathname("/other").count
   end
 
   test "ordered_by_pageviews orders descending" do
-    WeeklyPageStat.create!(site: @site, hostname: "a.com", pathname: "/", week_start: @week_start, pageviews: 10)
-    WeeklyPageStat.create!(site: @site, hostname: "b.com", pathname: "/", week_start: @week_start, pageviews: 50)
-    WeeklyPageStat.create!(site: @site, hostname: "c.com", pathname: "/", week_start: @week_start, pageviews: 25)
+    create_weekly_stat(@site, hostname: "a.com", week_start: @week_start, pageviews: 10)
+    create_weekly_stat(@site, hostname: "b.com", week_start: @week_start, pageviews: 50)
+    create_weekly_stat(@site, hostname: "c.com", week_start: @week_start, pageviews: 25)
 
     stats = WeeklyPageStat.ordered_by_pageviews
 
@@ -91,9 +71,9 @@ class WeeklyPageStatTest < ActiveSupport::TestCase
   end
 
   test "ordered_by_week orders descending" do
-    WeeklyPageStat.create!(site: @site, hostname: "a.com", pathname: "/", week_start: @week_start)
-    WeeklyPageStat.create!(site: @site, hostname: "b.com", pathname: "/", week_start: @week_start + 1.week)
-    WeeklyPageStat.create!(site: @site, hostname: "c.com", pathname: "/", week_start: @week_start - 1.week)
+    create_weekly_stat(@site, hostname: "a.com", week_start: @week_start)
+    create_weekly_stat(@site, hostname: "b.com", week_start: @week_start + 1.week)
+    create_weekly_stat(@site, hostname: "c.com", week_start: @week_start - 1.week)
 
     stats = WeeklyPageStat.ordered_by_week
 
@@ -101,43 +81,16 @@ class WeeklyPageStatTest < ActiveSupport::TestCase
   end
 
   test "global scope filters by dimension_type = 'global'" do
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      week_start: @week_start,
-      dimension_type: "global"
-    )
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test2",
-      week_start: @week_start,
-      dimension_type: "country",
-      dimension_value: "US"
-    )
+    create_weekly_stat(@site, pathname: "/test", week_start: @week_start, dimension_type: "global")
+    create_weekly_stat(@site, pathname: "/test2", week_start: @week_start, dimension_type: "country", dimension_value: "US")
 
     assert_equal 1, WeeklyPageStat.global.count
     assert_equal "global", WeeklyPageStat.global.first.dimension_type
   end
 
   test "for_dimension scope filters by specific dimension type and value" do
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      week_start: @week_start,
-      dimension_type: "country",
-      dimension_value: "US"
-    )
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test2",
-      week_start: @week_start,
-      dimension_type: "country",
-      dimension_value: "GB"
-    )
+    create_weekly_stat(@site, pathname: "/test", week_start: @week_start, dimension_type: "country", dimension_value: "US")
+    create_weekly_stat(@site, pathname: "/test2", week_start: @week_start, dimension_type: "country", dimension_value: "GB")
 
     assert_equal 1, WeeklyPageStat.for_dimension("country", "US").count
     result = WeeklyPageStat.for_dimension("country", "US").first
@@ -146,30 +99,9 @@ class WeeklyPageStatTest < ActiveSupport::TestCase
   end
 
   test "for_dimension_type scope filters by dimension type" do
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test",
-      week_start: @week_start,
-      dimension_type: "country",
-      dimension_value: "US"
-    )
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test2",
-      week_start: @week_start,
-      dimension_type: "country",
-      dimension_value: "GB"
-    )
-    WeeklyPageStat.create!(
-      site: @site,
-      hostname: "example.com",
-      pathname: "/test3",
-      week_start: @week_start,
-      dimension_type: "browser",
-      dimension_value: "chrome"
-    )
+    create_weekly_stat(@site, pathname: "/test", week_start: @week_start, dimension_type: "country", dimension_value: "US")
+    create_weekly_stat(@site, pathname: "/test2", week_start: @week_start, dimension_type: "country", dimension_value: "GB")
+    create_weekly_stat(@site, pathname: "/test3", week_start: @week_start, dimension_type: "browser", dimension_value: "chrome")
 
     assert_equal 2, WeeklyPageStat.for_dimension_type("country").count
     assert_equal 1, WeeklyPageStat.for_dimension_type("browser").count

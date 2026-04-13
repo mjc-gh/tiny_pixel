@@ -28,11 +28,8 @@ module Sites
 
     test "displays visitors data with daily interval" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat(
+        sites(:tech_blog),
         visits: 50,
         sessions: 40
       )
@@ -76,19 +73,14 @@ module Sites
 
     test "filters visitors by pathname when param present" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat(
+        sites(:tech_blog),
         visits: 50,
         sessions: 40
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
+      create_daily_stat(
+        sites(:tech_blog),
         pathname: "/about",
-        date: Date.current,
         visits: 25,
         sessions: 20
       )
@@ -100,19 +92,14 @@ module Sites
 
     test "chart data includes only filtered pathname" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
-        date: Date.current,
+      create_daily_stat(
+        sites(:tech_blog),
         visits: 50,
         sessions: 40
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
+      create_daily_stat(
+        sites(:tech_blog),
         pathname: "/about",
-        date: Date.current,
         visits: 25,
         sessions: 20
       )
@@ -125,18 +112,14 @@ module Sites
 
     test "filters visitors by date range when params present" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 15),
         visits: 50,
         sessions: 40
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 25),
         visits: 30,
         sessions: 25
@@ -149,18 +132,14 @@ module Sites
 
     test "chart data includes only visitors within date range" do
       login(users(:alice))
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 15),
         visits: 50,
         sessions: 40
       )
-      DailyPageStat.create!(
-        site: sites(:tech_blog),
-        hostname: "example.com",
-        pathname: "/",
+      create_daily_stat(
+        sites(:tech_blog),
         date: Date.new(2024, 1, 25),
         visits: 30,
         sessions: 25

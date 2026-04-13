@@ -4,6 +4,9 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 
+# Load support helpers
+Dir[File.expand_path("support/**/*.rb", __dir__)].each { |f| require f }
+
 if ENV["COVERAGE"].present?
   require "simplecov"
   require "simplecov-console"
@@ -29,7 +32,15 @@ module ActiveSupport
 
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
+
+    # Include test helpers
+    include StatHelpers
+    include PaginationHelpers
   end
+end
+
+class ViewComponent::TestCase
+  include PaginationHelpers
 end
 
 class ActionDispatch::IntegrationTest
