@@ -9,11 +9,7 @@ module Sites
 
     def index
       @display_hostname = @site.display_hostname
-      @pathname_stats = build_pathname_stats
-
-      stats_array = @pathname_stats
-        .map { |key, metrics| build_stat_object(key, metrics, @display_hostname) }
-        .sort_by { |stat| -stat.pageviews }
+      stats_array = build_pathname_stats
 
       @stats = WillPaginate::Collection.create(
         params[:page] || 1,
@@ -44,70 +40,35 @@ module Sites
 
       base_query = apply_date_range_filter(base_query)
 
-      stats = {}
+      # Build grouped aggregate query
+      group_columns = @display_hostname ? [:hostname, :pathname] : [:pathname]
 
-      if @display_hostname
-        # Group by hostname and pathname
-        hostname_pathnames = base_query.distinct.pluck(:hostname, :pathname)
-        hostname_pathnames.each do |hostname, pathname|
-          query = base_query.where(hostname: hostname, pathname: pathname)
-          key = [hostname, pathname]
-          stats[key] = [
-            query.sum(:pageviews),
-            query.sum(:unique_pageviews),
-            query.sum(:visits),
-            query.sum(:sessions),
-            query.sum(:bounced_count),
-            query.sum(:total_duration),
-            query.sum(:duration_count)
-          ]
-        end
-      else
-        # Group by pathname only
-        pathnames = base_query.distinct.pluck(:pathname)
-        pathnames.each do |pathname|
-          query = base_query.where(pathname: pathname)
-          stats[pathname] = [
-            query.sum(:pageviews),
-            query.sum(:unique_pageviews),
-            query.sum(:visits),
-            query.sum(:sessions),
-            query.sum(:bounced_count),
-            query.sum(:total_duration),
-            query.sum(:duration_count)
-          ]
-        end
-      end
-
-      stats
+      base_query
+        .group(*group_columns)
+        .select(build_select_clause(group_columns))
+        .order("SUM(pageviews) DESC")
+        .map { |row| build_stat_from_row(row) }
     end
 
-    def build_stat_object(key, metrics, display_hostname)
-      if display_hostname
-        hostname, pathname = key
-        PageviewStat.new(
-          hostname: hostname,
-          pathname: pathname,
-          pageviews: metrics[0],
-          unique_pageviews: metrics[1],
-          visits: metrics[2],
-          sessions: metrics[3],
-          bounced_count: metrics[4],
-          total_duration: metrics[5],
-          duration_count: metrics[6]
-        )
-      else
-        PageviewStat.new(
-          pathname: key,
-          pageviews: metrics[0],
-          unique_pageviews: metrics[1],
-          visits: metrics[2],
-          sessions: metrics[3],
-          bounced_count: metrics[4],
-          total_duration: metrics[5],
-          duration_count: metrics[6]
-        )
-      end
+    def build_select_clause(group_columns)
+      columns = group_columns.map(&:to_s)
+      aggregates = %w[pageviews unique_pageviews visits sessions bounced_count total_duration duration_count]
+        .map { |col| "SUM(#{col}) as #{col}" }
+      (columns + aggregates).join(", ")
+    end
+
+    def build_stat_from_row(row)
+      PageviewStat.new(
+        hostname: @display_hostname ? row.hostname : nil,
+        pathname: row.pathname,
+        pageviews: row.pageviews.to_i,
+        unique_pageviews: row.unique_pageviews.to_i,
+        visits: row.visits.to_i,
+        sessions: row.sessions.to_i,
+        bounced_count: row.bounced_count.to_i,
+        total_duration: row.total_duration.to_f,
+        duration_count: row.duration_count.to_i
+      )
     end
   end
 end
