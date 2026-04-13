@@ -16,7 +16,7 @@
 
 **Formatting**: Ruby 3.4, 2-space indentation, Unix line endings (LF)
 
-**Required**: 
+**Required**:
 - Frozen string literals at top of `.rb` files: `# frozen_string_literal: true`
 - Snake case naming: `req_1` not `req1`
 - No unnecessary comments or tests for built-in validations
@@ -32,7 +32,7 @@
 - Use explicit foreign/primary keys when needed
 - Use `self.table_name` only if non-standard
 
-**Controllers**: RESTful conventions with strong parameters  
+**Controllers**: RESTful conventions with strong parameters
 **Views**: Render JSON or HTML per endpoint purpose
 
 ## References
@@ -42,7 +42,7 @@
 - **Tracking Script**: See `@doc/TRACKING_SCRIPT.md` for implementation details of `pkg/tiny_pixel.js`
 - **UI Styles**: See `@doc/STYLES.md` for guidelines on CSS, Tailwind, and icons
 - **ViewComponents**: See `@app/components`
-- **Stack**: Minitest, simplecov, RuboCop-Rails, Brakeman
+- **Testing Stack**: Minitest, simplecov (with 100% coverage required), RuboCop-Rails, Brakeman
 - **Databases**: SQLite (primary + ingestion)
 
 ## Stimulus Controller Patterns
