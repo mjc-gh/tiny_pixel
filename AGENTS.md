@@ -6,11 +6,11 @@
 
 | Task | Command |
 |------|---------|
-| Generate | `be rails g [model\|controller\|job\|component]` |
-| Test | `be rails t` \| `be rails t test/models/site_test.rb` \| `be rails t --name pattern` |
-| Coverage | `COVERAGE=1 be rails t` |
-| Lint | `be rubocop` |
-| Auto-fix | `be rubocop -A` |
+| Generate | `./bin/rails g [model\|controller\|job\|component]` |
+| Test | `./bin/rails t` \| `./bin/rails t test/models/site_test.rb` \| `./bin/rails t --name pattern` |
+| Coverage | `COVERAGE=1 ./bin/rails t` |
+| Lint | `./bin/rubocop` |
+| Auto-fix | `./bin/rubocop -A` |
 
 ## Code Style
 
