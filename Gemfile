@@ -2,7 +2,6 @@ source "https://rubygems.org"
 
 gem "rails", "~> 8.1"
 
-gem 'whenever', require: false
 gem "concurrent-ruby-edge", "~> 0.7.1", require: "concurrent-edge"
 gem "importmap-rails"
 gem "revise_auth"
