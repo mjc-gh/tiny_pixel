@@ -208,6 +208,7 @@ GEM
     minitest (6.0.3)
       drb (~> 2.0)
       prism (~> 1.5)
+    minitest-mock (5.27.0)
     msgpack (1.8.0)
     nenv (0.3.0)
     net-imap (0.6.3)
@@ -482,6 +483,7 @@ DEPENDENCIES
   jbuilder
   kamal
   maxmind-db
+  minitest-mock
   propshaft
   pry
   puma

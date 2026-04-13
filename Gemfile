@@ -29,6 +29,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "pry"
 
+  gem "minitest-mock"
+
   gem "rubocop"
   gem "rubocop-minitest"
   gem "rubocop-rails"

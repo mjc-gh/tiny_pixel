@@ -1,4 +1,5 @@
 require "active_support/core_ext/integer/time"
+require_relative "../lib/middlewares/silence_request"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -88,4 +89,7 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Do not log certain requests
+  config.middleware.use Middlewares::SilenceRequest, paths: %w[/up /_/pixel.gif]
 end
