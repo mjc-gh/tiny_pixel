@@ -57,3 +57,4 @@ end
 gem "view_component", "~> 4.6"
 gem "chartkick"
 gem "will_paginate"
+gem "heroicon-rails", github: "mattes/heroicon-rails"

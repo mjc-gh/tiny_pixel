@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/mattes/heroicon-rails.git
+  revision: 5d73cb966e9551138561ed85e9c19fd9c95011f9
+  specs:
+    heroicon-rails (0.3.1)
+      activesupport (>= 8.0)
+      nokogiri (>= 1.16)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -476,6 +484,7 @@ DEPENDENCIES
   guard
   guard-minitest
   guard-rubocop
+  heroicon-rails!
   importmap-rails
   jbuilder
   kamal

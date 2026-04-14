@@ -2,17 +2,23 @@
 
 ## Icons
 
-This project exclusively uses [Heroicons](https://heroicons.com/) for all icons.
+This project uses the [heroicon-rails](https://github.com/mattes/heroicon-rails) gem to render [Heroicons](https://heroicons.com/) consistently throughout the application.
 
 ### Usage Pattern
 
-Icons are rendered as inline SVGs using the **outline** style (24x24 viewBox, stroke-based):
+Icons are rendered using the `heroicon` helper, which supports different icon types (`:outline`, `:mini`, etc.):
 
 ```erb
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-  <path stroke-linecap="round" stroke-linejoin="round" d="..." />
-</svg>
+<%= heroicon "eye", type: :outline, class: "h-5 w-5" %>
+<%= heroicon "chevron-left", type: :mini, class: "h-5 w-5" %>
 ```
+
+### Icon Types
+
+| Type | Use Case | Scale |
+|------|----------|-------|
+| `:outline` | Default icons, buttons, navigation | 24x24 viewBox |
+| `:mini` | Pagination, compact spaces | 20x20 viewBox |
 
 ### Standard Sizes
 
@@ -23,22 +29,26 @@ Icons are rendered as inline SVGs using the **outline** style (24x24 viewBox, st
 
 ### Icon Reference
 
-| Use Case | Heroicon Name |
-|----------|---------------|
-| Light mode toggle | `sun` |
-| Dark mode toggle | `moon` |
-| Settings | `cog-8-tooth` |
-| Menu open | `bars-3` |
-| Menu close | `x-mark` |
-| Previous page | `chevron-left` |
-| Next page | `chevron-right` |
+| Use Case | Heroicon Name | Type |
+|----------|---------------|------|
+| Light mode toggle | `sun` | `:outline` |
+| Dark mode toggle | `moon` | `:outline` |
+| Settings | `cog-8-tooth` | `:outline` |
+| Menu open | `bars-3` | `:outline` |
+| Menu close | `x-mark` | `:outline` |
+| Previous page | `chevron-left` | `:mini` |
+| Next page | `chevron-right` | `:mini` |
+| Eye (password visible) | `eye` | `:outline` |
+| Eye slash (password hidden) | `eye-slash` | `:outline` |
+| Code snippet | `code-bracket` | `:outline` |
 
 ### Guidelines
 
-1. Always use the **outline** variant for consistency
-2. Use `stroke="currentColor"` to inherit text color from parent
+1. Always use the `heroicon` helper from the gem for consistency
+2. Use `type: :outline` by default, `type: :mini` for pagination and compact spaces
 3. Apply sizing via Tailwind classes (`h-5 w-5`, etc.)
-4. Do not use emoji or text characters for icons
+4. Use `data:` attribute for Stimulus controller integration: `<%= heroicon "x-mark", data: { "action-target": "icon" }, class: "h-5 w-5" %>`
+5. Do not use emoji or inline SVG elements for icons
 
 ## CSS Guidelines
 
@@ -118,7 +128,7 @@ dialog.slideover[open] {
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-lg font-bold">Title</h2>
       <button type="button" data-action="slideover#close" class="text-content-secondary hover:text-content-primary">
-        <!-- x-mark icon -->
+         <%= heroicon "x-mark", type: :outline, class: "h-5 w-5" %>
       </button>
     </div>
     

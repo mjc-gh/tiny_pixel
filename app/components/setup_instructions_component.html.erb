@@ -3,11 +3,9 @@
     <!-- Header with close button -->
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-lg font-bold text-content-primary"><%= t("sites.instructions.title") %></h2>
-      <button type="button" data-action="slideover#close" class="text-content-secondary hover:text-content-primary transition-colors p-1" aria-label="Close">
-        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+       <button type="button" data-action="slideover#close" class="text-content-secondary hover:text-content-primary transition-colors p-1" aria-label="Close">
+         <%= heroicon "x-mark", type: :outline, class: "h-5 w-5" %>
+       </button>
     </div>
 
     <!-- Description -->
