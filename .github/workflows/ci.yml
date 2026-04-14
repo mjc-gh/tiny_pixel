@@ -81,6 +81,7 @@ jobs:
       - name: Run Rails tests
         env:
           RAILS_ENV: test
+          COVERAGE: 1
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test test:system
 
@@ -93,6 +94,14 @@ jobs:
         with:
           name: screenshots
           path: ${{ github.workspace }}/tmp/screenshots
+          if-no-files-found: ignore
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: coverage-report
+          path: ${{ github.workspace }}/coverage
           if-no-files-found: ignore
 
   build_and_push_docker:
