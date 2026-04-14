@@ -21,6 +21,12 @@
 
         <div class="space-y-4">
           <div>
+            <%= form.label :name, t("sites.edit.name_label"), class: "block text-sm font-medium text-content-label mb-1" %>
+            <%= form.text_field :name, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+            <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.name_help") %></p>
+          </div>
+
+          <div>
             <%= form.label :salt_duration, t("sites.edit.salt_duration_label"), class: "block text-sm font-medium text-content-label mb-1" %>
             <%= form.select :salt_duration, Site.salt_durations.keys.map { |key| [t("sites.salt_durations.#{key}"), key] }, {}, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
             <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.salt_duration_help") %></p>

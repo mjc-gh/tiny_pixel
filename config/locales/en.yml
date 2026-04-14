@@ -51,6 +51,8 @@ en:
     edit:
       title: "Site Settings"
       settings: "Settings"
+      name_label: "Site Name"
+      name_help: "The display name for your site (max 60 characters)"
       salt_duration_label: "Salt Cycling Frequency"
       salt_duration_help: "Controls how often the site's visitor salt is rotated"
       display_hostname_label: "Display Hostname"

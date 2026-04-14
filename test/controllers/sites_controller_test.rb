@@ -132,13 +132,14 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit displays current site settings" do
-    login(users(:alice))
+   login(users(:alice))
 
-    get edit_site_url(sites(:my_blog))
+   get edit_site_url(sites(:my_blog))
 
-    assert_select "select#site_salt_duration"
-    assert_select "input#site_display_hostname[type='checkbox']"
-  end
+   assert_select "input#site_name"
+   assert_select "select#site_salt_duration"
+   assert_select "input#site_display_hostname[type='checkbox']"
+ end
 
   test "update redirects unauthenticated users to login" do
     patch site_url(sites(:my_blog)), params: { site: { salt_duration: "weekly" } }
@@ -176,10 +177,39 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update redirects to site show page on success" do
+   login(users(:alice))
+
+   patch site_url(sites(:my_blog)), params: { site: { salt_duration: "monthly" } }
+
+   assert_redirected_to site_url(sites(:my_blog))
+ end
+
+  test "update saves valid name changes" do
+    login(users(:alice))
+    original_name = sites(:my_blog).name
+
+    patch site_url(sites(:my_blog)), params: { site: { name: "Updated Blog Name" } }
+
+    sites(:my_blog).reload
+    assert_equal "Updated Blog Name", sites(:my_blog).name
+    assert_not_equal original_name, sites(:my_blog).name
+  end
+
+  test "update rejects empty name" do
     login(users(:alice))
 
-    patch site_url(sites(:my_blog)), params: { site: { salt_duration: "monthly" } }
+    patch site_url(sites(:my_blog)), params: { site: { name: "" } }
 
-    assert_redirected_to site_url(sites(:my_blog))
+    assert_response :unprocessable_entity
+    assert_select ".bg-danger-bg"
+  end
+
+  test "update rejects name exceeding maximum length" do
+    login(users(:alice))
+
+    patch site_url(sites(:my_blog)), params: { site: { name: "a" * 61 } }
+
+    assert_response :unprocessable_entity
+    assert_select ".bg-danger-bg"
   end
 end

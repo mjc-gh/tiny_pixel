@@ -20,9 +20,7 @@ class SitesController < ApplicationController
     if @site.update(site_params)
       redirect_to @site, notice: t("sites.update.success")
     else
-      # :nocov:
       render :edit, status: :unprocessable_entity
-      # :nocov:
     end
   end
 
@@ -33,6 +31,6 @@ class SitesController < ApplicationController
   end
 
   def site_params
-    params.require(:site).permit(:salt_duration, :display_hostname)
+    params.require(:site).permit(:name, :salt_duration, :display_hostname)
   end
 end
