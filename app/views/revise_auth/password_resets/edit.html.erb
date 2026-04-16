@@ -2,7 +2,7 @@
   <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
     <h1 class="text-2xl font-bold text-content-primary mb-6"><%=t ".reset_password" %></h1>
 
-    <%= form_with model: @user, url: password_reset_path, class: "space-y-4" do |form| %>
+    <%= default_form_with model: @user, url: password_reset_path do |form| %>
       <% if form.object.errors.any? %>
         <div class="bg-danger-bg border border-danger-border rounded-md p-4">
           <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
@@ -14,33 +14,31 @@
       <% end %>
 
       <div data-controller="password-visibility">
-        <%= form.label :password, class: "block text-sm font-medium text-content-label mb-1" %>
         <div class="relative">
-          <%= form.password_field :password, required: true, data: { password_visibility_target: "input" }, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
-          <button type="button" data-action="password-visibility#toggle" class="absolute inset-y-0 right-0 pr-3 flex items-center text-content-secondary hover:text-content-primary">
+          <%= form.password_field :password, required: true, data: { password_visibility_target: "input" } %>
+          <button type="button" data-action="password-visibility#toggle" class="h-5 w-5 absolute inset-y-0 right-2 top-8.5 flex items-center text-content-secondary hover:text-content-primary">
             <!-- eye-slash icon (default, shown when masked) -->
-            <%= heroicon "eye-slash", type: :outline, data: { "password-visibility-target": "hideIcon" }, class: "h-5 w-5" %>
+            <%= heroicon "eye-slash", type: :outline, "data-password-visibility-target": "hideIcon", class: "h-5 w-5" %>
             <!-- eye icon (hidden, shown when visible) -->
-            <%= heroicon "eye", type: :outline, data: { "password-visibility-target": "showIcon" }, class: "hidden h-5 w-5" %>
+            <%= heroicon "eye", type: :outline, "data-password-visibility-target": "showIcon", class: "hidden h-5 w-5" %>
           </button>
         </div>
       </div>
 
       <div data-controller="password-visibility">
-        <%= form.label :password_confirmation, class: "block text-sm font-medium text-content-label mb-1" %>
         <div class="relative">
-          <%= form.password_field :password_confirmation, required: true, data: { password_visibility_target: "input" }, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
-          <button type="button" data-action="password-visibility#toggle" class="absolute inset-y-0 right-0 pr-3 flex items-center text-content-secondary hover:text-content-primary">
+          <%= form.password_field :password_confirmation, required: true, data: { password_visibility_target: "input" } %>
+          <button type="button" data-action="password-visibility#toggle" class="h-5 w-5 absolute inset-y-0 right-2 top-8.5 flex items-center text-content-secondary hover:text-content-primary">
             <!-- eye-slash icon (default, shown when masked) -->
-            <%= heroicon "eye-slash", type: :outline, data: { "password-visibility-target": "hideIcon" }, class: "h-5 w-5" %>
+            <%= heroicon "eye-slash", type: :outline, "data-password-visibility-target": "hideIcon", class: "h-5 w-5" %>
             <!-- eye icon (hidden, shown when visible) -->
-            <%= heroicon "eye", type: :outline, data: { "password-visibility-target": "showIcon" }, class: "hidden h-5 w-5" %>
+            <%= heroicon "eye", type: :outline, "data-password-visibility-target": "showIcon", class: "hidden h-5 w-5" %>
           </button>
         </div>
       </div>
 
       <div class="pt-2">
-        <%= form.button t(".reset_password"), class: "w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium" %>
+        <%= form.button t(".reset_password"), class: "w-full" %>
       </div>
     <% end %>
   </div>

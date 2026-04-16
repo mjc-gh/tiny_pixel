@@ -5,7 +5,7 @@
   </div>
 
   <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
-    <%= form_with model: @site, local: true, class: "space-y-4" do |form| %>
+    <%= default_form_with model: @site, local: true do |form| %>
       <% if @site.errors.any? %>
         <div class="bg-danger-bg border border-danger-border rounded-md p-4 mb-4">
           <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
@@ -21,27 +21,25 @@
 
         <div class="space-y-4">
           <div>
-            <%= form.label :name, t("sites.edit.name_label"), class: "block text-sm font-medium text-content-label mb-1" %>
-            <%= form.text_field :name, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+            <%= form.text_field :name, label: t("sites.edit.name_label") %>
             <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.name_help") %></p>
           </div>
 
           <div>
-            <%= form.label :salt_duration, t("sites.edit.salt_duration_label"), class: "block text-sm font-medium text-content-label mb-1" %>
-            <%= form.select :salt_duration, Site.salt_durations.keys.map { |key| [t("sites.salt_durations.#{key}"), key] }, {}, class: "w-full px-3 py-2 border border-input-border rounded-md bg-input-bg text-content-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" %>
+            <%= form.select :salt_duration, Site.salt_durations.keys.map { |key| [t("sites.salt_durations.#{key}"), key] }, {}, label: t("sites.edit.salt_duration_label") %>
             <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.salt_duration_help") %></p>
           </div>
 
           <div>
             <label class="flex items-center gap-3 cursor-pointer">
-              <%= form.check_box :display_hostname, class: "rounded border-input-border bg-input-bg text-primary focus:ring-primary focus:ring-2" %>
+              <%= form.check_box :display_hostname %>
               <span class="text-sm font-medium text-content-label"><%= t("sites.edit.display_hostname_label") %></span>
             </label>
             <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.display_hostname_help") %></p>
           </div>
 
           <div>
-            <%= form.button t("common.save"), class: "bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium" %>
+            <%= form.button t("common.save") %>
           </div>
         </div>
       </fieldset>

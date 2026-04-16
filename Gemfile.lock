@@ -6,6 +6,13 @@ GIT
       activesupport (>= 8.0)
       nokogiri (>= 1.16)
 
+GIT
+  remote: https://github.com/mjc-gh/form_buildable.git
+  revision: aaea67c6bbce27e59d421c036a58c52a65d67510
+  specs:
+    form_buildable (0.1.0)
+      rails (>= 7.0.8)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -481,6 +488,7 @@ DEPENDENCIES
   chartkick
   concurrent-ruby-edge (~> 0.7.1)
   debug
+  form_buildable!
   guard
   guard-minitest
   guard-rubocop
