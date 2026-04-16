@@ -14,13 +14,13 @@
 
 ## Code Style
 
-**Formatting**: Ruby 3.4, 2-space indentation, Unix line endings (LF)
+**Formatting**: Ruby 4, 2-space indentation, Unix line endings (LF)
 
 **Required**:
 - Frozen string literals at top of `.rb` files: `# frozen_string_literal: true`
 - Snake case naming: `req_1` not `req1`
-- No unnecessary comments or tests for built-in validations
 - One class per `.rb` file
+- Do not add unnecessary code comments
 
 **Structure**:
 - Callbacks → Enums → Scopes → Validations (in class body)
@@ -31,9 +31,16 @@
 - Use explicit foreign/primary keys when needed
 - Use `self.table_name` only if non-standard
 
-**Controllers**: RESTful conventions with strong parameters
+**Controllers**:
+- RESTful conventions with strong parameters
+- Prefer resource routing
 
-**Views**: Render JSON or HTML per endpoint purpose
+**Views**:
+- Render JSON or HTML per endpoint purpose
+
+**Testing**:
+- Prefer less test cases while maximizing code coverage
+- Don't test framework features (validations, relations, other declarative APIs)
 
 ## References
 
