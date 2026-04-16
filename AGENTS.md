@@ -20,12 +20,11 @@
 - Frozen string literals at top of `.rb` files: `# frozen_string_literal: true`
 - Snake case naming: `req_1` not `req1`
 - No unnecessary comments or tests for built-in validations
+- One class per `.rb` file
 
 **Structure**:
 - Callbacks → Enums → Scopes → Validations (in class body)
 - Scopes as lambdas: `scope :name, -> { where(...) }`
-- Rails exceptions: `ActiveRecord::RecordNotFound`, `ActiveRecord::ValidationError`
-- One class per Ruby `.rb` file
 
 **Models**:
 - Inherit from `ApplicationRecord` (main) or `AnalyticsRecord` (analytics-only)
@@ -33,6 +32,7 @@
 - Use `self.table_name` only if non-standard
 
 **Controllers**: RESTful conventions with strong parameters
+
 **Views**: Render JSON or HTML per endpoint purpose
 
 ## References
