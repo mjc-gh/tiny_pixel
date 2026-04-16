@@ -18,9 +18,9 @@
         <div data-controller="theme">
            <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="theme#toggle">
              <!-- Sun icon (shown when in dark mode, click to switch to light) -->
-             <%= heroicon "sun", type: :outline, data: { "theme-target": "lightIcon" }, class: "hidden h-5 w-5" %>
+             <%= heroicon "sun", type: :outline, "data-theme-target": "lightIcon", class: "hidden h-5 w-5" %>
              <!-- Moon icon (shown when in light mode, click to switch to dark) -->
-             <%= heroicon "moon", type: :outline, data: { "theme-target": "darkIcon" }, class: "h-5 w-5" %>
+             <%= heroicon "moon", type: :outline, "data-theme-target": "darkIcon", class: "h-5 w-5" %>
            </button>
         </div>
       </div>
@@ -30,15 +30,15 @@
         <!-- Theme toggle button (mobile) -->
         <div data-controller="theme">
            <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="theme#toggle">
-             <%= heroicon "sun", type: :outline, data: { "theme-target": "lightIcon" }, class: "hidden h-6 w-6" %>
-             <%= heroicon "moon", type: :outline, data: { "theme-target": "darkIcon" }, class: "h-6 w-6" %>
+             <%= heroicon "sun", type: :outline, "data-theme-target": "lightIcon", class: "hidden h-6 w-6" %>
+             <%= heroicon "moon", type: :outline, "data-theme-target": "darkIcon", class: "h-6 w-6" %>
            </button>
         </div>
 
          <!-- Hamburger button -->
          <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="mobile-menu#toggle">
-           <%= heroicon "bars-3", type: :outline, data: { "mobile-menu-target": "openIcon" }, class: "h-6 w-6" %>
-           <%= heroicon "x-mark", type: :outline, data: { "mobile-menu-target": "closeIcon" }, class: "hidden h-6 w-6" %>
+           <%= heroicon "bars-3", type: :outline, "data-mobile-menu-target": "openIcon", class: "h-6 w-6" %>
+           <%= heroicon "x-mark", type: :outline, "data-mobile-menu-target": "closeIcon", class: "hidden h-6 w-6" %>
          </button>
       </div>
     </div>
