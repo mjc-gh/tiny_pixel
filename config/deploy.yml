@@ -3,10 +3,10 @@ image: ghcr.io/mjc-gh/tiny_pixel
 servers:
   web:
     hosts:
-      - <%= ENV.fetch("KAMAL_WEB_HOST"] %>
+      - <%= ENV.fetch("KAMAL_WEB_HOST") %>
   workers:
     hosts:
-      - <%= ENV.fetch("KAMAL_WEB_HOST"] %>
+      - <%= ENV.fetch("KAMAL_WEB_HOST") %>
     cmd: ./bin/jobs
 registry:
   server: ghcr.io
@@ -20,8 +20,13 @@ builder:
 env:
   secret:
     - RAILS_MASTER_KEY
-
 proxy:
   hosts:
-    - tp.michaeljcoyne.me
+    - "<%= ENV.fetch("KAMAL_PROXY_HOST") %>"
   ssl: true
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
