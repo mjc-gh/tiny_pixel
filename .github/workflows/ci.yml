@@ -50,8 +50,11 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Lint code for consistent style
+      - name: Lint with rubocop
         run: bin/rubocop -f github
+
+      - name: Lint with herb analyze
+        run: bin/herb analyze .
 
   test:
     runs-on: ubuntu-latest
