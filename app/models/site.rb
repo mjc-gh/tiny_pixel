@@ -75,15 +75,6 @@ class Site < ApplicationRecord
     self.salt_last_cycled_at = Time.current
   end
 
-  def salt_cycle_due?
-    cutoff = case salt_duration
-             when "daily" then 1.day.ago
-             when "weekly" then 1.week.ago
-             when "monthly" then 1.month.ago
-    end
-    salt_last_cycled_at <= cutoff
-  end
-
   def session_timeout
     session_timeout_minutes.minutes
   end

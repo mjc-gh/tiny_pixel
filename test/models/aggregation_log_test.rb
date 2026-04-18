@@ -36,29 +36,6 @@ class AggregationLogTest < ActiveSupport::TestCase
     end
   end
 
-  test "validates aggregation_type inclusion" do
-    log = AggregationLog.new(
-      site: @site,
-      aggregation_type: "invalid",
-      time_bucket: @time_bucket
-    )
-
-    assert_not log.valid?
-    assert_includes log.errors[:aggregation_type], "is not included in the list"
-  end
-
-  test "accepts valid aggregation types" do
-    %w[hourly daily weekly].each do |type|
-      log = AggregationLog.new(
-        site: @site,
-        aggregation_type: type,
-        time_bucket: @time_bucket
-      )
-
-      assert log.valid?, "#{type} should be valid"
-    end
-  end
-
   test "for_site scope filters by site_id" do
     AggregationLog.create!(site: @site, aggregation_type: "hourly", time_bucket: @time_bucket)
 

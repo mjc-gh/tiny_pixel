@@ -3,64 +3,26 @@
 require "test_helper"
 
 class DimensionTableComponentTest < ViewComponent::TestCase
-  def test_renders_countries_label
-    stats = create_paginated_collection([])
-    site = sites(:tech_blog)
+  [
+    ["country", "Countries", "country_stats"],
+    ["browser", "Browsers", "browser_stats"],
+    ["device_type", "Device Types", "device_type_stats"],
+    ["referrer_hostname", "Referrers", "referrer_hostname_stats"]
+  ].each do |type, label, frame_id|
+    define_method("test_renders_#{type}_label") do
+      stats = create_paginated_collection([])
+      site = sites(:tech_blog)
 
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "country",
-      frame_id: "country_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
+      render_inline(DimensionTableComponent.new(
+        stats: stats,
+        type: type,
+        frame_id: frame_id,
+        site: site,
+        base_path: "/sites/1/dimensions"
+      ))
 
-    assert_text "Countries"
-  end
-
-  def test_renders_browsers_label
-    stats = create_paginated_collection([])
-    site = sites(:tech_blog)
-
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "browser",
-      frame_id: "browser_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
-
-    assert_text "Browsers"
-  end
-
-  def test_renders_device_types_label
-    stats = create_paginated_collection([])
-    site = sites(:tech_blog)
-
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "device_type",
-      frame_id: "device_type_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
-
-    assert_text "Device Types"
-  end
-
-  def test_renders_referrers_label
-    stats = create_paginated_collection([])
-    site = sites(:tech_blog)
-
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "referrer_hostname",
-      frame_id: "referrer_hostname_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
-
-    assert_text "Referrers"
+      assert_text label
+    end
   end
 
   def test_renders_table_with_headers
@@ -282,116 +244,49 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_no_selector "tbody tr"
   end
 
-  def test_formats_browser_enum_chrome
-    stat = { dimension_value: "1", pageviews: 100, sessions: 50 }
-    stats = create_paginated_collection([stat])
-    site = sites(:tech_blog)
+  [
+    ["1", "Chrome"],
+    ["4", "Firefox"],
+    ["999", "Other"]
+  ].each do |value, label|
+    define_method("test_formats_browser_enum_#{label.downcase}") do
+      stat = { dimension_value: value, pageviews: 100, sessions: 50 }
+      stats = create_paginated_collection([stat])
+      site = sites(:tech_blog)
 
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "browser",
-      frame_id: "browser_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
+      render_inline(DimensionTableComponent.new(
+        stats: stats,
+        type: "browser",
+        frame_id: "browser_stats",
+        site: site,
+        base_path: "/sites/1/dimensions"
+      ))
 
-    assert_selector "td", text: "Chrome"
+      assert_selector "td", text: label
+    end
   end
 
-  def test_formats_browser_enum_firefox
-    stat = { dimension_value: "4", pageviews: 100, sessions: 50 }
-    stats = create_paginated_collection([stat])
-    site = sites(:tech_blog)
+  [
+    ["1", "Desktop"],
+    ["2", "Mobile"],
+    ["9", "Crawler"],
+    ["10", "Other"]
+  ].each do |value, label|
+    define_method("test_formats_device_type_enum_#{label.downcase}") do
+      stat = { dimension_value: value, pageviews: 100, sessions: 50 }
+      stats = create_paginated_collection([stat])
+      site = sites(:tech_blog)
 
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "browser",
-      frame_id: "browser_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
+      render_inline(DimensionTableComponent.new(
+        stats: stats,
+        type: "device_type",
+        frame_id: "device_type_stats",
+        site: site,
+        base_path: "/sites/1/dimensions"
+      ))
 
-    assert_selector "td", text: "Firefox"
-  end
-
-  def test_formats_browser_enum_other
-    stat = { dimension_value: "999", pageviews: 100, sessions: 50 }
-    stats = create_paginated_collection([stat])
-    site = sites(:tech_blog)
-
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "browser",
-      frame_id: "browser_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
-
-    assert_selector "td", text: "Other"
-  end
-
-  def test_formats_device_type_enum_desktop
-    stat = { dimension_value: "1", pageviews: 100, sessions: 50 }
-    stats = create_paginated_collection([stat])
-    site = sites(:tech_blog)
-
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "device_type",
-      frame_id: "device_type_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
-
-    assert_selector "td", text: "Desktop"
-  end
-
-  def test_formats_device_type_enum_mobile
-    stat = { dimension_value: "2", pageviews: 100, sessions: 50 }
-    stats = create_paginated_collection([stat])
-    site = sites(:tech_blog)
-
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "device_type",
-      frame_id: "device_type_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
-
-    assert_selector "td", text: "Mobile"
-  end
-
-  def test_formats_device_type_enum_crawler
-    stat = { dimension_value: "9", pageviews: 100, sessions: 50 }
-    stats = create_paginated_collection([stat])
-    site = sites(:tech_blog)
-
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "device_type",
-      frame_id: "device_type_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
-
-    assert_selector "td", text: "Crawler"
-  end
-
-  def test_formats_device_type_enum_other
-    stat = { dimension_value: "10", pageviews: 100, sessions: 50 }
-    stats = create_paginated_collection([stat])
-    site = sites(:tech_blog)
-
-    render_inline(DimensionTableComponent.new(
-      stats: stats,
-      type: "device_type",
-      frame_id: "device_type_stats",
-      site: site,
-      base_path: "/sites/1/dimensions"
-    ))
-
-    assert_selector "td", text: "Other"
+      assert_selector "td", text: label
+    end
   end
 
   def test_handles_unknown_browser_enum_value

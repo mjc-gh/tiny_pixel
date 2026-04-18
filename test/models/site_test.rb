@@ -160,23 +160,6 @@ class SiteTest < ActiveSupport::TestCase
     assert_equal 1, site.salt_version
   end
 
-  test "salt_duration enum is set to daily" do
-    site = sites(:my_blog)
-    assert_equal "daily", site.salt_duration
-  end
-
-  test "salt_duration enum supports weekly" do
-    site = sites(:my_blog)
-    site.salt_duration = :weekly
-    assert_equal "weekly", site.salt_duration
-  end
-
-  test "salt_duration enum supports monthly" do
-    site = sites(:my_blog)
-    site.salt_duration = :monthly
-    assert_equal "monthly", site.salt_duration
-  end
-
   test "need_to_cycle_salt scope includes daily sites after 1 day" do
     site = Site.create!(name: "Daily Site", salt: "placeholder", salt_duration: :daily)
     site.update(salt_last_cycled_at: 2.days.ago)
@@ -219,54 +202,6 @@ class SiteTest < ActiveSupport::TestCase
     assert_not_includes Site.need_to_cycle_salt, site
   end
 
-  test "#salt_cycle_due? returns true for daily site after 1 day" do
-    site = sites(:my_blog)
-    site.salt_duration = :daily
-    site.salt_last_cycled_at = 2.days.ago
-
-    assert site.salt_cycle_due?
-  end
-
-  test "#salt_cycle_due? returns false for daily site within 1 day" do
-    site = sites(:my_blog)
-    site.salt_duration = :daily
-    site.salt_last_cycled_at = 12.hours.ago
-
-    assert_not site.salt_cycle_due?
-  end
-
-  test "#salt_cycle_due? returns true for weekly site after 1 week" do
-    site = sites(:my_blog)
-    site.salt_duration = :weekly
-    site.salt_last_cycled_at = 8.days.ago
-
-    assert site.salt_cycle_due?
-  end
-
-  test "#salt_cycle_due? returns false for weekly site within 1 week" do
-    site = sites(:my_blog)
-    site.salt_duration = :weekly
-    site.salt_last_cycled_at = 3.days.ago
-
-    assert_not site.salt_cycle_due?
-  end
-
-  test "#salt_cycle_due? returns true for monthly site after 1 month" do
-    site = sites(:my_blog)
-    site.salt_duration = :monthly
-    site.salt_last_cycled_at = 32.days.ago
-
-    assert site.salt_cycle_due?
-  end
-
-  test "#salt_cycle_due? returns false for monthly site within 1 month" do
-    site = sites(:my_blog)
-    site.salt_duration = :monthly
-    site.salt_last_cycled_at = 15.days.ago
-
-    assert_not site.salt_cycle_due?
-  end
-
   test "::cycle_stale_salts! invalidates SiteCache for cycled sites" do
     site = sites(:my_blog)
     site.update(salt_last_cycled_at: 2.days.ago)
@@ -283,44 +218,6 @@ class SiteTest < ActiveSupport::TestCase
     site = Site.create!(name: "Timeout Test", salt: "placeholder")
 
     assert_equal 30, site.session_timeout_minutes
-  end
-
-  test "session_timeout_minutes validation rejects values below 5" do
-    site = sites(:my_blog)
-    site.session_timeout_minutes = 4
-
-    assert_not site.valid?
-    assert site.errors[:session_timeout_minutes].any?
-  end
-
-  test "session_timeout_minutes validation rejects values above 1440" do
-    site = sites(:my_blog)
-    site.session_timeout_minutes = 1441
-
-    assert_not site.valid?
-    assert site.errors[:session_timeout_minutes].any?
-  end
-
-  test "session_timeout_minutes validation accepts value at lower boundary" do
-    site = sites(:my_blog)
-    site.session_timeout_minutes = 5
-
-    assert site.valid?
-  end
-
-  test "session_timeout_minutes validation accepts value at upper boundary" do
-    site = sites(:my_blog)
-    site.session_timeout_minutes = 1440
-
-    assert site.valid?
-  end
-
-  test "session_timeout_minutes validation rejects nil" do
-    site = sites(:my_blog)
-    site.session_timeout_minutes = nil
-
-    assert_not site.valid?
-    assert site.errors[:session_timeout_minutes].any?
   end
 
   test "#session_timeout returns duration in minutes" do

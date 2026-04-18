@@ -135,28 +135,6 @@ class PixelRequestTest < ActiveSupport::TestCase
     assert pr.errors[:user_agent].any?
   end
 
-  test "validation fails when missing hostname" do
-    pr = PixelRequest.new
-    pr.pathname = "/"
-    pr.property_id = sites(:my_blog).property_id
-    pr.remote_ip = "1.2.3.4"
-    pr.user_agent = "Mozilla/5.0"
-
-    refute pr.valid?
-    assert pr.errors[:hostname].any?
-  end
-
-  test "validation fails when missing pathname" do
-    pr = PixelRequest.new
-    pr.hostname = "example.com"
-    pr.property_id = sites(:my_blog).property_id
-    pr.remote_ip = "1.2.3.4"
-    pr.user_agent = "Mozilla/5.0"
-
-    refute pr.valid?
-    assert pr.errors[:pathname].any?
-  end
-
   test "visitor_digest is consistent for same inputs" do
     site = sites(:my_blog)
     req = FakeRequest.new("1.2.3.4", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")

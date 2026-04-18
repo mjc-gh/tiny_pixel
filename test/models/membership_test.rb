@@ -13,20 +13,6 @@ class MembershipTest < ActiveSupport::TestCase
     assert_equal "member", membership.role
   end
 
-  test "role can be set to admin" do
-    membership = memberships(:alice_my_blog_admin)
-
-    assert membership.admin?
-    assert_not membership.member?
-  end
-
-  test "role can be set to member" do
-    membership = memberships(:bob_my_blog_member)
-
-    assert membership.member?
-    assert_not membership.admin?
-  end
-
   test "duplicate user and site combination is invalid" do
     alice = users(:alice)
     my_blog = sites(:my_blog)

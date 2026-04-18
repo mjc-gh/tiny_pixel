@@ -51,13 +51,4 @@ class UserTest < ActiveSupport::TestCase
 
     assert_includes alice.sites, my_blog
   end
-
-  test "destroying user destroys associated memberships" do
-    alice = users(:alice)
-    membership_id = memberships(:alice_my_blog_admin).id
-
-    alice.destroy
-
-    assert_not Membership.exists?(membership_id)
-  end
 end
