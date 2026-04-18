@@ -1,7 +1,10 @@
 <nav class="fixed top-0 left-0 right-0 bg-surface border-b border-border z-50" data-controller="mobile-menu">
   <div class="container mx-auto px-5">
     <div class="flex justify-between items-center h-16">
-      <%= link_to "tiny_pixel", root_path, class: "font-bold text-xl text-content-primary" %>
+      <%= link_to root_path, class: "flex items-center space-x-2 font-bold text-xl text-content-primary hover:opacity-80 transition-opacity" do %>
+        <%= helpers.inline_svg_tag "logo.svg", class: "h-8 w-8" -%>
+        <span class="font-mono font-semibold text-content-secondary">tiny_pixel</span>
+      <% end %>
 
       <!-- Desktop navigation (hidden on mobile) -->
       <div class="hidden md:flex items-center space-x-6">
