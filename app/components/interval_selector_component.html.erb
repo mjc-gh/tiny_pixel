@@ -7,9 +7,15 @@
     onchange="window.location.href = this.value"
   >
     <% intervals.each do |interval| %>
-      <option value="<%= interval_path(interval[:value]) %>" <%= 'selected' if selected?(interval[:value]) %>>
-        <%= interval[:label] %>
-      </option>
+      <% if selected?(interval[:value]) %>
+        <option value="<%= interval_path(interval[:value]) %>" selected>
+          <%= interval[:label] %>
+        </option>
+      <% else %>
+        <option value="<%= interval_path(interval[:value]) %>">
+          <%= interval[:label] %>
+        </option>
+      <% end %>
     <% end %>
   </select>
 </div>
