@@ -2,23 +2,27 @@ source "https://rubygems.org"
 
 gem "rails", "~> 8.1"
 
+gem "chartkick"
 gem "concurrent-ruby-edge", "~> 0.7.1", require: "concurrent-edge"
-gem "importmap-rails"
-gem "revise_auth"
 gem "form_buildable", github: "mjc-gh/form_buildable"
+gem "heroicon-rails", github: "mattes/heroicon-rails"
+gem "importmap-rails"
 gem "jbuilder"
 gem "kamal"
 gem "maxmind-db"
 gem "propshaft"
-gem "tailwindcss-rails"
 gem "puma"
 gem "rack-cors"
+gem "revise_auth"
 # gem "solid_cache"
 gem "solid_queue"
 gem "sqlite3"
 gem "stimulus-rails"
+gem "tailwindcss-rails"
 gem "turbo-rails"
 gem "user_agent_parser", "~> 2.18"
+gem "view_component", "~> 4.6"
+gem "will_paginate"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -41,6 +45,7 @@ group :development, :test do
 end
 
 group :development do
+  gem "herb"
   gem "web-console"
 end
 
@@ -54,8 +59,3 @@ end
 group :production do
   gem "thruster"
 end
-
-gem "view_component", "~> 4.6"
-gem "chartkick"
-gem "will_paginate"
-gem "heroicon-rails", github: "mattes/heroicon-rails"

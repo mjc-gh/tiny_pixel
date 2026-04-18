@@ -169,6 +169,16 @@ GEM
     guard-rubocop (1.5.0)
       guard (~> 2.0)
       rubocop (< 2.0)
+    herb (0.9.6-aarch64-linux-gnu)
+    herb (0.9.6-aarch64-linux-musl)
+    herb (0.9.6-arm-linux-gnu)
+    herb (0.9.6-arm-linux-musl)
+    herb (0.9.6-arm64-darwin)
+    herb (0.9.6-x86-linux-gnu)
+    herb (0.9.6-x86-linux-musl)
+    herb (0.9.6-x86_64-darwin)
+    herb (0.9.6-x86_64-linux-gnu)
+    herb (0.9.6-x86_64-linux-musl)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.2.3)
@@ -492,6 +502,7 @@ DEPENDENCIES
   guard
   guard-minitest
   guard-rubocop
+  herb
   heroicon-rails!
   importmap-rails
   jbuilder
