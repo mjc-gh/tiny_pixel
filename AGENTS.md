@@ -10,6 +10,7 @@
 | Test | `./bin/rails t` \| `./bin/rails t test/models/site_test.rb` \| `./bin/rails t --name pattern` |
 | Coverage | `COVERAGE=1 ./bin/rails t` |
 | Lint | `./bin/rubocop` |
+| ERB Analysis | `./bin/herb analyze .` |
 | Auto-fix | `./bin/rubocop -A` |
 
 ## Code Style
@@ -20,7 +21,7 @@
 - Frozen string literals at top of `.rb` files: `# frozen_string_literal: true`
 - Snake case naming: `req_1` not `req1`
 - One class per `.rb` file
-- Do not add unnecessary code comments
+- Never add unnecessary code comments
 
 **Structure**:
 - Callbacks → Enums → Scopes → Validations (in class body)
@@ -37,6 +38,7 @@
 
 **Views**:
 - Render JSON or HTML per endpoint purpose
+- Run `./bin/herb` to analyze views for syntax errors, formatting, and security issues
 
 **Testing**:
 - Prefer less test cases while maximizing code coverage
@@ -47,18 +49,7 @@
 - **Stats Models**: See `@doc/AGGREGATED_STATS.md` for `HourlyPageStat`, `DailyPageStat`, `WeeklyPageStat`
 - **Stat Filtering**: See `@doc/STAT_FILTERING.md` for pathname, hostname, date range, and dimension filtering patterns used in dashboard controllers
 - **Tracking Script**: See `@doc/TRACKING_SCRIPT.md` for implementation details of `pkg/tiny_pixel.js`
-- **UI Styles**: See `@doc/STYLES.md` for guidelines on CSS, Tailwind, and icons
+- **Front-end**: See `@doc/FRONTEND.md` for guidelines on JavasScript for the browser, Stimulus controllers, CSS, Tailwind, and icons
 - **ViewComponents**: See `@app/components`
 - **Testing Stack**: Minitest, simplecov (with 100% coverage required), RuboCop-Rails, Brakeman
 - **Databases**: SQLite (primary + ingestion)
-
-## Stimulus Controller Patterns
-
-The dashboard uses a centralized `Turbo.visit()` pattern in the Stimulus controller:
-
-1. **State Management**: All filter state stored as Stimulus values
-2. **Navigation**: All user actions call `visit()` method which navigates with Turbo
-3. **Server Rendering**: Server receives request with all filter params in URL
-4. **Frame Re-rendering**: Turbo automatically re-renders all turbo-frames with new content
-
-This pattern eliminates manual frame source manipulation and simplifies the frontend logic significantly.

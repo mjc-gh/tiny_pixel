@@ -1,5 +1,16 @@
 # UI Style Guidelines
 
+## Stimulus Controller Patterns
+
+The dashboard uses a centralized `Turbo.visit()` pattern in the Stimulus controller:
+
+1. **State Management**: All filter state stored as Stimulus values
+2. **Navigation**: All user actions call `visit()` method which navigates with Turbo
+3. **Server Rendering**: Server receives request with all filter params in URL
+4. **Frame Re-rendering**: Turbo automatically re-renders all turbo-frames with new content
+
+This pattern eliminates manual frame source manipulation and simplifies the frontend logic significantly.
+
 ## Icons
 
 This project uses the [heroicon-rails](https://github.com/mattes/heroicon-rails) gem to render [Heroicons](https://heroicons.com/) consistently throughout the application.
