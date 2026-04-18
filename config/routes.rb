@@ -3,6 +3,10 @@
 Rails.application.routes.draw do
   root "home#show"
 
+  # Override registrations controller
+  get "sign_up", to: "users/registrations#new"
+  post "sign_up", to: "users/registrations#create"
+
   revise_auth
 
   resources :sites, only: [:index, :show, :edit, :update] do

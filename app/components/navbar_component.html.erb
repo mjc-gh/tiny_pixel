@@ -11,7 +11,9 @@
           <%= link_to "Logout", logout_path, data: { turbo_method: :delete }, class: "text-content-secondary hover:text-content-primary" %>
         <% else %>
           <%= link_to "Login", login_path, class: "text-content-secondary hover:text-content-primary" %>
-          <%= link_to "Sign Up", sign_up_path, class: "text-content-secondary hover:text-content-primary" %>
+          <% if Rails.application.config.runtime_settings.allow_registration -%>
+            <%= link_to "Sign Up", sign_up_path, class: "text-content-secondary hover:text-content-primary" %>
+          <% end -%>
         <% end %>
 
         <!-- Theme toggle button -->

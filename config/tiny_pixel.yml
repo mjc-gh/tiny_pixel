@@ -1,0 +1,11 @@
+default: &default
+  allow_registration: <%= ENV.fetch("TP_ALLOW_REGISTRAION", "false") %> 
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
