@@ -57,3 +57,5 @@ config/deploy/*
 /.opencode/package.json
 /.opencode/package-lock.json
 /.opencode/bun.lock
+
+.env.sh

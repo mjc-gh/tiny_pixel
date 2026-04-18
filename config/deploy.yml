@@ -3,10 +3,10 @@ image: ghcr.io/mjc-gh/tiny_pixel
 servers:
   web:
     hosts:
-      - 107.170.70.30
+      - <%= ENV.fetch("KAMAL_WEB_HOST"] %>
   workers:
     hosts:
-      - 107.170.70.30
+      - <%= ENV.fetch("KAMAL_WEB_HOST"] %>
     cmd: ./bin/jobs
 registry:
   server: ghcr.io
@@ -14,7 +14,7 @@ registry:
   password:
     - KAMAL_REGISTRY_PASSWORD
 volumes:
-  - "/mnt/volume_nyc2_01/tiny_pixel:/rails/storage"
+  - "<%= ENV.fetch("KAMAL_VOLUME_PATH") %>:/rails/storage"
 builder:
   arch: amd64
 env:
