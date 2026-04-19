@@ -11,6 +11,7 @@ export default class extends Controller {
     const isPassword = this.inputTarget.type === "password"
     this.inputTarget.type = isPassword ? "text" : "password"
     this.updateIconVisibility()
+    this.inputTarget.focus()
   }
 
   updateIconVisibility() {
