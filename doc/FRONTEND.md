@@ -88,6 +88,69 @@ Do not use inline `<style>` tags in templates or components. All CSS must be def
 **Example - ✅ Do this instead:**
 Define styles in `app/assets/tailwind/application.css` and reference them in templates using Tailwind classes or custom CSS classes.
 
+## Design Tokens System
+
+The application uses CSS custom properties (design tokens) to maintain consistency across light and dark modes. All color-based styling must use design tokens instead of hardcoded Tailwind classes.
+
+### Token Categories
+
+Tokens are organized by purpose in `app/assets/tailwind/application.css`:
+
+| Category | Light Mode Example | Dark Mode Example | Usage |
+|----------|-------------------|-------------------|-------|
+| **Backgrounds** | `--color-background` | (darker shade) | Page backgrounds |
+| **Surfaces** | `--color-surface` | (darker shade) | Cards, containers |
+| **Borders** | `--color-border` | (lighter shade) | Element dividers |
+| **Text/Content** | `--color-content-primary` | (lighter shade) | Body text |
+| **Primary Action** | `--color-primary` | (lighter shade) | Links, buttons |
+| **Danger/Alert** | `--color-danger-bg`, `-border`, `-text` | (with dark variants) | Error states |
+| **Warning** | `--color-warning-bg`, `-border`, `-text` | (with dark variants) | Warning states |
+| **Success** | `--color-success-bg`, `-border`, `-text` | (with dark variants) | Success states |
+
+### Usage Pattern
+
+Always use token-based class names in templates instead of hardcoded colors:
+
+**❌ Don't do this (hardcoded Tailwind):**
+```erb
+<div class="bg-red-100 border border-red-400 text-red-700">
+  Error message
+</div>
+```
+
+**✅ Do this instead (design tokens):**
+```erb
+<div class="bg-danger-bg border border-danger-border text-danger-text">
+  Error message
+</div>
+```
+
+### Variant-Based Components
+
+When creating components with multiple variants (success, danger, warning), use token-based classes:
+
+```erb
+<div class="bg-<%= @variant %>-bg border border-<%= @variant %>-border text-<%= @variant %>-text">
+  <!-- content -->
+</div>
+```
+
+The component receives the variant (`:success`, `:danger`, `:warning`) and Tailwind resolves to the correct token for the current theme mode.
+
+### Adding New Tokens
+
+When adding new design tokens:
+
+1. Define in `@theme` block for light mode defaults
+2. Define in `.dark` block for dark mode overrides
+3. Use semantic names (e.g., `--color-success-bg` not `--color-green-bg`)
+4. Ensure sufficient contrast for accessibility (WCAG AA minimum)
+5. Verify both light and dark mode appearance
+
+### Token Definitions
+
+See `app/assets/tailwind/application.css` for current token definitions and their color values.
+
 ## Slideover Conventions
 
 Slideovers use the native HTML `<dialog>` element with the `tailwindcss-stimulus-components` Slideover controller. They slide in from the right side of the screen with a backdrop overlay.
@@ -147,7 +210,106 @@ dialog.slideover[open] {
     
     <div class="flex justify-end gap-3">
       <button autofocus type="button" data-action="slideover#close">Close</button>
-    </div>
-  </dialog>
+     </div>
+   </dialog>
+ </div>
+ ```
+
+## ViewComponent Patterns
+
+The application uses [ViewComponent](https://viewcomponent.org/) to create reusable, testable UI components.
+
+### When to Create a Component
+
+Create a ViewComponent when:
+- A UI element appears in multiple places in the application
+- A template has complex logic or styling that warrants encapsulation
+- The element needs to be easily tested in isolation
+- The element has multiple variants or configuration options
+
+### Component Structure
+
+**File Organization:**
+- Component class: `app/components/{name}_component.rb`
+- Component template: `app/components/{name}_component.html.erb`
+- Component tests: `test/components/{name}_component_test.rb`
+
+**Class Structure:**
+```ruby
+# frozen_string_literal: true
+
+class AlertComponent < ViewComponent::Base
+  def initialize(variant: :danger, message: "")
+    @variant = variant
+    @message = message
+  end
+
+  private
+
+  def variant_title
+    case @variant
+    when :success
+      "Success"
+    when :danger
+      "Error"
+    end
+  end
+end
+```
+
+### Styling Components with Design Tokens
+
+Always use design tokens for color-based styling (see Design Tokens System section):
+
+```erb
+<div class="bg-<%= @variant %>-bg border border-<%= @variant %>-border text-<%= @variant %>-text">
+  <strong><%= variant_title %></strong>
+  <%= @message %>
 </div>
 ```
+
+This ensures:
+- Automatic dark mode support through token definitions
+- Consistent theming across the application
+- Single source of truth for colors
+
+### Stimulus Controller Integration
+
+Components can use Stimulus controllers for interactivity:
+
+```erb
+<div data-controller="alert" data-alert-dismiss-after-value="5000" role="alert">
+  <!-- content -->
+  <button data-action="alert#close">Dismiss</button>
+</div>
+```
+
+### Testing Components
+
+All ViewComponents require tests. Use `ViewComponent::TestCase`:
+
+```ruby
+class AlertComponentTest < ViewComponent::TestCase
+  def test_renders_with_success_variant
+    render_inline(AlertComponent.new(variant: :success, message: "Saved!"))
+    
+    assert_text "Success"
+    assert_text "Saved!"
+    assert_selector ".bg-success-bg"
+  end
+end
+```
+
+**Test Guidelines:**
+- Test all variants and configuration options
+- Verify correct CSS classes are applied
+- Check rendered content and attributes
+- Minimize test cases while maximizing coverage
+- Don't test framework features (delegated to ViewComponent library)
+
+### Component Examples
+
+- **AlertComponent**: Multi-variant alert with Stimulus controller
+- **SiteCardComponent**: Display site information with links
+- **PaginationComponent**: Pagination controls with styling
+- See `app/components/` for more examples

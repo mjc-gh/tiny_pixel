@@ -46,10 +46,9 @@
 
 ## References
 
-- **Stats Models**: See `@doc/AGGREGATED_STATS.md` for `HourlyPageStat`, `DailyPageStat`, `WeeklyPageStat`
-- **Stat Filtering**: See `@doc/STAT_FILTERING.md` for pathname, hostname, date range, and dimension filtering patterns used in dashboard controllers
-- **Tracking Script**: See `@doc/TRACKING_SCRIPT.md` for implementation details of `pkg/tiny_pixel.js`
-- **Front-end**: See `@doc/FRONTEND.md` for guidelines on JavasScript for the browser, Stimulus controllers, CSS, Tailwind, and icons
-- **ViewComponents**: See `@app/components`
+- **Stats Models**: See `doc/AGGREGATED_STATS.md` for `HourlyPageStat`, `DailyPageStat`, `WeeklyPageStat`
+- **Stat Filtering**: See `doc/STAT_FILTERING.md` for pathname, hostname, date range, and dimension filtering patterns used in dashboard controllers
+- **Tracking Script**: See `doc/TRACKING_SCRIPT.md` for implementation details of `pkg/tiny_pixel.js`
+- **Front-end**: See `doc/FRONTEND.md` for guidelines on JavaScript for the browser, Stimulus controllers, CSS, Tailwind, icons, design tokens, and ViewComponents
 - **Testing Stack**: Minitest, simplecov (with 100% coverage required), RuboCop-Rails, Brakeman
 - **Databases**: SQLite (primary + ingestion)
