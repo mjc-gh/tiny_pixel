@@ -1,0 +1,8 @@
+<div class="bg-<%= @variant %>-bg border border-<%= @variant %>-border text-<%= @variant %>-text px-4 py-3 mb-8 rounded relative flex items-start" role="alert" data-controller="alert" data-alert-dismiss-after-value="<%= @dismiss_after %>" id="flash-<%= @variant %>">
+  <span class="block sm:inline">
+    <strong class="font-bold"><%= variant_title %></strong> <%= @message -%>
+  </span>
+  <button data-action="alert#close" class="inline-flex text-<%= @variant %>-text focus:outline-none transition ease-in-out duration-150 ml-auto opacity-70 hover:opacity-100">
+    <%= heroicon 'x-circle', variant: :solid, options: { class: 'w-6 h-6' } -%>
+  </button>
+</div>

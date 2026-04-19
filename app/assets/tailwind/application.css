@@ -29,14 +29,19 @@
   --color-danger-border: #fecaca;
   --color-danger-text: #dc2626;
 
-  /* Warning colors */
-  --color-warning-bg: #fefce8;
-  --color-warning-border: #fef08a;
-  --color-warning-text: #a16207;
+   /* Warning colors */
+   --color-warning-bg: #fefce8;
+   --color-warning-border: #fef08a;
+   --color-warning-text: #a16207;
 
-  /* Input colors */
-  --color-input-border: #d1d5db;
-  --color-input-bg: #ffffff;
+   /* Success colors */
+   --color-success-bg: #f0fdf4;
+   --color-success-border: #bbf7d0;
+   --color-success-text: #15803d;
+
+   /* Input colors */
+   --color-input-border: #d1d5db;
+   --color-input-bg: #ffffff;
 }
 
 /* Dark mode overrides */
@@ -67,14 +72,19 @@
   --color-danger-border: #7f1d1d;
   --color-danger-text: #fca5a5;
 
-  /* Warning colors */
-  --color-warning-bg: #422006;
-  --color-warning-border: #713f12;
-  --color-warning-text: #fcd34d;
+   /* Warning colors */
+   --color-warning-bg: #422006;
+   --color-warning-border: #713f12;
+   --color-warning-text: #fcd34d;
 
-   /* Input colors */
-   --color-input-border: #4b5563;
-   --color-input-bg: #1f2937;
+   /* Success colors */
+   --color-success-bg: #052e16;
+   --color-success-border: #14532d;
+   --color-success-text: #86efac;
+
+    /* Input colors */
+    --color-input-border: #4b5563;
+    --color-input-bg: #1f2937;
 }
 
 /* Slideover animations */
