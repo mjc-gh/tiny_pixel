@@ -1,17 +1,20 @@
 <%= turbo_stream.update "onboarding-content" do -%>
-  <div class="space-y-8">
-    <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
-      <%= render InlineSetupInstructionsComponent.new(site: @site, request: request) %>
-    </div>
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-content-primary mb-2"><%= t("onboarding.sites.create.title") %></h1>
+    <p class="text-content-secondary"><%= t("onboarding.sites.create.description") %></p>
+  </div>
 
-    <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
-      <h2 class="text-lg font-semibold text-content-primary mb-4"><%= t("onboarding.sites.create.next_steps") %></h2>
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+    <%= render InlineSetupInstructionsComponent.new(site: @site, request: request) %>
+  </div>
 
-      <div class="space-y-3">
-        <%= link_to t("onboarding.sites.create.view_dashboard"), site_path(@site), class: "block px-4 py-2 bg-primary text-white rounded hover:bg-primary-hover transition-colors text-center font-medium", data: { turbo_frame: "_top" } %>
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+    <h2 class="text-lg font-semibold text-content-primary mb-4"><%= t("onboarding.sites.create.next_steps") %></h2>
 
-        <%= link_to t("onboarding.sites.create.site_settings"), edit_site_path(@site), class: "block px-4 py-2 bg-surface-hover border border-border text-content-primary rounded hover:bg-surface transition-colors text-center font-medium", data: { turbo_frame: "_top" } %>
-      </div>
+    <div class="space-y-3">
+      <%= link_to t("onboarding.sites.create.view_dashboard"), site_path(@site), class: "block px-4 py-2 bg-primary text-white rounded hover:bg-primary-hover transition-colors text-center font-medium", data: { turbo_frame: "_top" } %>
+
+      <%= link_to t("onboarding.sites.create.site_settings"), edit_site_path(@site), class: "block px-4 py-2 bg-surface-hover border border-border text-content-primary rounded hover:bg-surface transition-colors text-center font-medium", data: { turbo_frame: "_top" } %>
     </div>
   </div>
 <% end -%>

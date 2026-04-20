@@ -35,7 +35,7 @@ class Onboarding::SitesControllerTest < ActionDispatch::IntegrationTest
   test "redirects to sites_path on create if user already has sites" do
     login(users(:alice))
 
-    post onboarding_sites_path, params: { site: { name: "Another Site" } }
+    post onboarding_sites_path, params: { site: { name: "Another Site" } }, as: :turbo_stream
 
     assert_redirected_to sites_path
   end
@@ -46,7 +46,7 @@ class Onboarding::SitesControllerTest < ActionDispatch::IntegrationTest
 
     assert_difference("Site.count", 1) do
       assert_difference("Membership.count", 1) do
-        post onboarding_sites_path, params: { site: { name: "My Test Site" } }
+        post onboarding_sites_path, params: { site: { name: "My Test Site" } }, as: :turbo_stream
       end
     end
 
@@ -59,7 +59,7 @@ class Onboarding::SitesControllerTest < ActionDispatch::IntegrationTest
     user = User.create!(email: "newuser@example.com", password: "password12345", password_confirmation: "password12345")
     login(user, password: "password12345")
 
-    post onboarding_sites_path, params: { site: { name: "My Test Site" } }
+    post onboarding_sites_path, params: { site: { name: "My Test Site" } }, as: :turbo_stream
 
     assert_response :success
     assert_select "h1", text: "Your Site is Ready!"
@@ -69,7 +69,7 @@ class Onboarding::SitesControllerTest < ActionDispatch::IntegrationTest
     user = User.create!(email: "newuser@example.com", password: "password12345", password_confirmation: "password12345")
     login(user, password: "password12345")
 
-    post onboarding_sites_path, params: { site: { name: "" } }
+    post onboarding_sites_path, params: { site: { name: "" } }, as: :turbo_stream
 
     assert_response :unprocessable_entity
     assert_select ".bg-danger-bg"
@@ -79,7 +79,7 @@ class Onboarding::SitesControllerTest < ActionDispatch::IntegrationTest
     user = User.create!(email: "newuser@example.com", password: "password12345", password_confirmation: "password12345")
     login(user, password: "password12345")
 
-    post onboarding_sites_path, params: { site: { name: "My Test Site" } }
+    post onboarding_sites_path, params: { site: { name: "My Test Site" } }, as: :turbo_stream
 
     assert_select 'div[data-controller="clipboard"]'
   end
@@ -88,7 +88,7 @@ class Onboarding::SitesControllerTest < ActionDispatch::IntegrationTest
     user = User.create!(email: "newuser@example.com", password: "password12345", password_confirmation: "password12345")
     login(user, password: "password12345")
 
-    post onboarding_sites_path, params: { site: { name: "My Test Site" } }
+    post onboarding_sites_path, params: { site: { name: "My Test Site" } }, as: :turbo_stream
 
     site = Site.last
     assert_select "a[href='#{site_path(site)}']", text: "View Dashboard"
