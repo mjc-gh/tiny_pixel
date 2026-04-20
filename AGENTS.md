@@ -15,7 +15,9 @@
 
 ## Code Style
 
-**Formatting**: Ruby 4, 2-space indentation, Unix line endings (LF)
+**Formatting**:
+- Ruby 4, 2-space indentation, Unix line endings (LF)
+- YAML (`.yml` files) 2-space indentation
 
 **Required**:
 - Frozen string literals at top of `.rb` files: `# frozen_string_literal: true`
@@ -38,6 +40,7 @@
 
 **Views**:
 - Render JSON or HTML per endpoint purpose
+- Never explicitly render form errors when using `default_form_with`
 - Run `./bin/herb` to analyze views for syntax errors, formatting, and security issues
 
 **Testing**:
