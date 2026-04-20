@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     resources :sites, only: [:new, :create]
   end
 
-  resources :sites, only: [:index, :show, :edit, :update] do
+  resources :sites, only: [:index, :show, :new, :create, :edit, :update] do
     scope module: :sites do
       resource :instructions, only: [:show]
       resources :pathnames, only: [:index]

@@ -117,6 +117,73 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "new redirects unauthenticated users to login" do
+    get new_site_url
+
+    assert_redirected_to login_path
+  end
+
+  test "authenticated users can access new" do
+    login(users(:alice))
+
+    get new_site_url
+
+    assert_response :success
+  end
+
+  test "new displays the site form fields" do
+    login(users(:alice))
+
+    get new_site_url
+
+    assert_select "input#site_name"
+    assert_select "select#site_salt_duration"
+    assert_select "input#site_display_hostname[type='checkbox']"
+  end
+
+  test "create redirects unauthenticated users to login" do
+    post sites_url, params: { site: { name: "New Site" } }
+
+    assert_redirected_to login_path
+  end
+
+  test "valid create saves site and creates admin membership" do
+    login(users(:alice))
+    original_count = Site.count
+
+    post sites_url, params: { site: { name: "New Site", salt_duration: "daily", display_hostname: true } }
+
+    assert_equal original_count + 1, Site.count
+    assert users(:alice).sites.exists?(name: "New Site")
+  end
+
+  test "valid create redirects to site show page" do
+    login(users(:alice))
+
+    post sites_url, params: { site: { name: "New Site", salt_duration: "daily", display_hostname: true } }
+
+    new_site = Site.find_by(name: "New Site")
+    assert_redirected_to site_url(new_site)
+  end
+
+  test "invalid create with empty name re-renders form with errors" do
+    login(users(:alice))
+
+    post sites_url, params: { site: { name: "" } }
+
+    assert_response :unprocessable_entity
+    assert_select ".bg-danger-bg"
+  end
+
+  test "invalid create with name too long re-renders form with errors" do
+    login(users(:alice))
+
+    post sites_url, params: { site: { name: "a" * 61 } }
+
+    assert_response :unprocessable_entity
+    assert_select ".bg-danger-bg"
+  end
+
   test "edit redirects unauthenticated users to login" do
     get edit_site_url(sites(:my_blog))
 

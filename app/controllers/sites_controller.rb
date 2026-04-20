@@ -14,6 +14,21 @@ class SitesController < ApplicationController
   def show
   end
 
+  def new
+    @site = Site.new
+  end
+
+  def create
+    @site = Site.new(site_params)
+
+    if @site.save
+      current_user.memberships.create!(site: @site, role: :admin)
+      redirect_to @site, notice: t("sites.create.success")
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
   def edit
   end
 

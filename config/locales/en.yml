@@ -18,6 +18,12 @@ en:
       other: Other
     unknown_value: Unknown
   sites:
+    index:
+      create_new: "Create New Site"
+    new:
+      title: "Create New Site"
+    create:
+      success: "Site created successfully"
     edit:
       title: "Site Settings"
       settings: "Settings"
