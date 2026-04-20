@@ -35,13 +35,13 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: sites(:tech_blog).name, count: 0
   end
 
-  test "shows empty state when user has no sites" do
+  test "redirects to onboarding when user has no sites" do
     user = User.create!(email: "newuser@example.com", password: "password12345", password_confirmation: "password12345")
     login(user, password: "password12345")
 
     get sites_url
 
-    assert_select "p", text: "You don't have any sites yet."
+    assert_redirected_to new_onboarding_site_path
   end
 
   test "show redirects unauthenticated users to login" do

@@ -25,7 +25,7 @@ class Site < ApplicationRecord
   PROPERTY_ID_LENGHT = 8
 
   before_validation :set_property_id, on: :create
-  before_create :cycle_salt
+  before_validation :cycle_salt, on: :create
 
   enum :salt_duration, { daily: 0, weekly: 1, monthly: 2 }
 

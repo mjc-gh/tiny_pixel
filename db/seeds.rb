@@ -269,6 +269,14 @@ puts "Created #{multi_hourly_count} hourly page stats for multi-domain site"
 puts "Created #{multi_daily_count} daily page stats for multi-domain site"
 puts "Created #{multi_weekly_count} weekly page stats for multi-domain site"
 
+# Create a user with no sites for testing onboarding flow
+puts "\nCreating onboarding test user..."
+onboarding_user = User.find_or_create_by!(email: "onboarding@example.com") do |u|
+  u.password = "thisisapassword"
+  u.confirmed_at = Time.current
+end
+puts "Created onboarding test user: #{onboarding_user.email} (no sites)"
+
 puts "\nSeeding complete!"
 puts "Total records:"
 puts "  - Sites: #{Site.count}"

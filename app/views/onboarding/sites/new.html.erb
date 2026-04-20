@@ -1,0 +1,27 @@
+<% content_for :head do -%>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end -%>
+
+<div class="w-full max-w-md mx-auto space-y-6 py-16">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-content-primary mb-2"><%= t("onboarding.sites.new.title") %></h1>
+    <p class="text-content-secondary"><%= t("onboarding.sites.new.description") %></p>
+  </div>
+
+  <%= turbo_frame_tag "onboarding-content" do -%>
+    <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+      <%= default_form_with model: @site, local: true, url: onboarding_sites_path do |form| %>
+        <div class="space-y-4">
+          <div>
+            <%= form.text_field :name, label: t("onboarding.sites.new.name_label") %>
+            <p class="text-xs text-content-muted mt-1"><%= t("onboarding.sites.new.name_help") %></p>
+          </div>
+
+          <div>
+            <%= form.button t("onboarding.sites.new.submit") %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end -%>
+</div>

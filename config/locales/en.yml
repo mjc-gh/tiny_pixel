@@ -39,6 +39,22 @@ en:
       snippet_label: "Tracking Script"
       copy: "Copy to clipboard"
       close: "Close"
+  onboarding:
+    sites:
+      new:
+        title: "Welcome to tiny_pixel"
+        description: "Create your first site to start tracking visitors."
+        name_label: "Site Name"
+        name_help: "Enter a name for your website (e.g., 'My Blog')"
+        submit: "Create Site"
+      create:
+        title: "Your Site is Ready!"
+        description: "Add this script to your website to start collecting analytics."
+        snippet_label: "Tracking Script"
+        copy: "Copy to clipboard"
+        next_steps: "What's Next?"
+        view_dashboard: "View Dashboard"
+        site_settings: "Site Settings"
   users:
     registrations:
       not_allowed: Registration is not allowed

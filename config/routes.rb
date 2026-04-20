@@ -9,6 +9,10 @@ Rails.application.routes.draw do
 
   revise_auth
 
+  namespace :onboarding do
+    resources :sites, only: [:new, :create]
+  end
+
   resources :sites, only: [:index, :show, :edit, :update] do
     scope module: :sites do
       resource :instructions, only: [:show]
