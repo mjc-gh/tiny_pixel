@@ -28,6 +28,10 @@ Rails.application.routes.draw do
       resources :dimensions, only: [:index]
     end
   end
+
+  # PWA routes
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+
   # Pixel ingestion ingestion
   get "/_/pixel.gif" => "v1/pixels#create", as: :v1_pixels
 
