@@ -7,6 +7,10 @@ Rails.application.routes.draw do
   get "sign_up", to: "users/registrations#new"
   post "sign_up", to: "users/registrations#create"
 
+  namespace :users do
+    resource :password_reset, only: [:edit, :update]
+  end
+
   revise_auth
 
   namespace :onboarding do

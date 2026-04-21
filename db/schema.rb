@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_10_120237) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_21_102400) do
   create_table "aggregation_logs", force: :cascade do |t|
     t.string "aggregation_type", null: false
     t.datetime "completed_at"
@@ -100,6 +100,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_10_120237) do
     t.datetime "created_at", null: false
     t.string "email", null: false
     t.string "password_digest", null: false
+    t.boolean "password_reset_required", default: false, null: false
     t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true

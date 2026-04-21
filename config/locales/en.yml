@@ -64,3 +64,10 @@ en:
   users:
     registrations:
       not_allowed: Registration is not allowed
+    password_resets:
+      edit:
+        title: "Set Your Password"
+        description: "Please set a new password to continue."
+        set_password: "Set Password"
+      update:
+        success: "Password updated successfully"

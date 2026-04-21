@@ -5,13 +5,14 @@
 # Table name: users
 # Database name: primary
 #
-#  id                :integer          not null, primary key
-#  confirmed_at      :datetime
-#  email             :string           not null
-#  password_digest   :string           not null
-#  unconfirmed_email :string
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
+#  id                      :integer          not null, primary key
+#  confirmed_at            :datetime
+#  email                   :string           not null
+#  password_digest         :string           not null
+#  password_reset_required :boolean          default(FALSE), not null
+#  unconfirmed_email       :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
 #
 # Indexes
 #
