@@ -22,7 +22,7 @@ gem "stimulus-rails"
 gem "tailwindcss-rails"
 gem "turbo-rails"
 gem "user_agent_parser", "~> 2.18"
-gem "view_component", "~> 4.7"
+gem "view_component", "~> 4.8"
 gem "will_paginate"
 
 # Reduces boot times through caching; required in config/boot.rb

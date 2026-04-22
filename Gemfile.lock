@@ -232,7 +232,7 @@ GEM
     method_source (1.1.0)
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
-    minitest (6.0.4)
+    minitest (6.0.5)
       drb (~> 2.0)
       prism (~> 1.5)
     minitest-mock (5.27.0)
@@ -459,7 +459,7 @@ GEM
     uri (1.1.1)
     user_agent_parser (2.21.0)
     useragent (0.16.11)
-    view_component (4.7.0)
+    view_component (4.8.0)
       actionview (>= 7.1.0)
       activesupport (>= 7.1.0)
       concurrent-ruby (~> 1)
@@ -532,7 +532,7 @@ DEPENDENCIES
   thruster
   turbo-rails
   user_agent_parser (~> 2.18)
-  view_component (~> 4.7)
+  view_component (~> 4.8)
   web-console
   will_paginate
 
