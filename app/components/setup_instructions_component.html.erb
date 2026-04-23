@@ -1,5 +1,5 @@
 <div data-controller="slideover" data-slideover-open-value="true" data-turbo-temporary>
-  <dialog data-slideover-target="dialog" class="slideover h-full max-h-full m-0 w-96 p-8 bg-surface backdrop:bg-black/80">
+  <dialog data-slideover-target="dialog" class="slideover h-full max-h-full m-0 sm:min-w-96 md:min-w-sm lg:min-w-md p-8 bg-surface backdrop:bg-black/40">
     <!-- Header with close button -->
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-lg font-bold text-content-primary"><%= t("sites.instructions.title") %></h2>
@@ -14,7 +14,7 @@
     <!-- Tracking snippet section -->
     <div class="mb-6" data-controller="clipboard">
       <label class="block text-sm font-medium text-content-primary mb-2"><%= t("sites.instructions.snippet_label") %></label>
-      <div class="bg-surface-hover border border-border rounded p-4 mb-3 font-mono text-sm overflow-x-auto" data-clipboard-target="source">
+      <div class="bg-surface-hover border border-border rounded p-4 mb-3 font-mono text-sm overflow-x-auto text-gray-700 dark:text-gray-300" data-clipboard-target="source">
         <%= tracking_snippet %>
       </div>
       <button type="button" 
