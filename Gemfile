@@ -11,6 +11,7 @@ gem "inline_svg"
 gem "jbuilder"
 gem "kamal"
 gem "maxmind-db"
+gem 'postmark-rails'
 gem "propshaft"
 gem "puma"
 gem "rack-cors"

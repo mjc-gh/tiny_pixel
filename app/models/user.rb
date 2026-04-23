@@ -20,6 +20,7 @@
 #
 class User < ApplicationRecord
   include ReviseAuth::Model
+  prepend UserReviseExtension
 
   has_many :memberships, dependent: :destroy
   has_many :sites, through: :memberships

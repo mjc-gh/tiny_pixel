@@ -26,6 +26,10 @@ module TinyPixel
   end
 
   class << self
+    def email_delivery_supported?
+      Rails.application.config.runtime_settings.action_mailer_delivery.in?  %w[smtp postmark]
+    end
+
     def maxmind_db
       @geo_db ||= build_maxmind_db
     end
