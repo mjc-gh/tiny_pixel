@@ -37,7 +37,7 @@ module TinyPixel
     private
 
     def build_maxmind_db
-      path = Rails.root.join("vendor", "maxmind", "GeoLite2-Country.mmdb").to_s
+      path = Rails.root.join("storage", "GeoLite2-Country.mmdb").to_s
       return NullGeodb.new unless File.exist?(path)
 
       MaxMind::DB.new(path, mode: MaxMind::DB::MODE_MEMORY)
