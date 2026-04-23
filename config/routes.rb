@@ -29,6 +29,11 @@ Rails.application.routes.draw do
     end
   end
 
+  # System Admin
+  namespace :admin do
+    get "/" => "dashboard#index"
+  end
+
   # PWA routes
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 

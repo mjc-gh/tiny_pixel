@@ -66,4 +66,8 @@ class ActionDispatch::IntegrationTest
   def login(user, password: "password123")
     super user, password:
   end
+
+  def admin_auth_headers(user = "tiny_pixel", password = AdminController.secret_password)
+    { Authorization: ActionController::HttpAuthentication::Basic.encode_credentials(user, password) }
+  end
 end

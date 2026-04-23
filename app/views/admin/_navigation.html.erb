@@ -1,0 +1,42 @@
+<nav class="fixed top-0 left-0 right-0 bg-surface border-b border-border z-50" data-controller="mobile-menu">
+  <div class="container mx-auto px-5">
+    <div class="flex justify-between items-center h-16">
+      <%= link_to root_path, class: "flex items-center space-x-2 font-bold text-xl text-content-primary hover:opacity-80 transition-opacity" do %>
+        <%= inline_svg_tag "logo.svg", class: "h-8 w-8" -%>
+        <span class="font-mono font-semibold text-content-secondary">tiny_pixel</span>
+
+        <span class="inline-flex items-center rounded-md bg-red-400/10 px-2 py-1 text-xs font-medium text-red-400 inset-ring inset-ring-red-400/20 uppercase">Admin</span>
+      <% end %>
+
+      <!-- Desktop navigation (hidden on mobile) -->
+      <div class="hidden md:flex items-center space-x-6">
+        <!-- Theme toggle button -->
+        <div data-controller="theme">
+           <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="theme#toggle">
+             <!-- Sun icon (shown when in dark mode, click to switch to light) -->
+             <%= heroicon "sun", type: :outline, "data-theme-target": "lightIcon", class: "hidden h-5 w-5" %>
+             <!-- Moon icon (shown when in light mode, click to switch to dark) -->
+             <%= heroicon "moon", type: :outline, "data-theme-target": "darkIcon", class: "h-5 w-5" %>
+           </button>
+        </div>
+      </div>
+
+      <!-- Mobile buttons (hamburger + theme toggle) -->
+      <div class="flex md:hidden items-center space-x-2">
+        <!-- Theme toggle button (mobile) -->
+        <div data-controller="theme">
+           <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="theme#toggle">
+             <%= heroicon "sun", type: :outline, "data-theme-target": "lightIcon", class: "hidden h-6 w-6" %>
+             <%= heroicon "moon", type: :outline, "data-theme-target": "darkIcon", class: "h-6 w-6" %>
+           </button>
+        </div>
+
+         <!-- Hamburger button -->
+         <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="mobile-menu#toggle">
+           <%= heroicon "bars-3", type: :outline, "data-mobile-menu-target": "openIcon", class: "h-6 w-6" %>
+           <%= heroicon "x-mark", type: :outline, "data-mobile-menu-target": "closeIcon", class: "hidden h-6 w-6" %>
+         </button>
+      </div>
+    </div>
+  </div>
+</nav>
