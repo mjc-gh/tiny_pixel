@@ -133,8 +133,6 @@ class PixelRequest
   def visitor_country
     geo = TinyPixel.maxmind_db.get(remote_ip)
 
-    TinyPixel.research_log.info "Geo: #{geo.inspect}"
-
     geo&.dig("country", "iso_code") || DEFAULT_COUNTRY_CODE
   rescue IPAddr::Error
     DEFAULT_COUNTRY_CODE
@@ -205,10 +203,7 @@ class PixelRequest
   end
 
   def parsed_user_agent
-    @parsed_user_agent ||= USER_AGENT_PARSER.parse(user_agent).tap do |p|
-      TinyPixel.research_log.info "User-agent: #{user_agent.inspect}"
-      TinyPixel.research_log.info "User-agent Results: #{p.to_h.inspect}"
-    end
+    @parsed_user_agent ||= USER_AGENT_PARSER.parse(user_agent)
   end
 
   def sha_256(&block)

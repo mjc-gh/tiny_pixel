@@ -21,14 +21,6 @@ module TinyPixel
     # Setup runtime settings
     config.runtime_settings = config_for(:tiny_pixel)
 
-    # Configuration for the application, engines, and railties goes here.
-    #
-    # These settings can be overridden in specific environments using the files
-    # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
-
     # NOTE: Avoids the need for image_processing
     config.active_storage.variant_processor = :disabled
   end
@@ -36,10 +28,6 @@ module TinyPixel
   class << self
     def maxmind_db
       @geo_db ||= build_maxmind_db
-    end
-
-    def research_log
-      @research_log ||= Logger.new(Rails.root.join("log", "research.log"))
     end
 
     private
