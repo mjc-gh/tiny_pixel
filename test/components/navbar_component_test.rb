@@ -3,19 +3,19 @@
 require "test_helper"
 
 class NavbarComponentTest < ViewComponent::TestCase
-  def test_renders_navigation_container
+  test "renders navigation container" do
     render_inline(NavbarComponent.new(user: nil))
 
     assert_selector "nav"
   end
 
-  def test_renders_home_link
+  test "renders home link" do
     render_inline(NavbarComponent.new(user: nil))
 
     assert_link "tiny_pixel", href: "/"
   end
 
-  def test_signed_in_user_sees_sites_link
+  test "signed in user sees sites link" do
     user = users(:alice)
 
     render_inline(NavbarComponent.new(user: user))
@@ -23,7 +23,7 @@ class NavbarComponentTest < ViewComponent::TestCase
     assert_link "Sites", href: "/sites"
   end
 
-  def test_signed_in_user_sees_profile_link
+  test "signed in user sees profile link" do
     user = users(:alice)
 
     render_inline(NavbarComponent.new(user: user))
@@ -31,7 +31,7 @@ class NavbarComponentTest < ViewComponent::TestCase
     assert_link "Profile", href: "/profile"
   end
 
-  def test_signed_in_user_sees_logout_link
+  test "signed in user sees logout link" do
     user = users(:alice)
 
     render_inline(NavbarComponent.new(user: user))
@@ -39,7 +39,7 @@ class NavbarComponentTest < ViewComponent::TestCase
     assert_selector "a[href='/logout'][data-turbo-method='delete']", text: "Logout"
   end
 
-  def test_signed_in_user_does_not_see_login_or_sign_up
+  test "signed in user does not see login or sign up" do
     user = users(:alice)
 
     render_inline(NavbarComponent.new(user: user))
@@ -48,19 +48,19 @@ class NavbarComponentTest < ViewComponent::TestCase
     assert_no_link "Sign Up"
   end
 
-  def test_signed_out_user_sees_login_link
+  test "signed out user sees login link" do
     render_inline(NavbarComponent.new(user: nil))
 
     assert_link "Login", href: "/login"
   end
 
-  def test_signed_out_user_sees_sign_up_link
+  test "signed out user sees sign up link" do
     render_inline(NavbarComponent.new(user: nil))
 
     assert_link "Sign Up", href: "/sign_up"
   end
 
-  def test_signed_out_user_does_not_see_sites_profile_or_logout
+  test "signed out user does not see sites profile or logout" do
     render_inline(NavbarComponent.new(user: nil))
 
     assert_no_link "Sites"

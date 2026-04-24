@@ -3,28 +3,28 @@
 require "test_helper"
 
 class DateRangeSelectorComponentTest < ViewComponent::TestCase
-  def test_renders_two_date_inputs
+  test "renders two date inputs" do
     site = sites(:my_blog)
     render_inline(DateRangeSelectorComponent.new(start_date: nil, end_date: nil, site: site))
 
     assert_selector "input[type='date']", count: 2
   end
 
-  def test_renders_start_date_input
+  test "renders start date input" do
     site = sites(:my_blog)
     render_inline(DateRangeSelectorComponent.new(start_date: nil, end_date: nil, site: site))
 
     assert_selector "input[name='start_date'][type='date']"
   end
 
-  def test_renders_end_date_input
+  test "renders end date input" do
     site = sites(:my_blog)
     render_inline(DateRangeSelectorComponent.new(start_date: nil, end_date: nil, site: site))
 
     assert_selector "input[name='end_date'][type='date']"
   end
 
-  def test_populates_start_date_value
+  test "populates start date value" do
     site = sites(:my_blog)
     start_date = Date.new(2024, 1, 15)
 
@@ -33,7 +33,7 @@ class DateRangeSelectorComponentTest < ViewComponent::TestCase
     assert_selector "input[name='start_date'][value='2024-01-15']"
   end
 
-  def test_populates_end_date_value
+  test "populates end date value" do
     site = sites(:my_blog)
     end_date = Date.new(2024, 1, 31)
 
@@ -42,7 +42,7 @@ class DateRangeSelectorComponentTest < ViewComponent::TestCase
     assert_selector "input[name='end_date'][value='2024-01-31']"
   end
 
-  def test_populates_both_date_values
+  test "populates both date values" do
     site = sites(:my_blog)
     start_date = Date.new(2024, 1, 15)
     end_date = Date.new(2024, 1, 31)
@@ -53,14 +53,14 @@ class DateRangeSelectorComponentTest < ViewComponent::TestCase
     assert_selector "input[name='end_date'][value='2024-01-31']"
   end
 
-  def test_renders_to_label
+  test "renders to label" do
     site = sites(:my_blog)
     render_inline(DateRangeSelectorComponent.new(start_date: nil, end_date: nil, site: site))
 
     assert_selector "span", text: "to"
   end
 
-  def test_has_stimulus_targets_for_date_inputs
+  test "has stimulus targets for date inputs" do
     site = sites(:my_blog)
     render_inline(DateRangeSelectorComponent.new(start_date: nil, end_date: nil, site: site))
 
@@ -68,14 +68,14 @@ class DateRangeSelectorComponentTest < ViewComponent::TestCase
     assert_selector "input[data-site-dashboard-target='endDate']"
   end
 
-  def test_has_change_action_for_date_inputs
+  test "has change action for date inputs" do
     site = sites(:my_blog)
     render_inline(DateRangeSelectorComponent.new(start_date: nil, end_date: nil, site: site))
 
     assert_selector "input[data-action='change->site-dashboard#updateDateRange']", count: 2
   end
 
-  def test_renders_with_nil_dates
+  test "renders with nil dates" do
     site = sites(:my_blog)
     render_inline(DateRangeSelectorComponent.new(start_date: nil, end_date: nil, site: site))
 

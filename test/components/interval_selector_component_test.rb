@@ -3,7 +3,7 @@
 require "test_helper"
 
 class IntervalSelectorComponentTest < ViewComponent::TestCase
-  def test_renders_select_element
+  test "renders select element" do
     site = sites(:my_blog)
 
     render_inline(IntervalSelectorComponent.new(current_interval: "daily", site: site))
@@ -11,7 +11,7 @@ class IntervalSelectorComponentTest < ViewComponent::TestCase
     assert_selector "select#interval"
   end
 
-  def test_renders_all_interval_options
+  test "renders all interval options" do
     site = sites(:my_blog)
 
     render_inline(IntervalSelectorComponent.new(current_interval: "daily", site: site))
@@ -21,7 +21,7 @@ class IntervalSelectorComponentTest < ViewComponent::TestCase
     assert_selector "option", text: "Weekly"
   end
 
-  def test_marks_current_interval_as_selected
+  test "marks current interval as selected" do
     site = sites(:my_blog)
 
     render_inline(IntervalSelectorComponent.new(current_interval: "hourly", site: site))
@@ -29,7 +29,7 @@ class IntervalSelectorComponentTest < ViewComponent::TestCase
     assert_selector "option[selected]", text: "Hourly"
   end
 
-  def test_daily_selected_by_default
+  test "daily selected by default" do
     site = sites(:my_blog)
 
     render_inline(IntervalSelectorComponent.new(current_interval: "daily", site: site))
@@ -37,7 +37,7 @@ class IntervalSelectorComponentTest < ViewComponent::TestCase
     assert_selector "option[selected]", text: "Daily"
   end
 
-  def test_weekly_interval_selection
+  test "weekly interval selection" do
     site = sites(:my_blog)
 
     render_inline(IntervalSelectorComponent.new(current_interval: "weekly", site: site))
@@ -45,7 +45,7 @@ class IntervalSelectorComponentTest < ViewComponent::TestCase
     assert_selector "option[selected]", text: "Weekly"
   end
 
-  def test_renders_label
+  test "renders label" do
     site = sites(:my_blog)
 
     render_inline(IntervalSelectorComponent.new(current_interval: "daily", site: site))

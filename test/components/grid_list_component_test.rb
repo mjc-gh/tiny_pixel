@@ -3,7 +3,7 @@
 require "test_helper"
 
 class GridListComponentTest < ViewComponent::TestCase
-  def test_renders_grid_container
+  test "renders grid container" do
     render_inline(GridListComponent.new) do |grid|
       grid.with_card { "<div>Item 1</div>".html_safe }
     end
@@ -13,7 +13,7 @@ class GridListComponentTest < ViewComponent::TestCase
     assert_selector "div.gap-6"
   end
 
-  def test_renders_card_slots
+  test "renders card slots" do
     render_inline(GridListComponent.new) do |grid|
       grid.with_card { "<span class='test-item'>Test Content</span>".html_safe }
     end
@@ -21,7 +21,7 @@ class GridListComponentTest < ViewComponent::TestCase
     assert_selector "span.test-item", text: "Test Content"
   end
 
-  def test_renders_multiple_cards
+  test "renders multiple cards" do
     render_inline(GridListComponent.new) do |grid|
       grid.with_card { "<div class='card'>Card 1</div>".html_safe }
       grid.with_card { "<div class='card'>Card 2</div>".html_safe }

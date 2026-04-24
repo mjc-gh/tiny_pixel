@@ -3,7 +3,7 @@
 require "test_helper"
 
 class SetupInstructionsComponentTest < ViewComponent::TestCase
-  def test_renders_slideover_controller
+  test "renders slideover controller" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -12,7 +12,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_selector "[data-controller='slideover']"
   end
 
-  def test_slideover_has_turbo_temporary_attribute
+  test "slideover has turbo temporary attribute" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -21,7 +21,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_selector "[data-controller='slideover'][data-turbo-temporary]"
   end
 
-  def test_renders_dialog_element
+  test "renders dialog element" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -30,7 +30,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_selector "dialog[data-slideover-target='dialog']"
   end
 
-  def test_renders_title
+  test "renders title" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -39,7 +39,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_text I18n.t("sites.instructions.title")
   end
 
-  def test_renders_description
+  test "renders description" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -48,7 +48,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_text I18n.t("sites.instructions.description")
   end
 
-  def test_renders_tracking_snippet_with_property_id
+  test "renders tracking snippet with property id" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -57,7 +57,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_includes rendered_content, "data-property-id=&quot;#{site.property_id}&quot;"
   end
 
-  def test_renders_tracking_snippet_with_server_attribute
+  test "renders tracking snippet with server attribute" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -66,7 +66,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_includes rendered_content, "data-server=&quot;http://localhost:3000&quot;"
   end
 
-  def test_renders_tracking_script_source
+  test "renders tracking script source" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -75,7 +75,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_includes rendered_content, "src=&quot;http://localhost:3000/tp.js&quot;"
   end
 
-  def test_renders_copy_button
+  test "renders copy button" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -84,7 +84,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_text I18n.t("sites.instructions.copy")
   end
 
-  def test_copy_button_has_clipboard_controller
+  test "copy button has clipboard controller" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -93,7 +93,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_selector "div[data-controller='clipboard']"
   end
 
-  def test_renders_close_button
+  test "renders close button" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -102,7 +102,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_text I18n.t("sites.instructions.close")
   end
 
-  def test_close_button_has_slideover_action
+  test "close button has slideover action" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -111,7 +111,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_selector "button[data-action='slideover#close']", count: 2
   end
 
-  def test_renders_close_icon
+  test "renders close icon" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -120,7 +120,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_selector "svg"
   end
 
-  def test_snippet_contains_script_tag
+  test "snippet contains script tag" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "http://localhost:3000")
 
@@ -129,7 +129,7 @@ class SetupInstructionsComponentTest < ViewComponent::TestCase
     assert_includes rendered_content, "&lt;script"
   end
 
-  def test_different_base_urls_generate_correct_snippets
+  test "different base urls generate correct snippets" do
     site = sites(:tech_blog)
     request = OpenStruct.new(base_url: "https://example.com")
 

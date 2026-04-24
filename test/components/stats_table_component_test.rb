@@ -7,7 +7,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     @site = sites(:tech_blog)
   end
 
-  def test_renders_table_with_stats
+  test "renders table with stats" do
     stat = DailyPageStat.create!(
       site: @site,
       hostname: "example.com",
@@ -30,7 +30,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_selector "th", text: "Unique Page Views"
   end
 
-  def test_renders_pathname_column
+  test "renders pathname column" do
     stat = DailyPageStat.create!(
       site: @site,
       hostname: "example.com",
@@ -45,7 +45,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_text "/test-path"
   end
 
-  def test_renders_empty_state_when_no_stats
+  test "renders empty state when no stats" do
     columns = [{ label: "Page Views", method: :pageviews }]
 
     render_inline(StatsTableComponent.new(stats: [], columns: columns, time_column: :date))
@@ -54,7 +54,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_no_selector "table"
   end
 
-  def test_formats_daily_time_column
+  test "formats daily time column" do
     stat = DailyPageStat.create!(
       site: @site,
       hostname: "example.com",
@@ -69,7 +69,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_text Date.current.strftime("%b %d, %Y")
   end
 
-  def test_formats_hourly_time_column
+  test "formats hourly time column" do
     stat = HourlyPageStat.create!(
       site: @site,
       hostname: "example.com",
@@ -84,7 +84,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_text Time.current.beginning_of_hour.strftime("%Y-%m-%d %H:%M")
   end
 
-  def test_formats_weekly_time_column
+  test "formats weekly time column" do
     stat = WeeklyPageStat.create!(
       site: @site,
       hostname: "example.com",
@@ -99,7 +99,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_text "Week of"
   end
 
-  def test_formats_bounce_rate_with_percentage
+  test "formats bounce rate with percentage" do
     stat = DailyPageStat.create!(
       site: @site,
       hostname: "example.com",
@@ -115,7 +115,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_text "%"
   end
 
-  def test_formats_avg_duration_with_seconds
+  test "formats avg duration with seconds" do
     stat = DailyPageStat.create!(
       site: @site,
       hostname: "example.com",
@@ -132,7 +132,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_text "s"
   end
 
-  def test_renders_pagination_when_provided
+  test "renders pagination when provided" do
     stat = DailyPageStat.create!(
       site: @site,
       hostname: "example.com",
@@ -155,7 +155,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_selector "nav[aria-label='Pagination']"
   end
 
-  def test_does_not_render_pagination_without_all_params
+  test "does not render pagination without all params" do
     stat = DailyPageStat.create!(
       site: @site,
       hostname: "example.com",
@@ -175,7 +175,7 @@ class StatsTableComponentTest < ViewComponent::TestCase
     assert_no_selector "nav[aria-label='Pagination']"
   end
 
-  def test_does_not_render_pagination_without_frame_id
+  test "does not render pagination without frame id" do
     stat = DailyPageStat.create!(
       site: @site,
       hostname: "example.com",

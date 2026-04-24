@@ -18,7 +18,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     ["device_type", "Device Types", "device_type_stats"],
     ["referrer_hostname", "Referrers", "referrer_hostname_stats"]
   ].each do |type, label, frame_id|
-    define_method("test_renders_#{type}_label") do
+    test "renders #{type} label" do
       stats = create_paginated_stats([])
       site = sites(:tech_blog)
 
@@ -35,7 +35,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     end
   end
 
-  def test_renders_table_with_headers
+  test "renders table with headers" do
     stats = create_paginated_stats([])
     site = sites(:tech_blog)
 
@@ -53,7 +53,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "th", text: /Country|Page Views|Sessions/
   end
 
-  def test_renders_dimension_values_in_table
+  test "renders dimension values in table" do
     stat = { dimension_value: "US", pageviews: 100, sessions: 50 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -70,7 +70,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "td", text: "US"
   end
 
-  def test_renders_pageviews_count
+  test "renders pageviews count" do
     stat = { dimension_value: "US", pageviews: 1000, sessions: 500 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -87,7 +87,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "td", text: "1,000"
   end
 
-  def test_renders_sessions_count
+  test "renders sessions count" do
     stat = { dimension_value: "US", pageviews: 100, sessions: 500 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -104,7 +104,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "td", text: "500"
   end
 
-  def test_renders_unknown_for_blank_dimension_value
+  test "renders unknown for blank dimension value" do
     stat = { dimension_value: "", pageviews: 100, sessions: 50 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -121,7 +121,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "td", text: "Unknown"
   end
 
-  def test_renders_unknown_for_nil_dimension_value
+  test "renders unknown for nil dimension value" do
     stat = { dimension_value: nil, pageviews: 100, sessions: 50 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -138,7 +138,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "td", text: "Unknown"
   end
 
-  def test_renders_multiple_dimension_values
+  test "renders multiple dimension values" do
     stats_data = [
       { dimension_value: "US", pageviews: 100, sessions: 50 },
       { dimension_value: "GB", pageviews: 80, sessions: 40 },
@@ -161,7 +161,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "td", text: "CA"
   end
 
-  def test_renders_pagination_component
+  test "renders pagination component" do
     stats_data = (1..6).map { |i| { dimension_value: "C#{i}", pageviews: 100 - i, sessions: 50 - i } }
     stats = create_paginated_stats(stats_data)
     stats.define_singleton_method(:current_page) { 1 }
@@ -181,7 +181,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "nav[aria-label='Pagination']"
   end
 
-  def test_renders_page_headers_correctly
+  test "renders page headers correctly" do
     stat = { dimension_value: "chrome", pageviews: 100, sessions: 50 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -200,7 +200,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "th", text: "Sessions"
   end
 
-  def test_renders_device_type_page_headers_correctly
+  test "renders device type page headers correctly" do
     stat = { dimension_value: "mobile", pageviews: 100, sessions: 50 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -217,7 +217,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "th", text: "Device Type"
   end
 
-  def test_renders_referrer_hostname_page_headers_correctly
+  test "renders referrer hostname page headers correctly" do
     stat = { dimension_value: "google.com", pageviews: 100, sessions: 50 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -234,7 +234,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "th", text: "Referrer"
   end
 
-  def test_formats_large_numbers_with_delimiters
+  test "formats large numbers with delimiters" do
     stat = { dimension_value: "US", pageviews: 1000000, sessions: 500000 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -252,7 +252,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "td", text: "500,000"
   end
 
-  def test_renders_empty_table_with_no_stats
+  test "renders empty table with no stats" do
     stats = create_paginated_stats([])
     site = sites(:tech_blog)
 
@@ -275,7 +275,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     ["4", "Firefox"],
     ["999", "Other"]
   ].each do |value, label|
-    define_method("test_formats_browser_enum_#{label.downcase}") do
+    test "formats browser enum #{label.downcase}" do
       stat = { dimension_value: value, pageviews: 100, sessions: 50 }
       stats = create_paginated_stats([stat])
       site = sites(:tech_blog)
@@ -299,7 +299,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     ["9", "Crawler"],
     ["10", "Other"]
   ].each do |value, label|
-    define_method("test_formats_device_type_enum_#{label.downcase}") do
+    test "formats device type enum #{label.downcase}" do
       stat = { dimension_value: value, pageviews: 100, sessions: 50 }
       stats = create_paginated_stats([stat])
       site = sites(:tech_blog)
@@ -317,7 +317,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     end
   end
 
-  def test_handles_unknown_browser_enum_value
+  test "handles unknown browser enum value" do
     stat = { dimension_value: "555", pageviews: 100, sessions: 50 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -334,7 +334,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "td", text: "Unknown"
   end
 
-  def test_handles_unknown_device_type_enum_value
+  test "handles unknown device type enum value" do
     stat = { dimension_value: "555", pageviews: 100, sessions: 50 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)
@@ -351,7 +351,7 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     assert_selector "td", text: "Unknown"
   end
 
-  def test_renders_unknown_dimension_type_label
+  test "renders unknown dimension type label" do
     stat = { dimension_value: "value", pageviews: 100, sessions: 50 }
     stats = create_paginated_stats([stat])
     site = sites(:tech_blog)

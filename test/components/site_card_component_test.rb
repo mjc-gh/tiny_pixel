@@ -5,7 +5,8 @@ require "test_helper"
 class SiteCardComponentTest < ViewComponent::TestCase
   include Rails.application.routes.url_helpers
   include ActionView::Helpers::TranslationHelper
-  def test_renders_site_name
+
+  test "renders site name" do
     site = sites(:my_blog)
 
     render_inline(SiteCardComponent.new(site: site))
@@ -13,7 +14,7 @@ class SiteCardComponentTest < ViewComponent::TestCase
     assert_selector "h2", text: site.name
   end
 
-  def test_renders_site_property_id
+  test "renders site property id" do
     site = sites(:my_blog)
 
     render_inline(SiteCardComponent.new(site: site))
@@ -21,7 +22,7 @@ class SiteCardComponentTest < ViewComponent::TestCase
     assert_text site.property_id
   end
 
-  def test_renders_formatted_creation_date
+  test "renders formatted creation date" do
     site = sites(:my_blog)
 
     render_inline(SiteCardComponent.new(site: site))
@@ -29,7 +30,7 @@ class SiteCardComponentTest < ViewComponent::TestCase
     assert_text "Created"
   end
 
-  def test_renders_settings_link
+  test "renders settings link" do
     site = sites(:my_blog)
 
     render_inline(SiteCardComponent.new(site: site))

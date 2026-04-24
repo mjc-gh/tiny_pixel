@@ -3,7 +3,7 @@
 require "test_helper"
 
 class PaginationComponentTest < ViewComponent::TestCase
-  def test_renders_pagination_when_multiple_pages
+  test "renders pagination when multiple pages" do
     collection = create_paginated_collection(current_page: 1, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -16,7 +16,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_selector "nav[aria-label='Pagination']"
   end
 
-  def test_does_not_render_for_single_page
+  test "does not render for single page" do
     collection = create_paginated_collection(current_page: 1, total_pages: 1)
 
     render_inline(PaginationComponent.new(
@@ -28,7 +28,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_no_selector "nav"
   end
 
-  def test_renders_turbo_frame_attribute
+  test "renders turbo frame attribute" do
     collection = create_paginated_collection(current_page: 2, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -40,7 +40,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_selector "a[data-turbo-frame='page_views_stats']"
   end
 
-  def test_renders_turbo_action_replace_attribute
+  test "renders turbo action replace attribute" do
     collection = create_paginated_collection(current_page: 2, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -52,7 +52,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_selector "a[data-turbo-action='replace']"
   end
 
-  def test_disables_previous_on_first_page
+  test "disables previous on first page" do
     collection = create_paginated_collection(current_page: 1, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -65,7 +65,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_no_selector "a", text: "Previous"
   end
 
-  def test_disables_next_on_last_page
+  test "disables next on last page" do
     collection = create_paginated_collection(current_page: 5, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -78,7 +78,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_no_selector "a", text: "Next"
   end
 
-  def test_renders_page_numbers
+  test "renders page numbers" do
     collection = create_paginated_collection(current_page: 3, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -92,7 +92,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     end
   end
 
-  def test_highlights_current_page
+  test "highlights current page" do
     collection = create_paginated_collection(current_page: 3, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -104,7 +104,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_selector "span[aria-current='page']", text: "3"
   end
 
-  def test_includes_params_in_page_links
+  test "includes params in page links" do
     collection = create_paginated_collection(current_page: 1, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -117,7 +117,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_selector "a[href*='interval=hourly']"
   end
 
-  def test_displays_page_info
+  test "displays page info" do
     collection = create_paginated_collection(current_page: 2, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -132,7 +132,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_text "5"
   end
 
-  def test_renders_ellipsis_for_many_pages
+  test "renders ellipsis for many pages" do
     collection = create_paginated_collection(current_page: 5, total_pages: 10)
 
     render_inline(PaginationComponent.new(
@@ -144,7 +144,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_text "..."
   end
 
-  def test_previous_link_on_middle_page
+  test "previous link on middle page" do
     collection = create_paginated_collection(current_page: 3, total_pages: 5)
 
     render_inline(PaginationComponent.new(
@@ -156,7 +156,7 @@ class PaginationComponentTest < ViewComponent::TestCase
     assert_selector "a[href*='page=2']"
   end
 
-  def test_next_link_on_middle_page
+  test "next link on middle page" do
     collection = create_paginated_collection(current_page: 3, total_pages: 5)
 
     render_inline(PaginationComponent.new(

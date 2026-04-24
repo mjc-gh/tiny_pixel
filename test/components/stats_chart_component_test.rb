@@ -3,7 +3,7 @@
 require "test_helper"
 
 class StatsChartComponentTest < ViewComponent::TestCase
-  def test_renders_chart_with_data
+  test "renders chart with data" do
     chart_data = {
       "Page Views" => { Date.current => 100, Date.current - 1.day => 80 }
     }
@@ -13,7 +13,7 @@ class StatsChartComponentTest < ViewComponent::TestCase
     assert_selector "div.w-full"
   end
 
-  def test_renders_empty_state_when_no_data
+  test "renders empty state when no data" do
     chart_data = {
       "Page Views" => {}
     }
@@ -23,7 +23,7 @@ class StatsChartComponentTest < ViewComponent::TestCase
     assert_text "No data available for this period."
   end
 
-  def test_has_data_returns_true_with_data
+  test "has data returns true with data" do
     chart_data = {
       "Page Views" => { Date.current => 100 }
     }
@@ -32,7 +32,7 @@ class StatsChartComponentTest < ViewComponent::TestCase
     assert component.has_data?
   end
 
-  def test_has_data_returns_false_with_empty_data
+  test "has data returns false with empty data" do
     chart_data = {
       "Page Views" => {}
     }
@@ -41,7 +41,7 @@ class StatsChartComponentTest < ViewComponent::TestCase
     assert_not component.has_data?
   end
 
-  def test_chart_data_transforms_to_expected_format
+  test "chart data transforms to expected format" do
     chart_data = {
       "Page Views" => { Date.current => 100 },
       "Unique Views" => { Date.current => 80 }
@@ -55,7 +55,7 @@ class StatsChartComponentTest < ViewComponent::TestCase
     assert_equal "Unique Views", result[1][:name]
   end
 
-  def test_chart_options_returns_day_unit_for_daily
+  test "chart options returns day unit for daily" do
     component = StatsChartComponent.new(data: {}, time_column: :date, chart_id: "test_chart")
 
     options = component.chart_options
@@ -63,7 +63,7 @@ class StatsChartComponentTest < ViewComponent::TestCase
     assert_equal "day", options[:library][:scales][:x][:time][:unit]
   end
 
-  def test_chart_options_returns_hour_unit_for_hourly
+  test "chart options returns hour unit for hourly" do
     component = StatsChartComponent.new(data: {}, time_column: :time_bucket, chart_id: "test_chart")
 
     options = component.chart_options
@@ -71,7 +71,7 @@ class StatsChartComponentTest < ViewComponent::TestCase
     assert_equal "hour", options[:library][:scales][:x][:time][:unit]
   end
 
-  def test_chart_options_returns_week_unit_for_weekly
+  test "chart options returns week unit for weekly" do
     component = StatsChartComponent.new(data: {}, time_column: :week_start, chart_id: "test_chart")
 
     options = component.chart_options
@@ -79,7 +79,7 @@ class StatsChartComponentTest < ViewComponent::TestCase
     assert_equal "week", options[:library][:scales][:x][:time][:unit]
   end
 
-  def test_chart_options_includes_chart_id
+  test "chart options includes chart id" do
     component = StatsChartComponent.new(data: {}, time_column: :date, chart_id: "unique_chart_id")
 
     options = component.chart_options

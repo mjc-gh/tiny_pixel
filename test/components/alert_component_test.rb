@@ -3,7 +3,7 @@
 require "test_helper"
 
 class AlertComponentTest < ViewComponent::TestCase
-  def test_renders_with_success_variant
+  test "renders with success variant" do
     render_inline(AlertComponent.new(variant: :success, message: "Changes saved!"))
 
     assert_selector "[role='alert']"
@@ -11,7 +11,7 @@ class AlertComponentTest < ViewComponent::TestCase
     assert_text "Changes saved!"
   end
 
-  def test_renders_with_danger_variant
+  test "renders with danger variant" do
     render_inline(AlertComponent.new(variant: :danger, message: "Error occurred"))
 
     assert_selector "[role='alert']"
@@ -19,7 +19,7 @@ class AlertComponentTest < ViewComponent::TestCase
     assert_text "Error occurred"
   end
 
-  def test_renders_with_warning_variant
+  test "renders with warning variant" do
     render_inline(AlertComponent.new(variant: :warning, message: "Warning message"))
 
     assert_selector "[role='alert']"
@@ -27,13 +27,13 @@ class AlertComponentTest < ViewComponent::TestCase
     assert_text "Warning message"
   end
 
-  def test_default_variant_is_danger
+  test "default variant is danger" do
     render_inline(AlertComponent.new(message: "Some message"))
 
     assert_text "Error"
   end
 
-  def test_applies_success_css_classes
+  test "applies success css classes" do
     render_inline(AlertComponent.new(variant: :success, message: "test"))
 
     assert_selector ".bg-success-bg"
@@ -41,7 +41,7 @@ class AlertComponentTest < ViewComponent::TestCase
     assert_selector ".text-success-text"
   end
 
-  def test_applies_danger_css_classes
+  test "applies danger css classes" do
     render_inline(AlertComponent.new(variant: :danger, message: "test"))
 
     assert_selector ".bg-danger-bg"
@@ -49,7 +49,7 @@ class AlertComponentTest < ViewComponent::TestCase
     assert_selector ".text-danger-text"
   end
 
-  def test_applies_warning_css_classes
+  test "applies warning css classes" do
     render_inline(AlertComponent.new(variant: :warning, message: "test"))
 
     assert_selector ".bg-warning-bg"
@@ -57,63 +57,63 @@ class AlertComponentTest < ViewComponent::TestCase
     assert_selector ".text-warning-text"
   end
 
-  def test_includes_stimulus_controller
+  test "includes stimulus controller" do
     render_inline(AlertComponent.new(message: "test"))
 
     assert_selector "[data-controller='alert']"
   end
 
-  def test_sets_dismiss_after_value
+  test "sets dismiss after value" do
     render_inline(AlertComponent.new(message: "test", dismiss_after: 3000))
 
     assert_selector "[data-alert-dismiss-after-value='3000']"
   end
 
-  def test_sets_default_dismiss_after_value_for_danger
+  test "sets default dismiss after value for danger" do
     render_inline(AlertComponent.new(variant: :danger, message: "test"))
 
     assert_selector "[data-alert-dismiss-after-value='500000']"
   end
 
-  def test_sets_custom_dismiss_after_value_for_success
+  test "sets custom dismiss after value for success" do
     render_inline(AlertComponent.new(variant: :success, message: "test", dismiss_after: 5000))
 
     assert_selector "[data-alert-dismiss-after-value='5000']"
   end
 
-  def test_includes_dismiss_button
+  test "includes dismiss button" do
     render_inline(AlertComponent.new(message: "test"))
 
     assert_selector "button[data-action='alert#close']"
   end
 
-  def test_includes_heroicon_in_dismiss_button
+  test "includes heroicon in dismiss button" do
     render_inline(AlertComponent.new(message: "test"))
 
     assert_selector "button svg"
   end
 
-  def test_renders_unique_id_based_on_variant
+  test "renders unique id based on variant" do
     render_inline(AlertComponent.new(variant: :success, message: "test"))
 
     assert_selector "#flash-success"
   end
 
-  def test_invalid_variant_defaults_to_danger
+  test "invalid variant defaults to danger" do
     render_inline(AlertComponent.new(variant: :invalid, message: "test"))
 
     assert_text "Error"
     assert_selector ".bg-danger-bg"
   end
 
-  def test_renders_message_content
+  test "renders message content" do
     message = "This is a test message"
     render_inline(AlertComponent.new(message: message))
 
     assert_text message
   end
 
-  def test_empty_message_renders
+  test "empty message renders" do
     render_inline(AlertComponent.new(message: ""))
 
     assert_selector "[role='alert']"
