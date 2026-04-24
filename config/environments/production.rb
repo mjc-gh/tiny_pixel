@@ -101,6 +101,9 @@ Rails.application.configure do
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
+  # Keep logs concise
+  config.lograge.enabled = true
+
   # Do not log certain requests
   config.middleware.use Middlewares::SilenceRequest, paths: %w[/up /_/pixel.gif]
 end

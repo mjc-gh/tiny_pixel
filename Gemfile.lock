@@ -216,6 +216,11 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
+    lograge (0.14.0)
+      actionpack (>= 4)
+      activesupport (>= 4)
+      railties (>= 4)
+      request_store (~> 1.0)
     loofah (2.25.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -358,6 +363,8 @@ GEM
     regexp_parser (2.12.0)
     reline (0.6.3)
       io-console (~> 0.5)
+    request_store (1.7.0)
+      rack (>= 1.4)
     revise_auth (0.8.0)
       bcrypt (~> 3.1)
       rails (>= 7.1.0.beta1)
@@ -516,6 +523,7 @@ DEPENDENCIES
   inline_svg
   jbuilder
   kamal
+  lograge
   maxmind-db
   minitest-mock
   postmark-rails
