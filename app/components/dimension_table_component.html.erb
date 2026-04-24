@@ -20,19 +20,19 @@
       </thead>
       <tbody>
         <% @stats.each do |stat| %>
-          <% selected = is_selected?(stat[:dimension_value]) %>
+          <% selected = is_selected?(stat.dimension_value) %>
           <tr class="border-b transition-colors cursor-pointer <%= selected ? 'bg-primary/20 border-primary/40' : 'border-border hover:bg-surface-hover' %>"
               data-action="click->site-dashboard#selectDimension"
               data-dimension-type="<%= @type %>"
-              data-dimension-value="<%= stat[:dimension_value] %>">
+              data-dimension-value="<%= stat.dimension_value %>">
             <td class="px-4 py-3 <%= selected ? 'text-primary font-semibold' : 'text-content-primary' %>">
-              <%= dimension_display_name(stat[:dimension_value]) %>
+              <%= dimension_display_name(stat.dimension_value) %>
             </td>
             <td class="px-4 py-3 text-right <%= selected ? 'text-primary font-semibold' : 'text-content-primary' %>">
-              <%= number_with_delimiter(stat[:pageviews]) %>
+              <%= number_with_delimiter(stat.pageviews) %>
             </td>
             <td class="px-4 py-3 text-right <%= selected ? 'text-primary font-semibold' : 'text-content-primary' %>">
-              <%= number_with_delimiter(stat[:sessions]) %>
+              <%= number_with_delimiter(stat.sessions) %>
             </td>
           </tr>
         <% end %>
