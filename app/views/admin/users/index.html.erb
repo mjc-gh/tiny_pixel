@@ -1,0 +1,27 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-bold text-2xl text-content-primary"><%= t("admin.users.index.title") %></h1>
+  <%= link_to t("admin.users.index.create_new"), new_admin_user_path, class: "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" %>
+</div>
+
+<% if @users.any? %>
+  <div class="overflow-x-auto bg-surface border border-border rounded-lg">
+    <table class="min-w-full divide-y divide-border">
+      <thead class="bg-surface-hover">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-content-secondary">Email</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-content-secondary">Created</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        <% @users.each do |user| %>
+          <tr class="hover:bg-surface-hover transition-colors">
+            <td class="px-6 py-4 text-sm text-content-primary"><%= user.email %></td>
+            <td class="px-6 py-4 text-sm text-content-secondary"><%= user.created_at.strftime("%b %d, %Y") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-content-muted"><%= t("admin.users.index.no_users") %></p>
+<% end %>

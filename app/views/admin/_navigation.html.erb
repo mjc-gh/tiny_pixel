@@ -10,16 +10,20 @@
 
       <!-- Desktop navigation (hidden on mobile) -->
       <div class="hidden md:flex items-center space-x-6">
-        <!-- Theme toggle button -->
-        <div data-controller="theme">
-           <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="theme#toggle">
-             <!-- Sun icon (shown when in dark mode, click to switch to light) -->
-             <%= heroicon "sun", type: :outline, "data-theme-target": "lightIcon", class: "hidden h-5 w-5" %>
-             <!-- Moon icon (shown when in light mode, click to switch to dark) -->
-             <%= heroicon "moon", type: :outline, "data-theme-target": "darkIcon", class: "h-5 w-5" %>
-           </button>
+        <div class="flex items-center space-x-4">
+          <%= link_to "Users", admin_users_path, class: "text-sm text-content-secondary hover:text-content-primary transition-colors" %>
         </div>
-      </div>
+
+         <!-- Theme toggle button -->
+         <div data-controller="theme">
+            <button type="button" class="p-2 rounded-md text-content-secondary hover:text-content-primary hover:bg-surface-hover" data-action="theme#toggle">
+              <!-- Sun icon (shown when in dark mode, click to switch to light) -->
+              <%= heroicon "sun", type: :outline, "data-theme-target": "lightIcon", class: "hidden h-5 w-5" %>
+              <!-- Moon icon (shown when in light mode, click to switch to dark) -->
+              <%= heroicon "moon", type: :outline, "data-theme-target": "darkIcon", class: "h-5 w-5" %>
+            </button>
+         </div>
+       </div>
 
       <!-- Mobile buttons (hamburger + theme toggle) -->
       <div class="flex md:hidden items-center space-x-2">
@@ -36,7 +40,14 @@
            <%= heroicon "bars-3", type: :outline, "data-mobile-menu-target": "openIcon", class: "h-6 w-6" %>
            <%= heroicon "x-mark", type: :outline, "data-mobile-menu-target": "closeIcon", class: "hidden h-6 w-6" %>
          </button>
-      </div>
-    </div>
-  </div>
-</nav>
+       </div>
+     </div>
+
+     <!-- Mobile menu (shown/hidden by mobile-menu controller) -->
+     <div class="hidden md:hidden border-t border-border" data-mobile-menu-target="menu">
+       <div class="flex flex-col space-y-2 px-5 py-4">
+         <%= link_to "Users", admin_users_path, class: "px-3 py-2 rounded-md text-sm text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors" %>
+       </div>
+     </div>
+   </div>
+ </nav>

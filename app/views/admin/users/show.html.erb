@@ -1,0 +1,35 @@
+<div class="w-full max-w-2xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-content-primary"><%= t("admin.users.show.title") %></h1>
+    <%= link_to "← " + t("common.back"), admin_users_path, class: "text-sm text-primary hover:text-primary/80 transition-colors" %>
+  </div>
+
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8 space-y-6">
+    <% if @temp_password %>
+      <div class="bg-success-bg border border-success-border rounded-md p-4">
+        <p class="text-sm font-semibold text-success-text mb-4"><%= t("admin.users.show.password_label") %></p>
+        <div data-controller="clipboard" class="flex items-center gap-3">
+          <code class="text-sm bg-surface-hover rounded px-3 py-2 flex-1 text-content-primary font-mono break-all" data-clipboard-target="source"><%= @temp_password %></code>
+          <button
+            type="button"
+            data-action="clipboard#copy"
+            data-clipboard-target="button"
+            data-copied-text="<%= t('admin.users.show.copy_success') %>"
+            class="px-3 py-2 bg-success text-white rounded hover:bg-success/90 transition-colors text-sm font-medium whitespace-nowrap"
+          >
+            <%= t("admin.users.show.copy") %>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-info-bg border border-info-border rounded-md p-4">
+        <p class="text-sm text-info-text"><%= t("admin.users.show.instructions") %></p>
+      </div>
+    <% end %>
+
+    <div class="space-y-2">
+      <p class="text-sm font-semibold text-content-primary"><%= t("admin.users.show.user_email") %></p>
+      <p class="text-sm text-content-secondary"><%= @user.email %></p>
+    </div>
+  </div>
+</div>

@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   # System Admin
   namespace :admin do
     get "/" => "dashboard#index"
+    resources :users, only: [:index, :new, :create, :show]
   end
 
   # PWA routes

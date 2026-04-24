@@ -61,6 +61,23 @@ en:
         next_steps: "What's Next?"
         view_dashboard: "View Dashboard"
         site_settings: "Site Settings"
+  admin:
+    users:
+      index:
+        title: "Users"
+        create_new: "Create New User"
+        no_users: "No users created yet."
+      new:
+        title: "Create New User"
+        email_label: "Email"
+        email_help: "Enter the email address for the new user"
+      show:
+        title: "User Created"
+        password_label: "Temporary Password"
+        copy: "Copy"
+        copy_success: "Copied!"
+        instructions: "Share this password with the new user. They will be required to change their password upon their first login."
+        user_email: "User Email"
   users:
     registrations:
       not_allowed: Registration is not allowed
