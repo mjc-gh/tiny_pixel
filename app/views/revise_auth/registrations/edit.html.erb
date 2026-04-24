@@ -61,32 +61,32 @@
                 <!-- eye icon (hidden, shown when visible) -->
                 <%= heroicon "eye", type: :outline, "data-password-visibility-target": "showIcon", class: "hidden h-5 w-5" %>
               </button>
-             </div>
             </div>
+          </div>
 
-            <div data-controller="password-visibility">
-              <div class="relative">
-                <%= form.password_field :password, required: true, label: t(".new_password"), data: { password_visibility_target: "input" } %>
-                <button type="button" data-action="password-visibility#toggle" class="h-5 w-5 absolute inset-y-0 right-2 top-8.5 flex items-center text-content-secondary hover:text-content-primary">
-                  <!-- eye-slash icon (default, shown when masked) -->
-                  <%= heroicon "eye-slash", type: :outline, "data-password-visibility-target": "hideIcon", class: "h-5 w-5" %>
-                  <!-- eye icon (hidden, shown when visible) -->
-                  <%= heroicon "eye", type: :outline, "data-password-visibility-target": "showIcon", class: "hidden h-5 w-5" %>
-                </button>
-              </div>
+          <div data-controller="password-visibility">
+            <div class="relative">
+              <%= form.password_field :password, required: true, label: t(".new_password"), data: { password_visibility_target: "input" } %>
+              <button type="button" data-action="password-visibility#toggle" class="h-5 w-5 absolute inset-y-0 right-2 top-8.5 flex items-center text-content-secondary hover:text-content-primary">
+                <!-- eye-slash icon (default, shown when masked) -->
+                <%= heroicon "eye-slash", type: :outline, "data-password-visibility-target": "hideIcon", class: "h-5 w-5" %>
+                <!-- eye icon (hidden, shown when visible) -->
+                <%= heroicon "eye", type: :outline, "data-password-visibility-target": "showIcon", class: "hidden h-5 w-5" %>
+              </button>
             </div>
+          </div>
 
-            <div data-controller="password-visibility">
-              <div class="relative">
-                <%= form.password_field :password_confirmation, required: true, data: { password_visibility_target: "input" } %>
-                <button type="button" data-action="password-visibility#toggle" class="h-5 w-5 absolute inset-y-0 right-2 top-8.5 flex items-center text-content-secondary hover:text-content-primary">
-                  <!-- eye-slash icon (default, shown when masked) -->
-                  <%= heroicon "eye-slash", type: :outline, "data-password-visibility-target": "hideIcon", class: "h-5 w-5" %>
-                  <!-- eye icon (hidden, shown when visible) -->
-                  <%= heroicon "eye", type: :outline, "data-password-visibility-target": "showIcon", class: "hidden h-5 w-5" %>
-                </button>
-             </div>
-           </div>
+          <div data-controller="password-visibility">
+            <div class="relative">
+              <%= form.password_field :password_confirmation, required: true, data: { password_visibility_target: "input" } %>
+              <button type="button" data-action="password-visibility#toggle" class="h-5 w-5 absolute inset-y-0 right-2 top-8.5 flex items-center text-content-secondary hover:text-content-primary">
+                <!-- eye-slash icon (default, shown when masked) -->
+                <%= heroicon "eye-slash", type: :outline, "data-password-visibility-target": "hideIcon", class: "h-5 w-5" %>
+                <!-- eye icon (hidden, shown when visible) -->
+                <%= heroicon "eye", type: :outline, "data-password-visibility-target": "showIcon", class: "hidden h-5 w-5" %>
+              </button>
+            </div>
+          </div>
 
           <div>
             <%= form.button t(".save") %>

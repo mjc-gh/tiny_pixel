@@ -5,16 +5,16 @@
         <!-- Site name with settings icon -->
         <div class="flex justify-between sm:justify-start sm:gap-2 items-center">
           <h1 class="font-bold text-2xl text-content-primary"><%= @site.name %></h1>
-           <%= link_to edit_site_path(@site), title: t("common.settings"), class: "text-content-secondary hover:text-content-primary transition-colors" do %>
-             <%= heroicon "cog-8-tooth", type: :outline, class: "h-5 w-5" %>
-           <% end %>
+          <%= link_to edit_site_path(@site), title: t("common.settings"), class: "text-content-secondary hover:text-content-primary transition-colors" do %>
+            <%= heroicon "cog-8-tooth", type: :outline, class: "h-5 w-5" %>
+          <% end %>
         </div>
         <!-- Property ID with instructions icon -->
         <div class="flex justify-between sm:justify-start sm:gap-2 items-center">
           <p class="text-sm text-content-secondary"><%= @site.property_id %></p>
-           <%= link_to site_instructions_path(@site), title: t("sites.instructions.title"), data: { turbo_frame: "modals", action: "slideover#open" }, class: "text-content-secondary hover:text-content-primary transition-colors" do %>
-             <%= heroicon "code-bracket", type: :outline, class: "h-5 w-5" %>
-           <% end %>
+          <%= link_to site_instructions_path(@site), title: t("sites.instructions.title"), data: { turbo_frame: "modals", action: "slideover#open" }, class: "text-content-secondary hover:text-content-primary transition-colors" do %>
+            <%= heroicon "code-bracket", type: :outline, class: "h-5 w-5" %>
+          <% end %>
         </div>
       </div>
       <div class="flex items-center gap-4">
@@ -59,7 +59,7 @@
   <div class="gap-y-8 gap-x-4 grid grid-cols-1 md:grid-cols-2">
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-         <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+        <turbo-frame id="page_views_stats" src="<%= site_page_views_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
           <p class="text-content-muted">Loading page views...</p>
         </turbo-frame>
       </div>
@@ -67,7 +67,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-         <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+        <turbo-frame id="visitors_stats" src="<%= site_visitors_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
           <p class="text-content-muted">Loading visitors...</p>
         </turbo-frame>
       </div>
@@ -75,15 +75,15 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-         <turbo-frame id="avg_duration_stats" src="<%= site_avg_duration_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+        <turbo-frame id="avg_duration_stats" src="<%= site_avg_duration_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
           <p class="text-content-muted">Loading avg duration...</p>
         </turbo-frame>
       </div>
     </section>
 
-     <section>
+    <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-         <turbo-frame id="bounce_rate_stats" src="<%= site_bounce_rate_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+        <turbo-frame id="bounce_rate_stats" src="<%= site_bounce_rate_index_path(@site, interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
           <p class="text-content-muted">Loading bounce rate...</p>
         </turbo-frame>
       </div>
@@ -93,7 +93,7 @@
   <div class="gap-y-8 gap-x-4 grid grid-cols-1 md:grid-cols-2 mt-8">
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-         <turbo-frame id="country_stats" src="<%= site_dimensions_path(@site, type: 'country', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+        <turbo-frame id="country_stats" src="<%= site_dimensions_path(@site, type: 'country', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
           <p class="text-content-muted">Loading countries...</p>
         </turbo-frame>
       </div>
@@ -101,7 +101,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-         <turbo-frame id="browser_stats" src="<%= site_dimensions_path(@site, type: 'browser', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+        <turbo-frame id="browser_stats" src="<%= site_dimensions_path(@site, type: 'browser', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
           <p class="text-content-muted">Loading browsers...</p>
         </turbo-frame>
       </div>
@@ -109,7 +109,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-         <turbo-frame id="device_type_stats" src="<%= site_dimensions_path(@site, type: 'device_type', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+        <turbo-frame id="device_type_stats" src="<%= site_dimensions_path(@site, type: 'device_type', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
           <p class="text-content-muted">Loading device types...</p>
         </turbo-frame>
       </div>
@@ -117,7 +117,7 @@
 
     <section>
       <div class="border border-border rounded-lg p-4 bg-surface">
-         <turbo-frame id="referrer_hostname_stats" src="<%= site_dimensions_path(@site, type: 'referrer_hostname', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+        <turbo-frame id="referrer_hostname_stats" src="<%= site_dimensions_path(@site, type: 'referrer_hostname', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
           <p class="text-content-muted">Loading referrers...</p>
         </turbo-frame>
       </div>
