@@ -45,6 +45,29 @@ en:
       snippet_label: "Tracking Script"
       copy: "Copy to clipboard"
       close: "Close"
+    memberships:
+      title: "Team Members"
+      index:
+        title: "Team Members"
+        empty: "No team members found."
+        email: "Email"
+        role: "Role"
+        joined: "Joined"
+        actions: "Actions"
+        edit: "Edit"
+        remove: "Remove"
+      edit:
+        title: "Edit Member Role"
+        role_label: "Role"
+      update:
+        success: "Member role updated successfully"
+        cannot_demote_self: "You cannot demote yourself from admin"
+      destroy:
+        success: "Member removed successfully"
+        cannot_remove_self: "You cannot remove yourself from the site"
+      roles:
+        member: "Member"
+        admin: "Admin"
   onboarding:
     sites:
       new:

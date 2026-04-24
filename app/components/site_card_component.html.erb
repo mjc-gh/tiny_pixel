@@ -8,6 +8,11 @@
     <%= link_to edit_site_path(@site), title: t("common.settings"), class: "text-content-secondary hover:text-content-primary transition-colors" do %>
       <%= heroicon "cog-8-tooth", type: :outline, class: "h-5 w-5" %>
     <% end %>
+    <% if helpers.current_user&.admin_for?(@site) %>
+      <%= link_to site_memberships_path(@site), title: t("sites.memberships.title"), class: "text-content-secondary hover:text-content-primary transition-colors" do %>
+        <%= heroicon "user-group", type: :outline, class: "h-5 w-5" %>
+      <% end %>
+    <% end %>
     <%= link_to site_instructions_path(@site), title: t("sites.instructions.title"), data: { turbo_frame: "modals", action: "slideover#open" }, class: "text-content-secondary hover:text-content-primary transition-colors" do %>
       <%= heroicon "code-bracket", type: :outline, class: "h-5 w-5" %>
     <% end %>

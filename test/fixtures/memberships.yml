@@ -35,3 +35,8 @@ alice_tech_blog_admin:
   user: alice
   site: tech_blog
   role: 1
+
+charlie_my_blog_member:
+  user: charlie
+  site: my_blog
+  role: 0

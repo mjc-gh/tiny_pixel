@@ -1,0 +1,43 @@
+<div class="max-w-md">
+  <div class="mb-6">
+    <h1 class="font-bold text-2xl text-content-primary"><%= t("sites.memberships.edit.title") %></h1>
+    <p class="text-sm text-content-secondary mt-1"><%= @membership.user.email %></p>
+  </div>
+
+  <div class="border border-border rounded-lg p-6 bg-surface">
+    <%= form_with model: [:site, @membership], local: true, class: "space-y-4" do |form| %>
+      <% if @membership.errors.any? %>
+        <div class="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <h2 class="font-semibold text-destructive text-sm"><%= pluralize(@membership.errors.count, "error") %> prohibited this membership from being saved:</h2>
+          <ul class="mt-2 list-disc list-inside space-y-1">
+            <% @membership.errors.full_messages.each do |message| %>
+              <li class="text-sm text-destructive"><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :role, t("sites.memberships.edit.role_label"), class: "block text-sm font-medium text-content-primary mb-2" %>
+        <%= form.select :role, options_for_select(
+          [
+            [t("sites.memberships.roles.member"), "member"],
+            [t("sites.memberships.roles.admin"), "admin"]
+          ],
+          @membership.role
+        ), {},
+        class: "w-full px-3 py-2 border border-border rounded-lg bg-surface text-content-primary focus:outline-none focus:ring-2 focus:ring-primary",
+        disabled: (@membership.user == current_user && @membership.admin?)
+        %>
+        <% if @membership.user == current_user && @membership.admin? %>
+          <p class="mt-2 text-xs text-content-secondary"><%= t("sites.memberships.update.cannot_demote_self") %></p>
+        <% end %>
+      </div>
+
+      <div class="flex gap-2">
+        <%= form.submit t("common.save"), class: "px-4 py-2 rounded font-medium text-sm text-surface bg-primary hover:bg-primary/90 transition-colors" %>
+        <%= link_to t("common.back"), site_memberships_path(@site), class: "px-4 py-2 rounded font-medium text-sm text-content-primary border border-border hover:bg-surface-secondary transition-colors" %>
+      </div>
+    <% end %>
+  </div>
+</div>
