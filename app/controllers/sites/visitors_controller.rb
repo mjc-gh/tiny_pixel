@@ -26,9 +26,26 @@ module Sites
       scope = scope.where(hostname: current_hostname) if current_hostname.present?
       scope = apply_date_range_filter(scope)
 
+      aggregated = scope
+        .group(stats_time_column)
+        .select(
+          stats_time_column,
+          "SUM(visits) as visits",
+          "SUM(sessions) as sessions"
+        )
+
+      visits_data = {}
+      sessions_data = {}
+
+      aggregated.each do |row|
+        time_key = row.public_send(stats_time_column)
+        visits_data[time_key] = row.visits
+        sessions_data[time_key] = row.sessions
+      end
+
       @chart_data = {
-        "Visits" => scope.group(stats_time_column).sum(:visits),
-        "Sessions" => scope.group(stats_time_column).sum(:sessions)
+        "Visits" => visits_data,
+        "Sessions" => sessions_data
       }
     end
   end

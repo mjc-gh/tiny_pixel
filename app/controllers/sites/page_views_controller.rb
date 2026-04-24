@@ -26,9 +26,26 @@ module Sites
       scope = scope.where(hostname: current_hostname) if current_hostname.present?
       scope = apply_date_range_filter(scope)
 
+      aggregated = scope
+        .group(stats_time_column)
+        .select(
+          stats_time_column,
+          "SUM(pageviews) as pageviews",
+          "SUM(unique_pageviews) as unique_pageviews"
+        )
+
+      pageviews_data = {}
+      unique_pageviews_data = {}
+
+      aggregated.each do |row|
+        time_key = row.public_send(stats_time_column)
+        pageviews_data[time_key] = row.pageviews
+        unique_pageviews_data[time_key] = row.unique_pageviews
+      end
+
       @chart_data = {
-        "Page Views" => scope.group(stats_time_column).sum(:pageviews),
-        "Unique Page Views" => scope.group(stats_time_column).sum(:unique_pageviews)
+        "Page Views" => pageviews_data,
+        "Unique Page Views" => unique_pageviews_data
       }
     end
   end
