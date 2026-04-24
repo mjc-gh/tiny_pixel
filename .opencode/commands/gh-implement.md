@@ -5,7 +5,7 @@ model: openrouter/anthropic/claude-haiku-4.5
 
 Here is the GitHub issue to implement:
 
-`gh issue view $1 --repo mjc-gh/tiny_pixel`
+`gh api repos/mjc-gh/tiny_pixel/issues/$1 | jq -r '"### \(.title)\n\(.body)"'`
 
 **Instructions:**
 

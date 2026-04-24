@@ -8,7 +8,7 @@ Fetch GitHub issue #$1 and refine it with a detailed implementation plan.
 **Instructions:**
 
 1. Fetch the current issue content:
-   `gh issue view $1 --repo mjc-gh/tiny_pixel`
+   `gh api repos/mjc-gh/tiny_pixel/issues/$1 | jq -r '"### \(.title)\n\(.body)"'`
 
 2. Analyze the issue to understand:
    - What problem needs to be solved
