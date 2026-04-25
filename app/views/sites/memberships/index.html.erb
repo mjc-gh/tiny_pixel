@@ -2,11 +2,10 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="font-bold text-2xl text-content-primary"><%= t("sites.memberships.index.title") %></h1>
-      <p class="text-sm text-content-secondary mt-1"><%= @site.name %></p>
+      <%= link_to @site.name, site_path(@site), class: "text-sm text-content-secondary mt-1" %>
     </div>
     <div class="flex items-center gap-3">
-      <%= link_to t("sites.memberships.index.invite_member"), new_site_membership_path(@site), class: "px-4 py-2 rounded font-medium text-sm text-surface bg-primary hover:bg-primary/90 transition-colors" %>
-      <%= link_to t("common.back"), site_path(@site), class: "text-sm font-medium text-primary hover:text-primary/80 transition-colors" %>
+      <%= link_to t("sites.memberships.index.invite_member"), new_site_membership_path(@site), class: "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" %>
     </div>
   </div>
 

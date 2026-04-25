@@ -53,7 +53,7 @@ Configures the tracking script with server details from a script element's data 
 
 **Example:**
 ```html
-<script 
+<script
   src="https://analytics.example.com/tp.js"
   data-property-id="prop_123"
   data-server="https://analytics.example.com">

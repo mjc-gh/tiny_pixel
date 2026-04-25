@@ -18,6 +18,10 @@ module ApplicationHelper
     end
   end
 
+  def back_link
+    link_to "← #{t("common.back")}", :back, class: "text-sm text-primary hover:text-primary/80 transition-colors"
+  end
+
   def format_dimension_value(dimension_type, value)
     return "Unknown" if value.blank?
 

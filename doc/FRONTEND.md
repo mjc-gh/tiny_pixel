@@ -151,6 +151,24 @@ When adding new design tokens:
 
 See `app/assets/tailwind/application.css` for current token definitions and their color values.
 
+### Forms Pages
+
+- Use consistent layout with header and surface
+- Complete example:
+```erb
+<div class="w-full max-w-2xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="font-bold text-2xl text-content-primary">Header</h1>
+    <%= back_link %>
+  </div>
+  <div class="border border-border rounded-lg p-6 bg-surface">
+    <%= form_with model: @site do |form| %>
+      <!-- Form content -->
+    <% end %>
+  </div>
+</div>
+```
+
 ## Slideover Conventions
 
 Slideovers use the native HTML `<dialog>` element with the `tailwindcss-stimulus-components` Slideover controller. They slide in from the right side of the screen with a backdrop overlay.
@@ -207,7 +225,7 @@ dialog.slideover[open] {
     </div>
     
     <!-- Slideover content -->
-    
+
     <div class="flex justify-end gap-3">
       <button autofocus type="button" data-action="slideover#close">Close</button>
      </div>
@@ -292,7 +310,7 @@ All ViewComponents require tests. Use `ViewComponent::TestCase`:
 class AlertComponentTest < ViewComponent::TestCase
   def test_renders_with_success_variant
     render_inline(AlertComponent.new(variant: :success, message: "Saved!"))
-    
+
     assert_text "Success"
     assert_text "Saved!"
     assert_selector ".bg-success-bg"
