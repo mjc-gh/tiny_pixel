@@ -77,5 +77,5 @@ Rails.application.configure do
   end
 
   # Do not log certain requests
-  config.middleware.use Middlewares::SilenceRequest, paths: %w[/up /_/pixel.gif]
+  config.middleware.insert_before Rails::Rack::Logger, Middlewares::SilenceRequest, paths: %w[/up /_/pixel.gif]
 end
