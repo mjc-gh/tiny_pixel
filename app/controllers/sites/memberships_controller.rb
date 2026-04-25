@@ -4,7 +4,7 @@ module Sites
   class MembershipsController < ApplicationController
     before_action :authenticate_user!
     before_action :set_site
-    before_action :authorize_admin!
+    before_action :authorize_site_admin!
 
     def index
       @memberships = @site.memberships.includes(:user).order(created_at: :desc)
@@ -47,14 +47,6 @@ module Sites
     end
 
     private
-
-    def set_site
-      @site = current_user.sites.find(params[:site_id])
-    end
-
-    def authorize_admin!
-      head :forbidden unless current_user.admin_for?(@site)
-    end
 
     def membership_params
       params.require(:membership).permit(:role)

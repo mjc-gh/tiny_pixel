@@ -10,6 +10,10 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def authorize_site_admin!
+    head :forbidden unless current_user.admin_for?(@site)
+  end
+
   def set_site
     @site = current_user.sites.find(params[:site_id])
   end

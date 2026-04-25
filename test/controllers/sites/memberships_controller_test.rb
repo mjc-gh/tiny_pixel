@@ -176,6 +176,15 @@ module Sites
       assert_equal I18n.t("sites.memberships.update.success"), flash[:notice]
     end
 
+    test "update renders edit on validation error" do
+      login(users(:alice))
+      bob_membership = memberships(:bob_my_blog_member)
+
+      patch site_membership_url(sites(:my_blog), bob_membership), params: { membership: { role: "unknown" } }
+
+      assert_response :unprocessable_entity
+    end
+
     test "update prevents admin from demoting themselves" do
       login(users(:alice))
 

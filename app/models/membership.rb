@@ -24,7 +24,7 @@
 #  user_id  (user_id => users.id)
 #
 class Membership < ApplicationRecord
-  enum :role, { member: 0, admin: 1 }
+  enum :role, { member: 0, admin: 1 }, validate: true
 
   belongs_to :user
   belongs_to :site
