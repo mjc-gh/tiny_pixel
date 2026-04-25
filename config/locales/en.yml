@@ -56,9 +56,21 @@ en:
         actions: "Actions"
         edit: "Edit"
         remove: "Remove"
+        invite_member: "Invite Member"
+      new:
+        title: "Invite Member"
+        email_label: "Email"
+        email_help: "Enter the email address of the user to invite"
+        role_label: "Role"
+        no_email_warning: "Email delivery is not configured. Only existing users can be added. Contact your system administrator to add new users or configure email support."
       edit:
         title: "Edit Member Role"
         role_label: "Role"
+      create:
+        success: "Member added successfully"
+        success_invited: "Invitation sent successfully"
+        user_not_found: "No user found with this email. Email delivery is not configured, so only existing users can be added."
+        already_member: "This user is already a member of this site"
       update:
         success: "Member role updated successfully"
         cannot_demote_self: "You cannot demote yourself from admin"

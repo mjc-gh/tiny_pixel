@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   resources :sites, only: [:index, :show, :new, :create, :edit, :update] do
     scope module: :sites do
       # Site management
-      resources :memberships, only: [:index, :edit, :update, :destroy]
+      resources :memberships, only: [:index, :new, :create, :edit, :update, :destroy]
 
       # Site dashboard
       resource :instructions, only: [:show]
