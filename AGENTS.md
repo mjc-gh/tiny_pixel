@@ -49,6 +49,7 @@
 
 ## References
 
+- **Authentication & Authorization**: See `doc/AUTH.md` for ReviseAuth integration, multi-tenant authorization patterns, user creation, conditional email delivery, and testing patterns
 - **Stats Models**: See `doc/AGGREGATED_STATS.md` for `HourlyPageStat`, `DailyPageStat`, `WeeklyPageStat`
 - **Stat Filtering**: See `doc/STAT_FILTERING.md` for pathname, hostname, date range, and dimension filtering patterns used in dashboard controllers
 - **Tracking Script**: See `doc/TRACKING_SCRIPT.md` for implementation details of `pkg/tiny_pixel.js`
