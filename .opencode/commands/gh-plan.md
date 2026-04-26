@@ -28,6 +28,7 @@ Fetch GitHub issue #$1 and refine it with a detailed implementation plan.
    - Files to be created or modified
    - Any database migrations required
    - Test coverage requirements
+   - Brakeman checks and Rubocop linting
    - Always create a decisive plan without any options or alternatives; ask the user questions if needed
 
 5. Format the refined issue with:
