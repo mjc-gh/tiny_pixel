@@ -199,14 +199,22 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit displays current site settings" do
-   login(users(:alice))
+    login(users(:alice))
 
-   get edit_site_url(sites(:my_blog))
+    get edit_site_url(sites(:my_blog))
 
-   assert_select "input#site_name"
-   assert_select "select#site_salt_duration"
-   assert_select "input#site_display_hostname[type='checkbox']"
- end
+    assert_select "input#site_name"
+    assert_select "select#site_salt_duration"
+    assert_select "input#site_display_hostname[type='checkbox']"
+  end
+
+  test "edit returns 403 for members with member role" do
+    login(users(:bob))
+
+    get edit_site_url(sites(:my_blog))
+
+    assert_response :forbidden
+  end
 
   test "update redirects unauthenticated users to login" do
     patch site_url(sites(:my_blog)), params: { site: { salt_duration: "weekly" } }
@@ -241,6 +249,14 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
     patch site_url(sites(:tech_blog)), params: { site: { salt_duration: "monthly" } }
 
     assert_response :not_found
+  end
+
+  test "update returns 403 for members with member role" do
+    login(users(:bob))
+
+    patch site_url(sites(:my_blog)), params: { site: { name: "Hacked Name" } }
+
+    assert_response :forbidden
   end
 
   test "update redirects to site show page on success" do

@@ -5,6 +5,7 @@ class SitesController < ApplicationController
 
   before_action :authenticate_user!
   before_action :set_site, only: [:show, :edit, :update]
+  before_action :authorize_site_admin!, only: [:edit, :update]
 
   def index
     @sites = current_user.sites.order(created_at: :desc)
