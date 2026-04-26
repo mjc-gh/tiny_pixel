@@ -7,7 +7,7 @@
       "check_name": "PermitAttributes",
       "message": "Potentially dangerous key allowed for mass assignment",
       "file": "app/controllers/sites/memberships_controller.rb",
-      "line": 52,
+      "line": 99,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
       "code": "params.require(:membership).permit(:role)",
       "render_path": null,
@@ -15,6 +15,29 @@
         "type": "method",
         "class": "Sites::MembershipsController",
         "method": "membership_params"
+      },
+      "user_input": ":role",
+      "confidence": "Medium",
+      "cwe_id": [
+        915
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 105,
+      "fingerprint": "cb2ca551ea8b2ba942de95a0486271fce03d26f2c1d44ef8d33446ba95247f96",
+      "check_name": "PermitAttributes",
+      "message": "Potentially dangerous key allowed for mass assignment",
+      "file": "app/controllers/sites/memberships_controller.rb",
+      "line": 103,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": "params.require(:membership).permit(:email, :role)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Sites::MembershipsController",
+        "method": "create_params"
       },
       "user_input": ":role",
       "confidence": "Medium",

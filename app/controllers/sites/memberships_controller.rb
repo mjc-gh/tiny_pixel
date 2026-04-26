@@ -16,9 +16,8 @@ module Sites
 
     def create
       email = create_params[:email]
-      role = create_params[:role]
 
-      @membership = @site.memberships.build(role: role)
+      @membership = @site.memberships.build(role: create_params[:role])
 
       user = User.find_by(email: email)
       is_new_user = user.nil?
