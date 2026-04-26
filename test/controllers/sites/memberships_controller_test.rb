@@ -247,201 +247,201 @@ module Sites
       assert_equal I18n.t("sites.memberships.destroy.cannot_remove_self"), flash[:alert]
     end
 
-     test "destroy prevents member from removing themselves" do
-       login(users(:bob))
-       bob_membership = memberships(:bob_my_blog_member)
+    test "destroy prevents member from removing themselves" do
+      login(users(:bob))
+      bob_membership = memberships(:bob_my_blog_member)
 
-       delete site_membership_url(sites(:my_blog), bob_membership)
+      delete site_membership_url(sites(:my_blog), bob_membership)
 
-       # First it returns forbidden because bob is not an admin
-       assert_response :forbidden
-       assert Membership.exists?(bob_membership.id)
-     end
+      # First it returns forbidden because bob is not an admin
+      assert_response :forbidden
+      assert Membership.exists?(bob_membership.id)
+    end
 
-     # New action tests
-     test "new redirects unauthenticated users to login" do
-       get new_site_membership_url(sites(:my_blog))
+    # New action tests
+    test "new redirects unauthenticated users to login" do
+      get new_site_membership_url(sites(:my_blog))
 
-       assert_redirected_to login_path
-     end
+      assert_redirected_to login_path
+    end
 
-     test "new returns 404 for non-members" do
-       user = User.create!(email: "newuser@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
-       login(user, password: "password123456789")
+    test "new returns 404 for non-members" do
+      user = User.create!(email: "newuser@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
+      login(user, password: "password123456789")
 
-       get new_site_membership_url(sites(:tech_blog))
+      get new_site_membership_url(sites(:tech_blog))
 
-       assert_response :not_found
-     end
+      assert_response :not_found
+    end
 
-     test "new returns 403 for members with member role" do
-       login(users(:bob))
+    test "new returns 403 for members with member role" do
+      login(users(:bob))
 
-       get new_site_membership_url(sites(:my_blog))
+      get new_site_membership_url(sites(:my_blog))
 
-       assert_response :forbidden
-     end
+      assert_response :forbidden
+    end
 
-     test "new allows admins to view invite form" do
-       login(users(:alice))
+    test "new allows admins to view invite form" do
+      login(users(:alice))
 
-       get new_site_membership_url(sites(:my_blog))
+      get new_site_membership_url(sites(:my_blog))
 
-       assert_response :success
-     end
+      assert_response :success
+    end
 
-     test "new shows email and role fields" do
-       login(users(:alice))
+    test "new shows email and role fields" do
+      login(users(:alice))
 
-       get new_site_membership_url(sites(:my_blog))
+      get new_site_membership_url(sites(:my_blog))
 
-       assert_select "input[type='email']"
-       assert_select "select"
-     end
+      assert_select "input[type='email']"
+      assert_select "select"
+    end
 
-     test "new shows email delivery warning when email not supported" do
-       login(users(:alice))
+    test "new shows email delivery warning when email not supported" do
+      login(users(:alice))
 
-       TinyPixel.stub :email_delivery_supported?, false do
-         get new_site_membership_url(sites(:my_blog))
+      TinyPixel.stub :email_delivery_supported?, false do
+        get new_site_membership_url(sites(:my_blog))
 
-         assert_includes response.body, I18n.t("sites.memberships.new.no_email_warning")
-       end
-     end
+        assert_includes response.body, I18n.t("sites.memberships.new.no_email_warning")
+      end
+    end
 
-     # Create action tests (without email support)
-     test "create adds existing user as member successfully" do
-       login(users(:alice))
+    # Create action tests (without email support)
+    test "create adds existing user as member successfully" do
+      login(users(:alice))
 
-       # Find a user who is not a member of my_blog yet
-       new_member = User.create!(email: "newmember@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
+      # Find a user who is not a member of my_blog yet
+      new_member = User.create!(email: "newmember@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
 
-       TinyPixel.stub :email_delivery_supported?, false do
-         post site_memberships_url(sites(:my_blog)), params: {
-           membership: { email: new_member.email, role: "member" }
-         }
+      TinyPixel.stub :email_delivery_supported?, false do
+        post site_memberships_url(sites(:my_blog)), params: {
+          membership: { email: new_member.email, role: "member" }
+        }
 
-         assert_redirected_to site_memberships_url(sites(:my_blog))
-         assert_equal I18n.t("sites.memberships.create.success"), flash[:notice]
-       end
-     end
+        assert_redirected_to site_memberships_url(sites(:my_blog))
+        assert_equal I18n.t("sites.memberships.create.success"), flash[:notice]
+      end
+    end
 
-     test "create returns error when user doesn't exist without email support" do
-       login(users(:alice))
+    test "create returns error when user doesn't exist without email support" do
+      login(users(:alice))
 
-       TinyPixel.stub :email_delivery_supported?, false do
-         post site_memberships_url(sites(:my_blog)), params: {
-           membership: { email: "nonexistent@example.com", role: "member" }
-         }
+      TinyPixel.stub :email_delivery_supported?, false do
+        post site_memberships_url(sites(:my_blog)), params: {
+          membership: { email: "nonexistent@example.com", role: "member" }
+        }
 
-         assert_response :unprocessable_entity
-       end
-     end
+        assert_response :unprocessable_entity
+      end
+    end
 
-     test "create prevents duplicate memberships" do
-       login(users(:alice))
+    test "create prevents duplicate memberships" do
+      login(users(:alice))
 
-       TinyPixel.stub :email_delivery_supported?, false do
-         post site_memberships_url(sites(:my_blog)), params: {
-           membership: { email: users(:bob).email, role: "member" }
-         }
+      TinyPixel.stub :email_delivery_supported?, false do
+        post site_memberships_url(sites(:my_blog)), params: {
+          membership: { email: users(:bob).email, role: "member" }
+        }
 
-         # Try to add the same user again
-         post site_memberships_url(sites(:my_blog)), params: {
-           membership: { email: users(:bob).email, role: "member" }
-         }
+        # Try to add the same user again
+        post site_memberships_url(sites(:my_blog)), params: {
+          membership: { email: users(:bob).email, role: "member" }
+        }
 
-         assert_response :unprocessable_entity
-       end
-     end
+        assert_response :unprocessable_entity
+      end
+    end
 
-     # Create action tests (with email support)
-     test "create creates new user and sends password reset email with email support" do
-       login(users(:alice))
+    # Create action tests (with email support)
+    test "create creates new user and sends password reset email with email support" do
+      login(users(:alice))
 
-       TinyPixel.stub :email_delivery_supported?, true do
-         assert_difference("User.count", 1) do
-           post site_memberships_url(sites(:my_blog)), params: {
-             membership: { email: "newuser@example.com", role: "member" }
-           }
-         end
+      TinyPixel.stub :email_delivery_supported?, true do
+        assert_difference("User.count", 1) do
+          post site_memberships_url(sites(:my_blog)), params: {
+            membership: { email: "newuser@example.com", role: "member" }
+          }
+        end
 
-         assert_redirected_to site_memberships_url(sites(:my_blog))
-         assert_equal I18n.t("sites.memberships.create.success_invited"), flash[:notice]
+        assert_redirected_to site_memberships_url(sites(:my_blog))
+        assert_equal I18n.t("sites.memberships.create.success_invited"), flash[:notice]
 
-         new_user = User.find_by(email: "newuser@example.com")
-         assert_not_nil new_user
-         assert new_user.password_reset_required?
-       end
-     end
+        new_user = User.find_by(email: "newuser@example.com")
+        assert_not_nil new_user
+        assert new_user.password_reset_required?
+      end
+    end
 
-     test "create adds existing user without sending email" do
-       login(users(:alice))
+    test "create adds existing user without sending email" do
+      login(users(:alice))
 
-       # Find a user who is not a member of my_blog yet
-       new_member = User.create!(email: "anothermember@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
+      # Find a user who is not a member of my_blog yet
+      new_member = User.create!(email: "anothermember@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
 
-       TinyPixel.stub :email_delivery_supported?, true do
-         assert_no_difference("User.count") do
-           post site_memberships_url(sites(:my_blog)), params: {
-             membership: { email: new_member.email, role: "admin" }
-           }
-         end
+      TinyPixel.stub :email_delivery_supported?, true do
+        assert_no_difference("User.count") do
+          post site_memberships_url(sites(:my_blog)), params: {
+            membership: { email: new_member.email, role: "admin" }
+          }
+        end
 
-         assert_redirected_to site_memberships_url(sites(:my_blog))
-         assert_equal I18n.t("sites.memberships.create.success"), flash[:notice]
-       end
-     end
+        assert_redirected_to site_memberships_url(sites(:my_blog))
+        assert_equal I18n.t("sites.memberships.create.success"), flash[:notice]
+      end
+    end
 
-     test "create creates membership with correct role" do
-       login(users(:alice))
+    test "create creates membership with correct role" do
+      login(users(:alice))
 
-       # Create a new user who is not a member of my_blog yet
-       new_user = User.create!(email: "roletest@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
+      # Create a new user who is not a member of my_blog yet
+      new_user = User.create!(email: "roletest@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
 
-       TinyPixel.stub :email_delivery_supported?, false do
-         post site_memberships_url(sites(:my_blog)), params: {
-           membership: { email: new_user.email, role: "admin" }
-         }
+      TinyPixel.stub :email_delivery_supported?, false do
+        post site_memberships_url(sites(:my_blog)), params: {
+          membership: { email: new_user.email, role: "admin" }
+        }
 
-         new_membership = Membership.find_by(site: sites(:my_blog), user: new_user)
-         assert_equal "admin", new_membership.role
-       end
-     end
+        new_membership = Membership.find_by(site: sites(:my_blog), user: new_user)
+        assert_equal "admin", new_membership.role
+      end
+    end
 
-     test "create requires admin role for access" do
-       login(users(:bob))
+    test "create requires admin role for access" do
+      login(users(:bob))
 
-       post site_memberships_url(sites(:my_blog)), params: {
-         membership: { email: "newuser@example.com", role: "member" }
-       }
+      post site_memberships_url(sites(:my_blog)), params: {
+        membership: { email: "newuser@example.com", role: "member" }
+      }
 
-       assert_response :forbidden
-     end
+      assert_response :forbidden
+    end
 
-     test "create validates role parameter" do
-       login(users(:alice))
+    test "create validates role parameter" do
+      login(users(:alice))
 
-       TinyPixel.stub :email_delivery_supported?, false do
-         post site_memberships_url(sites(:my_blog)), params: {
-           membership: { email: users(:bob).email, role: "invalid_role" }
-         }
+      TinyPixel.stub :email_delivery_supported?, false do
+        post site_memberships_url(sites(:my_blog)), params: {
+          membership: { email: users(:bob).email, role: "invalid_role" }
+        }
 
-         assert_response :unprocessable_entity
-       end
-     end
+        assert_response :unprocessable_entity
+      end
+    end
 
-     test "create handles user save failure when creating new user" do
-       login(users(:alice))
+    test "create handles user save failure when creating new user" do
+      login(users(:alice))
 
-       TinyPixel.stub :email_delivery_supported?, true do
-         # Try to create a user with an invalid email that will fail validation
-         post site_memberships_url(sites(:my_blog)), params: {
-           membership: { email: "", role: "member" }
-         }
+      TinyPixel.stub :email_delivery_supported?, true do
+        # Try to create a user with an invalid email that will fail validation
+        post site_memberships_url(sites(:my_blog)), params: {
+          membership: { email: "", role: "member" }
+        }
 
-         assert_response :unprocessable_entity
-       end
-     end
-   end
- end
+        assert_response :unprocessable_entity
+      end
+    end
+  end
+end
