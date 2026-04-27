@@ -49,6 +49,7 @@ end
 
 group :development do
   gem "herb"
+  gem 'letter_opener_web', '~> 3.0'
   gem "web-console"
 end
 
