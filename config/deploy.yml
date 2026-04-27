@@ -19,7 +19,7 @@ builder:
   arch: amd64
 env:
   secret:
-    - RAILS_MASTER_KEY
+    - RAILS_SECRET_KEY_BASE
 proxy:
   hosts:
     - "<%= ENV.fetch("KAMAL_PROXY_HOST") %>"

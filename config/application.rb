@@ -1,16 +1,19 @@
 require_relative "boot"
 
 require "rails/all"
+require_relative "../lib/environ"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Default secret key base to Rails env in development and tests
+ENV["RAILS_SECRET_KEY_BASE"] ||= Rails.env if Rails.env.in? %w[development test]
+
 module TinyPixel
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
-
     config.generators.helper = false
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
@@ -20,6 +23,7 @@ module TinyPixel
 
     # Setup runtime settings
     config.runtime_settings = config_for(:tiny_pixel)
+    config.secret_key_base = Environ["RAILS_SECRET_KEY_BASE"]
 
     # NOTE: Avoids the need for image_processing
     config.active_storage.variant_processor = :disabled

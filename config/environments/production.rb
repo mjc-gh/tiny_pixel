@@ -69,7 +69,7 @@ Rails.application.configure do
       user_name: Environ["TP_SMTP_USER_NAME"],
       password: Environ["TP_SMTP_PASSWORD"],
       address: Environ["TP_SMTP_ADDRESS"],
-      port: ENV.fetch("TP_SMTP_PORT" ,587).to_i,
+      port: ENV.fetch("TP_SMTP_PORT", 587).to_i,
       authentication: :plain
     }
   when "postmark"

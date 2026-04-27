@@ -1,40 +1,42 @@
 <div class="w-full max-w-2xl mx-auto space-y-6">
   <h1 class="text-2xl font-bold text-content-primary"><%=t ".profile" %></h1>
 
-  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
-    <%= default_form_with model: current_user, url: profile_email_path do |form| %>
-      <fieldset>
-        <legend class="text-lg font-semibold text-content-primary mb-4"><%=t ".change_email_address" %></legend>
+  <% if TinyPixel.email_delivery_supported? -%>
+    <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+      <%= default_form_with model: current_user, url: profile_email_path do |form| %>
+        <fieldset>
+          <legend class="text-lg font-semibold text-content-primary mb-4"><%=t ".change_email_address" %></legend>
 
-        <% if current_user.unconfirmed_email? %>
-          <div class="bg-warning-bg border border-warning-border rounded-md p-4 mb-4">
-            <p class="text-sm text-warning-text"><%=t ".waiting_confirmation", email: current_user.unconfirmed_email %></p>
+          <% if current_user.unconfirmed_email? %>
+            <div class="bg-warning-bg border border-warning-border rounded-md p-4 mb-4">
+              <p class="text-sm text-warning-text"><%=t ".waiting_confirmation", email: current_user.unconfirmed_email %></p>
+            </div>
+          <% end %>
+
+          <% if form.object.errors.any? %>
+            <div class="bg-danger-bg border border-danger-border rounded-md p-4 mb-4">
+              <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
+                <% form.object.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <p class="text-sm text-content-secondary mb-2"><%=t ".current_email_address", email: current_user.email %></p>
+          <p class="text-sm text-content-muted mb-4"><%=t ".confirmation_instructions" %></p>
+
+          <div class="space-y-4">
+            <%= form.email_field :unconfirmed_email, required: true, label: t(".new_email") %>
+
+            <div>
+              <%= form.button t(".save") %>
+            </div>
           </div>
-        <% end %>
-
-        <% if form.object.errors.any? %>
-          <div class="bg-danger-bg border border-danger-border rounded-md p-4 mb-4">
-            <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
-              <% form.object.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
-
-        <p class="text-sm text-content-secondary mb-2"><%=t ".current_email_address", email: current_user.email %></p>
-        <p class="text-sm text-content-muted mb-4"><%=t ".confirmation_instructions" %></p>
-
-        <div class="space-y-4">
-          <%= form.email_field :unconfirmed_email, required: true, label: t(".new_email") %>
-
-          <div>
-            <%= form.button t(".save") %>
-          </div>
-        </div>
-      </fieldset>
-    <% end %>
-  </div>
+        </fieldset>
+      <% end %>
+    </div>
+  <% end -%>
 
   <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
     <%= default_form_with model: current_user, url: profile_password_path do |form| %>
