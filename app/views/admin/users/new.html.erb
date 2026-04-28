@@ -18,9 +18,33 @@
 
       <div class="space-y-4">
         <div>
-          <%= form.email_field :email, label: t("admin.users.new.email_label") %>
+          <%= form.email_field :email %>
           <p class="text-xs text-content-muted mt-1"><%= t("admin.users.new.email_help") %></p>
         </div>
+
+        <% if TinyPixel.email_delivery_supported? %>
+          <div>
+            <fieldset>
+              <legend class="block text-sm font-semibold text-content-primary mb-3">
+                <%= t("admin.users.new.creation_method_label") %>
+              </legend>
+              <div class="space-y-2">
+                <label class="flex items-center gap-3">
+                  <%= form.radio_button :creation_method, "password", { checked: true, name: "creation_method" } %>
+                  <span class="text-sm text-content-secondary">
+                    <%= t("admin.users.new.creation_method_password") %>
+                  </span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <%= form.radio_button :creation_method, "invite", { name: "creation_method" } %>
+                  <span class="text-sm text-content-secondary">
+                    <%= t("admin.users.new.creation_method_invite") %>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+        <% end %>
 
         <div>
           <%= form.button t("common.save") %>

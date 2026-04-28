@@ -134,4 +134,93 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil new_user
     assert_redirected_to admin_user_path(new_user)
   end
+
+  test "create with password method creates user with confirmed_at" do
+    assert_difference("User.count") do
+      post admin_users_path, headers: admin_auth_headers, params: {
+        user: { email: "password_method@example.com" },
+        creation_method: "password"
+      }
+    end
+
+    new_user = User.find_by(email: "password_method@example.com")
+    assert_not_nil new_user
+    assert new_user.password_reset_required?
+    assert_not_nil new_user.confirmed_at
+    assert_redirected_to admin_user_path(new_user)
+  end
+
+  test "create with invite method sends invitation email" do
+    TinyPixel.stub :email_delivery_supported?, true do
+      assert_difference("User.count") do
+        assert_enqueued_with(job: ActionMailer::MailDeliveryJob) do
+          post admin_users_path, headers: admin_auth_headers, params: {
+            user: { email: "invite_method@example.com" },
+            creation_method: "invite"
+          }
+        end
+      end
+
+      new_user = User.find_by(email: "invite_method@example.com")
+      assert_not_nil new_user
+      assert_redirected_to admin_users_path
+    end
+  end
+
+  test "create with invite method does not set confirmed_at" do
+    TinyPixel.stub :email_delivery_supported?, true do
+      post admin_users_path, headers: admin_auth_headers, params: {
+        user: { email: "invite_unconfirmed@example.com" },
+        creation_method: "invite"
+      }
+
+      new_user = User.find_by(email: "invite_unconfirmed@example.com")
+      assert_not_nil new_user
+      assert_nil new_user.confirmed_at
+      assert new_user.password_reset_required?
+    end
+  end
+
+  test "create with invite method when email not supported falls back to password" do
+    TinyPixel.stub :email_delivery_supported?, false do
+      assert_difference("User.count") do
+        post admin_users_path, headers: admin_auth_headers, params: {
+          user: { email: "fallback_test@example.com" },
+          creation_method: "invite"
+        }
+      end
+
+      new_user = User.find_by(email: "fallback_test@example.com")
+      assert_not_nil new_user
+      assert_not_nil new_user.confirmed_at
+      assert_redirected_to admin_user_path(new_user)
+    end
+  end
+
+  test "create with invite method and invalid email returns unprocessable_entity" do
+    TinyPixel.stub :email_delivery_supported?, true do
+      assert_no_difference("User.count") do
+        post admin_users_path, headers: admin_auth_headers, params: {
+          user: { email: "invalid-email" },
+          creation_method: "invite"
+        }
+      end
+
+      assert_response :unprocessable_entity
+      assert_select "form"
+    end
+  end
+
+  test "create with invite method and duplicate email returns unprocessable_entity" do
+    TinyPixel.stub :email_delivery_supported?, true do
+      assert_no_difference("User.count") do
+        post admin_users_path, headers: admin_auth_headers, params: {
+          user: { email: @user.email },
+          creation_method: "invite"
+        }
+      end
+
+      assert_response :unprocessable_entity
+    end
+  end
 end

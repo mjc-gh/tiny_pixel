@@ -113,6 +113,20 @@ en:
         copy_success: "Copied!"
         instructions: "Share this password with the new user. They will be required to change their password upon their first login."
         user_email: "User Email"
+      create:
+        success_invited: "User invited. An invitation email has been sent."
+      new:
+        creation_method_label: Create via
+        creation_method_password: Temporary password
+        creation_method_invite: Email invite
+        email_help: Enter the new users email address
+      show:
+        title: "User Created"
+        password_label: "Temporary Password"
+        copy: "Copy"
+        copy_success: "Copied!"
+        instructions: "Share this password with the new user. They will be required to change their password upon their first login."
+        user_email: "User Email"
   users:
     registrations:
       not_allowed: Registration is not allowed
