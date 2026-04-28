@@ -30,16 +30,18 @@
                 </span>
               </td>
               <td class="px-4 py-3 text-sm text-content-secondary"><%= membership.created_at.strftime("%B %d, %Y") %></td>
-              <td class="px-4 py-3 text-sm space-x-2 flex items-center gap-2">
-                <%= link_to edit_site_membership_path(@site, membership), title: t("sites.memberships.index.edit"), class: "text-primary hover:text-primary/80 transition-colors" do %>
-                  <%= heroicon "pencil", type: :outline, class: "h-4 w-4" %>
-                <% end %>
-                <% if membership.user != current_user %>
-                  <%= link_to site_membership_path(@site, membership), method: :delete, data: { confirm: t("sites.memberships.index.remove") }, title: t("sites.memberships.index.remove"), class: "text-destructive hover:text-destructive/80 transition-colors" do %>
-                    <%= heroicon "trash", type: :outline, class: "h-4 w-4" %>
-                  <% end %>
-                <% end %>
-              </td>
+               <td class="px-4 py-3 text-sm space-x-2 flex items-center gap-2">
+                 <%= link_to edit_site_membership_path(@site, membership), title: t("sites.memberships.index.edit"), class: "text-primary hover:text-primary/80 transition-colors" do %>
+                   <%= heroicon "pencil", type: :outline, class: "h-4 w-4" %>
+                 <% end %>
+                 <% if membership.user != current_user %>
+                   <%= form_with url: site_membership_path(@site, membership), method: :delete, local: true do %>
+                     <button type="submit" data-turbo-confirm="<%= t("sites.memberships.index.remove") %>" title="<%= t("sites.memberships.index.remove") %>" class="text-destructive hover:text-destructive/80 transition-colors p-0 bg-none border-none cursor-pointer">
+                       <%= heroicon "trash", type: :outline, class: "h-4 w-4" %>
+                     </button>
+                   <% end %>
+                 <% end %>
+               </td>
             </tr>
           <% end %>
         </tbody>

@@ -21,8 +21,10 @@
                 <p class="text-sm font-medium text-content-primary"><%= membership.site.name %></p>
                 <p class="text-xs text-content-secondary"><%= t("sites.memberships.roles.#{membership.role}") %></p>
               </div>
-              <%= link_to admin_user_membership_path(@user, membership), method: :delete, data: { turbo_confirm: t("admin.users.memberships.remove_confirm") }, class: "text-destructive hover:text-destructive/80 transition-colors" do %>
-                <%= heroicon "trash", type: :outline, class: "h-4 w-4" %>
+              <%= form_with url: admin_user_membership_path(@user, membership), method: :delete, local: true do %>
+                <button type="submit" data-turbo-confirm="<%= t("admin.users.memberships.remove_confirm") %>" title="<%= t("admin.users.memberships.remove_confirm") %>" class="text-destructive hover:text-destructive/80 transition-colors p-0 bg-none border-none cursor-pointer">
+                  <%= heroicon "trash", type: :outline, class: "h-4 w-4" %>
+                </button>
               <% end %>
             </div>
           <% end %>
@@ -44,8 +46,10 @@
       <% end %>
     </div>
 
-    <div class="border-t border-border pt-6 flex gap-2">
-      <%= link_to t("admin.users.show.delete"), admin_user_path(@user), method: :delete, data: { turbo_confirm: t("admin.users.destroy.confirm") }, class: "px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors text-sm font-medium" %>
-    </div>
+     <div class="border-t border-border pt-6">
+       <%= form_with url: admin_user_path(@user), method: :delete, local: true do |form| %>
+         <%= form.button t("admin.users.show.delete"), data: { turbo_confirm: t("admin.users.destroy.confirm") }, class: "px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors text-sm font-medium" %>
+       <% end %>
+     </div>
   </div>
 </div>

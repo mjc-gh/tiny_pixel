@@ -50,9 +50,11 @@
       <% end %>
     </div>
 
-    <div class="flex gap-2 pt-6 border-t border-border">
-      <%= link_to t("admin.users.show.edit"), edit_admin_user_path(@user), class: "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" %>
-      <%= link_to t("admin.users.show.delete"), admin_user_path(@user), method: :delete, data: { turbo_confirm: t("admin.users.destroy.confirm") }, class: "px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors text-sm font-medium" %>
-    </div>
+     <div class="flex gap-2 pt-6 border-t border-border">
+       <%= link_to t("admin.users.show.edit"), edit_admin_user_path(@user), class: "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" %>
+       <%= form_with url: admin_user_path(@user), method: :delete, local: true do |form| %>
+         <%= form.button t("admin.users.show.delete"), data: { turbo_confirm: t("admin.users.destroy.confirm") }, class: "px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors text-sm font-medium" %>
+       <% end %>
+     </div>
   </div>
 </div>

@@ -70,10 +70,10 @@ module Sites
 
       get site_memberships_url(sites(:my_blog))
 
-      # Count the number of delete links
-      delete_links = response.body.scan(/data-method="delete"/).count
+      # Count the number of delete forms (one for each removable member)
+      delete_forms = response.body.scan(/form.*method.*delete/i).count
       # Should be 2: one for bob, one for charlie (not for alice)
-      assert_equal 2, delete_links
+      assert_equal 2, delete_forms
     end
 
     # Edit action tests
