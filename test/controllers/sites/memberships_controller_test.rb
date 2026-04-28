@@ -356,14 +356,18 @@ module Sites
     end
 
     # Create action tests (with email support)
-    test "create creates new user and sends password reset email with email support" do
+    test "create creates new user and sends invitation email with email support" do
       login(users(:alice))
 
       TinyPixel.stub :email_delivery_supported?, true do
         assert_difference("User.count", 1) do
-          post site_memberships_url(sites(:my_blog)), params: {
-            membership: { email: "newuser@example.com", role: "member" }
-          }
+          assert_enqueued_with(job: ActionMailer::MailDeliveryJob, args: ->(args) {
+            args[0] == "UserMailer" && args[1] == "invitation"
+          }) do
+            post site_memberships_url(sites(:my_blog)), params: {
+              membership: { email: "newuser@example.com", role: "member" }
+            }
+          end
         end
 
         assert_redirected_to site_memberships_url(sites(:my_blog))

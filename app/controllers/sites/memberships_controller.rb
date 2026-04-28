@@ -15,46 +15,16 @@ module Sites
     end
 
     def create
+      @membership = @site.memberships.build(role: create_params[:role])
       email = create_params[:email]
 
-      @membership = @site.memberships.build(role: create_params[:role])
+      return render_invitation_error if email_delivery_unsupported?(email)
 
-      user = User.find_by(email: email)
-      is_new_user = user.nil?
-
-      if user.nil? && !TinyPixel.email_delivery_supported?
-        @membership.errors.add(:base, t("sites.memberships.create.user_not_found"))
-        render :new, status: :unprocessable_entity
-        return
-      end
-
-      if is_new_user
-        temp_password = SecureRandom.urlsafe_base64(ReviseAuth.minimum_password_length)
-        user = User.new(
-          email: email,
-          password: temp_password,
-          password_confirmation: temp_password,
-          password_reset_required: true,
-          confirmed_at: Time.current
-        )
-
-        unless user.save
-          render :new, status: :unprocessable_entity
-          return
-        end
-
-        user.send_password_reset_instructions
-      end
+      user, is_new_user = find_or_invite_user(email)
+      return if user.nil?
 
       @membership.user = user
-
-      if @membership.save
-        message_key = is_new_user ? "create.success_invited" : "create.success"
-        flash[:notice] = t("sites.memberships.#{message_key}")
-        redirect_to site_memberships_path(@site), status: :see_other
-      else
-        render :new, status: :unprocessable_entity
-      end
+      save_membership_and_redirect(is_new_user)
     end
 
     def edit
@@ -101,6 +71,41 @@ module Sites
 
     def create_params
       params.require(:membership).permit(:email, :role)
+    end
+
+    def email_delivery_unsupported?(email)
+      User.find_by(email: email).nil? && !TinyPixel.email_delivery_supported?
+    end
+
+    def render_invitation_error
+      @membership.errors.add(:base, t("sites.memberships.create.user_not_found"))
+      render :new, status: :unprocessable_entity
+    end
+
+    def find_or_invite_user(email)
+      user = User.find_by(email: email)
+      return [user, false] if user.present?
+
+      user = invite_new_user(email)
+      [user, user.present?]
+    end
+
+    def invite_new_user(email)
+      User.invite(email)
+    rescue ActiveRecord::RecordInvalid => e
+      e.record.errors.each { |error| @membership.errors.add(:base, error.full_message) }
+      render :new, status: :unprocessable_entity
+      nil
+    end
+
+    def save_membership_and_redirect(is_new_user)
+      if @membership.save
+        message_key = is_new_user ? "create.success_invited" : "create.success"
+        flash[:notice] = t("sites.memberships.#{message_key}")
+        redirect_to site_memberships_path(@site), status: :see_other
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
   end
 end

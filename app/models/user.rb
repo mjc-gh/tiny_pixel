@@ -8,6 +8,7 @@
 #  id                      :integer          not null, primary key
 #  confirmed_at            :datetime
 #  email                   :string           not null
+#  invitation_code         :string
 #  password_digest         :string           not null
 #  password_reset_required :boolean          default(FALSE), not null
 #  unconfirmed_email       :string
