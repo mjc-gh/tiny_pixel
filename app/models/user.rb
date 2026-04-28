@@ -19,11 +19,31 @@
 #  index_users_on_email  (email) UNIQUE
 #
 class User < ApplicationRecord
+  EmailDeliveryNotSupportedError = Class.new(StandardError)
+
   include ReviseAuth::Model
   prepend UserReviseExtension
 
+  generates_token_for :invitation_code, expires_in: 7.days
+
   has_many :memberships, dependent: :destroy
   has_many :sites, through: :memberships
+
+  def self.invite(email)
+    raise EmailDeliveryNotSupportedError unless TinyPixel.email_delivery_supported?
+
+    temp_password = SecureRandom.urlsafe_base64(ReviseAuth.minimum_password_length)
+    user = create!(
+      email: email,
+      password: temp_password,
+      password_confirmation: temp_password,
+      password_reset_required: true
+    )
+
+    UserMailer.invitation(user).deliver_later
+
+    user
+  end
 
   def admin_for?(site)
     memberships.exists?(site: site, role: :admin)

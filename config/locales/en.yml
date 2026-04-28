@@ -116,6 +116,9 @@ en:
   users:
     registrations:
       not_allowed: Registration is not allowed
+    invitations:
+      show:
+        invalid_token: "The invitation link is invalid or has expired"
     password_resets:
       edit:
         title: "Set Your Password"
@@ -123,3 +126,6 @@ en:
         set_password: "Set Password"
       update:
         success: "Password updated successfully"
+  user_mailer:
+    invitation:
+      subject: "You're invited to join tiny_pixel"

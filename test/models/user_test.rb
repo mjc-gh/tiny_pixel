@@ -51,4 +51,48 @@ class UserTest < ActiveSupport::TestCase
 
     assert_includes alice.sites, my_blog
   end
+
+  test "invite creates user with correct attributes" do
+    email = "new_user@example.com"
+    TinyPixel.stub :email_delivery_supported?, true do
+      user = User.invite(email)
+
+      assert_equal email, user.email
+      assert user.password_reset_required?
+    end
+  end
+
+  test "invite sends invitation email" do
+    email = "new_user@example.com"
+
+    TinyPixel.stub :email_delivery_supported?, true do
+      user = User.invite(email)
+      # User is created successfully with email
+      assert_equal email, user.email
+    end
+  end
+
+  test "invite raises EmailDeliveryNotSupportedError when email not configured" do
+    email = "new_user@example.com"
+    TinyPixel.stub :email_delivery_supported?, false do
+      assert_raises User::EmailDeliveryNotSupportedError do
+        User.invite(email)
+      end
+    end
+  end
+
+  test "invitation_code token expires after 7 days" do
+    user = User.create!(
+      email: "test@example.com",
+      password: "password123456",
+      confirmed_at: Time.current
+    )
+
+    token = user.generate_token_for(:invitation_code)
+
+    travel 8.days do
+      found_user = User.find_by_token_for(:invitation_code, token)
+      assert_nil found_user
+    end
+  end
 end

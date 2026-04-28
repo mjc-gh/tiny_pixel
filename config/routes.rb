@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   namespace :users do
     resource :password_reset, only: [:edit, :update]
+    resource :invitation, only: [:show]
   end
 
   revise_auth
