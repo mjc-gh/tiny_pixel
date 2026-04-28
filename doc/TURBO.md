@@ -33,6 +33,24 @@ def create
 end
 ```
 
+### Destructive Actions (DELETE requests)
+
+Modern pattern (NEVER use `data-method` with `link_to`, always use a form):
+```erb
+<%= form_with url: item_path(item), method: :delete, local: true do |form| %>
+  <%= form.button "Delete", data: { turbo_confirm: "Sure?" } %>
+<% end %>
+```
+
+For icon-only buttons (e.g., in tables):
+```erb
+<%= form_with url: item_path(item), method: :delete, local: true do %>
+  <button type="submit" data-turbo-confirm="Sure?" class="text-destructive hover:text-destructive/80">
+    <%= heroicon "trash", type: :outline, class: "h-4 w-4" %>
+  </button>
+<% end %>
+```
+
 ### Key Data Attributes
 | Attribute | Purpose |
 |-----------|---------|
@@ -44,6 +62,8 @@ end
 | `data-turbo-temporary` | Remove before caching (flash messages) |
 | `data-turbo-track="reload"` | Force reload when asset changes |
 | `data-turbo-prefetch="false"` | Disable hover prefetching |
+
+**Why:** `form_with` with `method: :delete` is the modern Turbo-compatible approach. It doesn't rely on JavaScript libraries and follows Rails 8+ conventions.
 
 ## Turbo Frames
 
