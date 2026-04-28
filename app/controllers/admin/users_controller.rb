@@ -37,12 +37,40 @@ class Admin::UsersController < AdminController
   def show
     @user = User.find(params[:id])
     @temp_password = flash[:temp_password]
+    @memberships = @user.memberships.includes(:site).order(created_at: :desc)
+  end
+
+  def edit
+    @user = User.find(params[:id])
+    @memberships = @user.memberships.includes(:site).order(created_at: :desc)
+  end
+
+  def update
+    @user = User.find(params[:id])
+
+    if regenerate_password_params[:regenerate_password] == "true"
+      temp_password = SecureRandom.urlsafe_base64(ReviseAuth.minimum_password_length)
+      @user.update!(password: temp_password, password_confirmation: temp_password, password_reset_required: true)
+      redirect_to admin_user_path(@user), flash: { temp_password: temp_password }, notice: t("admin.users.update.password_regenerated")
+    else
+      redirect_to admin_users_path
+    end
+  end
+
+  def destroy
+    @user = User.find(params[:id])
+    @user.destroy
+    redirect_to admin_users_path, notice: t("admin.users.destroy.success"), status: :see_other
   end
 
   private
 
   def user_params
     params.require(:user).permit(:email)
+  end
+
+  def regenerate_password_params
+    params.require(:user).permit(:regenerate_password)
   end
 
   def invite_method?

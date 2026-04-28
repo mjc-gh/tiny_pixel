@@ -1,0 +1,51 @@
+<div class="w-full max-w-2xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-content-primary"><%= t("admin.users.edit.title") %></h1>
+    <%= back_link %>
+  </div>
+
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8 space-y-6">
+    <div class="space-y-2">
+      <p class="text-sm font-semibold text-content-primary"><%= t("admin.users.show.user_email") %></p>
+      <p class="text-sm text-content-secondary"><%= @user.email %></p>
+    </div>
+
+    <div class="border-t border-border pt-6">
+      <h2 class="text-lg font-semibold text-content-primary mb-4"><%= t("admin.users.memberships.title") %></h2>
+
+      <% if @memberships.any? %>
+        <div class="space-y-3 mb-6">
+          <% @memberships.each do |membership| %>
+            <div class="flex items-center justify-between p-3 bg-surface-hover rounded-lg border border-border">
+              <div>
+                <p class="text-sm font-medium text-content-primary"><%= membership.site.name %></p>
+                <p class="text-xs text-content-secondary"><%= t("sites.memberships.roles.#{membership.role}") %></p>
+              </div>
+              <%= link_to admin_user_membership_path(@user, membership), method: :delete, data: { turbo_confirm: t("admin.users.memberships.remove_confirm") }, class: "text-destructive hover:text-destructive/80 transition-colors" do %>
+                <%= heroicon "trash", type: :outline, class: "h-4 w-4" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-content-muted mb-6"><%= t("admin.users.memberships.empty") %></p>
+      <% end %>
+
+      <%= link_to t("admin.users.memberships.add"), new_admin_user_membership_path(@user), class: "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" %>
+    </div>
+
+    <div class="border-t border-border pt-6">
+      <h2 class="text-lg font-semibold text-content-primary mb-4"><%= t("admin.users.edit.regenerate_password") %></h2>
+      <%= form_with model: @user, url: admin_user_path(@user), method: :patch, local: true do |form| %>
+        <div class="flex gap-2">
+          <%= form.hidden_field :regenerate_password, value: "true" %>
+          <%= form.button t("admin.users.edit.regenerate_password"), data: { turbo_confirm: t("admin.users.edit.regenerate_confirm") }, class: "px-4 py-2 bg-warning text-white rounded-lg hover:bg-warning/90 transition-colors text-sm font-medium" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="border-t border-border pt-6 flex gap-2">
+      <%= link_to t("admin.users.show.delete"), admin_user_path(@user), method: :delete, data: { turbo_confirm: t("admin.users.destroy.confirm") }, class: "px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors text-sm font-medium" %>
+    </div>
+  </div>
+</div>

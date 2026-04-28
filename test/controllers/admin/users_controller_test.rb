@@ -223,4 +223,107 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       assert_response :unprocessable_entity
     end
   end
+
+  test "edit with auth headers displays user" do
+    get edit_admin_user_path(@user), headers: admin_auth_headers
+
+    assert_response :success
+    assert_select "h1", I18n.t("admin.users.edit.title")
+    assert_match @user.email, response.body
+  end
+
+  test "edit without auth headers is unauthorized" do
+    get edit_admin_user_path(@user)
+
+    assert_response :unauthorized
+  end
+
+  test "edit displays user memberships" do
+    site = Site.create!(name: "Test Site")
+    @user.memberships.create!(site: site, role: :admin)
+
+    get edit_admin_user_path(@user), headers: admin_auth_headers
+
+    assert_response :success
+    assert_match site.name, response.body
+  end
+
+  test "update with password regeneration creates new password" do
+    patch admin_user_path(@user), headers: admin_auth_headers, params: {
+      user: { regenerate_password: "true" }
+    }
+
+    @user.reload
+    assert @user.password_reset_required?
+    assert_redirected_to admin_user_path(@user)
+  end
+
+  test "update with password regeneration redirects with flash" do
+    patch admin_user_path(@user), headers: admin_auth_headers, params: {
+      user: { regenerate_password: "true" }
+    }
+
+    assert_redirected_to admin_user_path(@user)
+    assert_equal "Password regenerated successfully", flash[:notice]
+  end
+
+  test "update without regenerate_password redirects to users list" do
+    patch admin_user_path(@user), headers: admin_auth_headers, params: {
+      user: { regenerate_password: "false" }
+    }
+
+    assert_redirected_to admin_users_path
+  end
+
+  test "update without auth headers is unauthorized" do
+    patch admin_user_path(@user), params: {
+      user: { regenerate_password: "true" }
+    }
+
+    assert_response :unauthorized
+  end
+
+  test "destroy with auth headers deletes user" do
+    user_to_delete = User.create!(
+      email: "delete_test@example.com",
+      password: "valid_password_12",
+      password_confirmation: "valid_password_12"
+    )
+
+    assert_difference("User.count", -1) do
+      delete admin_user_path(user_to_delete), headers: admin_auth_headers
+    end
+
+    assert_redirected_to admin_users_path
+  end
+
+  test "destroy with auth headers deletes user memberships" do
+    site = Site.create!(name: "Test Site")
+    user_with_memberships = User.create!(
+      email: "member_delete@example.com",
+      password: "valid_password_12",
+      password_confirmation: "valid_password_12"
+    )
+    user_with_memberships.memberships.create!(site: site, role: :member)
+
+    assert_difference("Membership.count", -1) do
+      delete admin_user_path(user_with_memberships), headers: admin_auth_headers
+    end
+
+    assert_redirected_to admin_users_path
+  end
+
+  test "destroy without auth headers is unauthorized" do
+    user_to_delete = User.create!(
+      email: "unauthorized_delete@example.com",
+      password: "valid_password_12",
+      password_confirmation: "valid_password_12"
+    )
+
+    assert_no_difference("User.count") do
+      delete admin_user_path(user_to_delete)
+    end
+
+    assert_response :unauthorized
+  end
 end

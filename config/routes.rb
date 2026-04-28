@@ -37,7 +37,9 @@ Rails.application.routes.draw do
   # System Admin
   namespace :admin do
     get "/" => "dashboard#index"
-    resources :users, only: [:index, :new, :create, :show]
+    resources :users, only: [:index, :new, :create, :show, :edit, :update, :destroy] do
+      resources :memberships, only: [:new, :create, :destroy], module: :users
+    end
   end
 
   # PWA routes

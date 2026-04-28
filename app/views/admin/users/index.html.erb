@@ -10,13 +10,19 @@
         <tr>
           <th class="px-6 py-3 text-left text-sm font-semibold text-content-secondary">Email</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-content-secondary">Created</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-content-secondary">Actions</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-border">
         <% @users.each do |user| %>
           <tr class="hover:bg-surface-hover transition-colors">
-            <td class="px-6 py-4 text-sm text-content-primary"><%= user.email %></td>
+            <td class="px-6 py-4 text-sm text-content-primary"><%= link_to user.email, admin_user_path(user), class: "text-primary hover:underline" %></td>
             <td class="px-6 py-4 text-sm text-content-secondary"><%= user.created_at.strftime("%b %d, %Y") %></td>
+            <td class="px-6 py-4 text-sm space-x-2 flex items-center gap-2">
+              <%= link_to edit_admin_user_path(user), title: "Edit", class: "text-primary hover:text-primary/80 transition-colors" do %>
+                <%= heroicon "pencil", type: :outline, class: "h-4 w-4" %>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>
