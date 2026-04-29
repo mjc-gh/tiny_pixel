@@ -17,12 +17,15 @@
         <div class="space-y-2">
           <% intervals.each do |interval| %>
             <label class="flex items-center gap-3 cursor-pointer">
-              <input type="radio"
-                     name="interval"
-                     value="<%= interval[:value] %>"
-                     <%= "checked" if selected?(interval[:value]) %>
-                     data-action="change->site-dashboard#updateInterval"
-                     class="w-4 h-4 text-primary border-border bg-surface cursor-pointer accent-primary">
+              <%= content_tag(
+                :input, nil,
+                type: "radio",
+                name: "interval",
+                value: interval[:value],
+                checked: selected?(interval[:value]),
+                data: { action: "change->site-dashboard#updateInterval" },
+                class: "w-4 h-4 text-primary border-border bg-surface cursor-pointer accent-primary"
+              ) %>
               <span class="text-sm text-content-primary"><%= interval[:label] %></span>
             </label>
           <% end %>
