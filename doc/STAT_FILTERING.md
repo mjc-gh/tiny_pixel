@@ -126,6 +126,14 @@ Date range filtering is always available on the dashboard. Users can select a st
 - Stat models - Have `for_date_range` scopes defined for each interval type
 
 **URL Parameter:** `start_date` and `end_date` (ISO8601 format: YYYY-MM-DD)
+- **Start date only** (e.g., `start_date=2024-04-01`): Filters from the specified date to the present
+- **End date only** (e.g., `end_date=2024-04-30`): Filters from the earliest available data to the specified date
+- **Both dates** (default): Filters between start and end dates (existing behavior)
+
+**Implementation Details:**
+- Backend: `FilterStats#apply_date_range_filter` applies filter when either date is present
+- Stat model scopes: `for_date_range(start_date, end_date)` uses Ruby range syntax: `start_date..end_date`, `start_date..`, or `..end_date`
+- Frontend: `DashboardFiltersComponent#display_summary` shows `"Apr 1 to now"` (start only) or `"oldest to Apr 24"` (end only)
 
 ## Adding New Stat Filters
 
