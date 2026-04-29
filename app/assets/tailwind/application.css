@@ -92,6 +92,10 @@ dialog.slideover[open] {
   animation: slide-in-from-right 250ms forwards ease;
 }
 
+button[type="button"] {
+  cursor: pointer;
+}
+
 @keyframes slide-in-from-right {
   from {
     transform: translateX(-100%);
