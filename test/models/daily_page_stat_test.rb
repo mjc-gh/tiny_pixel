@@ -26,6 +26,28 @@ class DailyPageStatTest < ActiveSupport::TestCase
     assert_equal 0, DailyPageStat.for_date_range(@date + 2.days, @date + 3.days).count
   end
 
+  test "for_date_range scope filters by start_date only" do
+    create_daily_stat(sites(:my_blog), pathname: "/test", date: @date)
+    create_daily_stat(sites(:my_blog), pathname: "/about", date: @date + 1.day)
+    create_daily_stat(sites(:my_blog), pathname: "/contact", date: @date - 1.day)
+
+    stats = DailyPageStat.for_date_range(@date, nil)
+
+    assert_equal 2, stats.count
+    assert_equal ["/about", "/test"], stats.pluck(:pathname).sort
+  end
+
+  test "for_date_range scope filters by end_date only" do
+    create_daily_stat(sites(:my_blog), pathname: "/test", date: @date)
+    create_daily_stat(sites(:my_blog), pathname: "/about", date: @date + 1.day)
+    create_daily_stat(sites(:my_blog), pathname: "/contact", date: @date - 1.day)
+
+    stats = DailyPageStat.for_date_range(nil, @date)
+
+    assert_equal 2, stats.count
+    assert_equal ["/contact", "/test"], stats.pluck(:pathname).sort
+  end
+
   test "ordered_by_date orders descending" do
     create_daily_stat(sites(:my_blog), hostname: "a.com", date: @date)
     create_daily_stat(sites(:my_blog), hostname: "b.com", date: @date + 1.day)

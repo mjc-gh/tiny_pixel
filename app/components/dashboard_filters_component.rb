@@ -38,6 +38,10 @@ class DashboardFiltersComponent < ViewComponent::Base
   def display_summary
     date_range = if @start_date && @end_date
       "#{@start_date.strftime('%b %-d')} - #{@end_date.strftime('%b %-d')}"
+    elsif @start_date
+      "#{@start_date.strftime('%b %-d')} to now"
+    elsif @end_date
+      "oldest to #{@end_date.strftime('%b %-d')}"
     else
       "Date range"
     end

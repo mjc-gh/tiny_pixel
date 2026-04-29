@@ -38,7 +38,16 @@ class DailyPageStat < ApplicationRecord
   belongs_to :site
 
   scope :for_site, ->(site_id) { where(site_id: site_id) }
-  scope :for_date_range, ->(start_date, end_date) { where(date: start_date..end_date) }
+  scope :for_date_range, ->(start_date, end_date) {
+    range = if start_date && end_date
+      start_date..end_date
+    elsif start_date
+      start_date..
+    elsif end_date
+      ..end_date
+    end
+    where(date: range) if range
+  }
   scope :for_hostname, ->(hostname) { where(hostname: hostname) }
   scope :for_pathname, ->(pathname) { where(pathname: pathname) }
   scope :global, -> { where(dimension_type: "global") }

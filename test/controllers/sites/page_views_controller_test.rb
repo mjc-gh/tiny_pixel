@@ -123,6 +123,42 @@ module Sites
       assert_response :success
     end
 
+    test "filters page views by only start_date param" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 15),
+        pageviews: 100
+      )
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 25),
+        pageviews: 50
+      )
+
+      get site_page_views_url(sites(:tech_blog), start_date: "2024-01-20")
+
+      assert_response :success
+    end
+
+    test "filters page views by only end_date param" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 15),
+        pageviews: 100
+      )
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 25),
+        pageviews: 50
+      )
+
+      get site_page_views_url(sites(:tech_blog), end_date: "2024-01-20")
+
+      assert_response :success
+    end
+
     test "chart data includes only stats within date range" do
       login(users(:alice))
       create_daily_stat(

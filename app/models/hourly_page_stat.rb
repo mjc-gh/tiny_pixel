@@ -38,7 +38,16 @@ class HourlyPageStat < ApplicationRecord
   belongs_to :site
 
   scope :for_site, ->(site_id) { where(site_id: site_id) }
-  scope :for_date_range, ->(start_time, end_time) { where(time_bucket: start_time..end_time) }
+  scope :for_date_range, ->(start_time, end_time) {
+    range = if start_time && end_time
+      start_time..end_time
+    elsif start_time
+      start_time..
+    elsif end_time
+      ..end_time
+    end
+    where(time_bucket: range) if range
+  }
   scope :for_hostname, ->(hostname) { where(hostname: hostname) }
   scope :for_pathname, ->(pathname) { where(pathname: pathname) }
   scope :global, -> { where(dimension_type: "global") }

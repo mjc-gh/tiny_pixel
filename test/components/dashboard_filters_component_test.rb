@@ -30,6 +30,28 @@ class DashboardFiltersComponentTest < ViewComponent::TestCase
     assert_text "Daily · Apr 1 - Apr 24"
   end
 
+  test "renders display summary with only start_date" do
+    render_inline(DashboardFiltersComponent.new(
+      current_interval: "daily",
+      start_date: Date.new(2024, 4, 1),
+      end_date: nil,
+      site: @site
+    ))
+
+    assert_text "Daily · Apr 1 to now"
+  end
+
+  test "renders display summary with only end_date" do
+    render_inline(DashboardFiltersComponent.new(
+      current_interval: "daily",
+      start_date: nil,
+      end_date: Date.new(2024, 4, 24),
+      site: @site
+    ))
+
+    assert_text "Daily · oldest to Apr 24"
+  end
+
   test "renders interval radio buttons" do
     render_inline(DashboardFiltersComponent.new(
       current_interval: "daily",

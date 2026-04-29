@@ -79,7 +79,7 @@ module FilterStats
   end
 
   def apply_date_range_filter(scope)
-    return scope unless current_start_date && current_end_date
+    return scope unless current_start_date || current_end_date
     scope.for_date_range(current_start_date, current_end_date)
   end
 

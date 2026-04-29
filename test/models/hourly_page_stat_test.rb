@@ -26,6 +26,28 @@ class HourlyPageStatTest < ActiveSupport::TestCase
     assert_equal 0, HourlyPageStat.for_date_range(@time_bucket + 2.hours, @time_bucket + 3.hours).count
   end
 
+  test "for_date_range scope filters by start_time only" do
+    create_hourly_stat(sites(:my_blog), pathname: "/test", time_bucket: @time_bucket)
+    create_hourly_stat(sites(:my_blog), pathname: "/about", time_bucket: @time_bucket + 1.hour)
+    create_hourly_stat(sites(:my_blog), pathname: "/contact", time_bucket: @time_bucket - 1.hour)
+
+    stats = HourlyPageStat.for_date_range(@time_bucket, nil)
+
+    assert_equal 2, stats.count
+    assert_equal ["/about", "/test"], stats.pluck(:pathname).sort
+  end
+
+  test "for_date_range scope filters by end_time only" do
+    create_hourly_stat(sites(:my_blog), pathname: "/test", time_bucket: @time_bucket)
+    create_hourly_stat(sites(:my_blog), pathname: "/about", time_bucket: @time_bucket + 1.hour)
+    create_hourly_stat(sites(:my_blog), pathname: "/contact", time_bucket: @time_bucket - 1.hour)
+
+    stats = HourlyPageStat.for_date_range(nil, @time_bucket)
+
+    assert_equal 2, stats.count
+    assert_equal ["/contact", "/test"], stats.pluck(:pathname).sort
+  end
+
   test "ordered_by_time orders descending" do
     create_hourly_stat(sites(:my_blog), hostname: "a.com", time_bucket: @time_bucket)
     create_hourly_stat(sites(:my_blog), hostname: "b.com", time_bucket: @time_bucket + 1.hour)

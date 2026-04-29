@@ -26,6 +26,28 @@ class WeeklyPageStatTest < ActiveSupport::TestCase
     assert_equal 0, WeeklyPageStat.for_date_range(@week_start + 2.weeks, @week_start + 3.weeks).count
   end
 
+  test "for_date_range scope filters by start_date only" do
+    create_weekly_stat(sites(:my_blog), pathname: "/test", week_start: @week_start)
+    create_weekly_stat(sites(:my_blog), pathname: "/about", week_start: @week_start + 1.week)
+    create_weekly_stat(sites(:my_blog), pathname: "/contact", week_start: @week_start - 1.week)
+
+    stats = WeeklyPageStat.for_date_range(@week_start, nil)
+
+    assert_equal 2, stats.count
+    assert_equal ["/about", "/test"], stats.pluck(:pathname).sort
+  end
+
+  test "for_date_range scope filters by end_date only" do
+    create_weekly_stat(sites(:my_blog), pathname: "/test", week_start: @week_start)
+    create_weekly_stat(sites(:my_blog), pathname: "/about", week_start: @week_start + 1.week)
+    create_weekly_stat(sites(:my_blog), pathname: "/contact", week_start: @week_start - 1.week)
+
+    stats = WeeklyPageStat.for_date_range(nil, @week_start)
+
+    assert_equal 2, stats.count
+    assert_equal ["/contact", "/test"], stats.pluck(:pathname).sort
+  end
+
   test "ordered_by_week orders descending" do
     create_weekly_stat(sites(:my_blog), hostname: "a.com", week_start: @week_start)
     create_weekly_stat(sites(:my_blog), hostname: "b.com", week_start: @week_start + 1.week)
