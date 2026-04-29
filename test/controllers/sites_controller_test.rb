@@ -82,7 +82,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
 
     get site_url(sites(:my_blog))
 
-    assert_select "select#interval"
+    assert_select "input[type='radio'][name='interval']", count: 3
   end
 
   test "show accepts interval parameter" do
@@ -98,7 +98,7 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
 
     get site_url(sites(:my_blog))
 
-    assert_select "option[value='#{site_path(sites(:my_blog), interval: 'daily')}'][selected]"
+    assert_select "input[type='radio'][name='interval'][value='daily'][checked]"
   end
 
   test "show returns 404 for unauthorized site" do

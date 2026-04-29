@@ -25,8 +25,7 @@
         </div>
       </div>
       <div class="flex items-center gap-4">
-        <%= render IntervalSelectorComponent.new(current_interval: current_interval, site: @site, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date, end_date: current_end_date, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>
-        <%= render DateRangeSelectorComponent.new(start_date: current_start_date, end_date: current_end_date, site: @site) %>
+        <%= render DashboardFiltersComponent.new(current_interval: current_interval, start_date: current_start_date, end_date: current_end_date, site: @site, pathname: current_pathname, hostname: current_hostname, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>
       </div>
     </div>
 
