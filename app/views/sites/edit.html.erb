@@ -37,6 +37,22 @@
             <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.display_hostname_help") %></p>
           </div>
 
+          <fieldset>
+            <legend class="text-base font-semibold text-content-primary mb-3"><%= t("sites.edit.stats_retention_title") %></legend>
+
+            <div class="space-y-4">
+              <div>
+                <%= form.number_field :stats_retention_duration, label: t("sites.edit.stats_retention_duration_label"), min: 1 %>
+                <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.stats_retention_duration_help") %></p>
+              </div>
+
+              <div>
+                <%= form.select :stats_retention_unit, Site.stats_retention_units.keys.map { |key| [t("sites.stats_retention_units.#{key}"), key] }, {}, label: t("sites.edit.stats_retention_unit_label") %>
+                <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.stats_retention_unit_help") %></p>
+              </div>
+            </div>
+          </fieldset>
+
           <div>
             <%= form.button t("common.save") %>
           </div>

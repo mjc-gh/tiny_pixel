@@ -57,4 +57,27 @@ class DailyPageStatTest < ActiveSupport::TestCase
 
     assert_equal ["b.com", "a.com", "c.com"], stats.pluck(:hostname)
   end
+
+  test "older_than scope filters by date" do
+    create_daily_stat(sites(:my_blog), hostname: "old.com", date: @date - 10.days)
+    create_daily_stat(sites(:my_blog), hostname: "recent.com", date: @date)
+
+    cutoff = (@date - 5.days).to_datetime
+    stats = DailyPageStat.older_than(cutoff)
+
+    assert_equal 1, stats.count
+    assert_equal "old.com", stats.first.hostname
+  end
+
+  test "older_than scope excludes stats at or after cutoff date" do
+    create_daily_stat(sites(:my_blog), hostname: "a.com", date: @date - 10.days)
+    create_daily_stat(sites(:my_blog), hostname: "b.com", date: @date - 5.days)
+    create_daily_stat(sites(:my_blog), hostname: "c.com", date: @date)
+
+    cutoff = (@date - 5.days).to_datetime
+    stats = DailyPageStat.older_than(cutoff)
+
+    assert_equal 1, stats.count
+    assert_equal ["a.com"], stats.pluck(:hostname)
+  end
 end

@@ -5,17 +5,19 @@
 # Table name: sites
 # Database name: primary
 #
-#  id                      :integer          not null, primary key
-#  display_hostname        :boolean          default(FALSE), not null
-#  name                    :string           not null
-#  salt                    :string           not null
-#  salt_duration           :integer          default("daily"), not null
-#  salt_last_cycled_at     :datetime         not null
-#  salt_version            :integer          default(0), not null
-#  session_timeout_minutes :integer          default(30)
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  property_id             :string           not null
+#  id                       :integer          not null, primary key
+#  display_hostname         :boolean          default(FALSE), not null
+#  name                     :string           not null
+#  salt                     :string           not null
+#  salt_duration            :integer          default("daily"), not null
+#  salt_last_cycled_at      :datetime         not null
+#  salt_version             :integer          default(0), not null
+#  session_timeout_minutes  :integer          default(30)
+#  stats_retention_duration :integer          default(12), not null
+#  stats_retention_unit     :integer          default(2), not null
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  property_id              :string           not null
 #
 # Indexes
 #
@@ -28,6 +30,7 @@ class Site < ApplicationRecord
   before_validation :cycle_salt, on: :create
 
   enum :salt_duration, { daily: 0, weekly: 1, monthly: 2 }
+  enum :stats_retention_unit, { days: 0, weeks: 1, months: 2, years: 3 }
 
   has_many :memberships, dependent: :destroy
   has_many :users, through: :memberships
@@ -38,6 +41,7 @@ class Site < ApplicationRecord
 
   validates :name, :property_id, :salt, presence: true
   validates :name, length: { maximum: 60 }
+  validates :stats_retention_duration, numericality: { greater_than: 0 }
   validates :session_timeout_minutes,
             presence: true,
             numericality: { greater_than_or_equal_to: 5, less_than_or_equal_to: 1440 }
@@ -77,6 +81,14 @@ class Site < ApplicationRecord
 
   def session_timeout
     session_timeout_minutes.minutes
+  end
+
+  def stats_retention_period
+    stats_retention_duration.send(stats_retention_unit)
+  end
+
+  def stats_retention_cutoff
+    stats_retention_period.ago
   end
 
   private

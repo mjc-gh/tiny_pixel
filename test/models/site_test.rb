@@ -227,4 +227,76 @@ class SiteTest < ActiveSupport::TestCase
     assert_equal 45.minutes, site.session_timeout
     assert_kind_of ActiveSupport::Duration, site.session_timeout
   end
+
+  test "#stats_retention_period returns correct ActiveSupport::Duration" do
+    site = sites(:my_blog)
+    site.stats_retention_duration = 12
+    site.stats_retention_unit = :months
+
+    assert_equal 12.months, site.stats_retention_period
+    assert_kind_of ActiveSupport::Duration, site.stats_retention_period
+  end
+
+  test "#stats_retention_period works with all retention units" do
+    site = sites(:my_blog)
+
+    site.stats_retention_unit = :days
+    site.stats_retention_duration = 7
+    assert_equal 7.days, site.stats_retention_period
+
+    site.stats_retention_unit = :weeks
+    site.stats_retention_duration = 4
+    assert_equal 4.weeks, site.stats_retention_period
+
+    site.stats_retention_unit = :months
+    site.stats_retention_duration = 6
+    assert_equal 6.months, site.stats_retention_period
+
+    site.stats_retention_unit = :years
+    site.stats_retention_duration = 2
+    assert_equal 2.years, site.stats_retention_period
+  end
+
+  test "#stats_retention_cutoff returns time in the past" do
+    site = sites(:my_blog)
+    site.stats_retention_duration = 30
+    site.stats_retention_unit = :days
+
+    now = Time.current
+    cutoff = site.stats_retention_cutoff
+
+    assert cutoff < now
+    # The cutoff should be approximately 30 days ago (allow some tolerance)
+    assert_in_delta cutoff, 30.days.ago, 5.seconds
+  end
+
+  test "stats_retention_duration must be positive" do
+    site = sites(:my_blog)
+    site.stats_retention_duration = 0
+
+    assert_not site.valid?
+  end
+
+  test "stats_retention_duration negative value is invalid" do
+    site = sites(:my_blog)
+    site.stats_retention_duration = -5
+
+    assert_not site.valid?
+  end
+
+  test "stats_retention_unit enum values are correct" do
+    assert_equal({ "days" => 0, "weeks" => 1, "months" => 2, "years" => 3 }, Site.stats_retention_units)
+  end
+
+  test "stats_retention_unit defaults to months (2)" do
+    site = Site.create!(name: "Retention Test", salt: "placeholder")
+
+    assert site.months?
+  end
+
+  test "stats_retention_duration defaults to 12" do
+    site = Site.create!(name: "Retention Test", salt: "placeholder")
+
+    assert_equal 12, site.stats_retention_duration
+  end
 end

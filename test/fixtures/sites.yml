@@ -3,17 +3,19 @@
 # Table name: sites
 # Database name: primary
 #
-#  id                      :integer          not null, primary key
-#  display_hostname        :boolean          default(FALSE), not null
-#  name                    :string           not null
-#  salt                    :string           not null
-#  salt_duration           :integer          default("daily"), not null
-#  salt_last_cycled_at     :datetime         not null
-#  salt_version            :integer          default(0), not null
-#  session_timeout_minutes :integer          default(30)
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  property_id             :string           not null
+#  id                       :integer          not null, primary key
+#  display_hostname         :boolean          default(FALSE), not null
+#  name                     :string           not null
+#  salt                     :string           not null
+#  salt_duration            :integer          default("daily"), not null
+#  salt_last_cycled_at      :datetime         not null
+#  salt_version             :integer          default(0), not null
+#  session_timeout_minutes  :integer          default(30)
+#  stats_retention_duration :integer          default(12), not null
+#  stats_retention_unit     :integer          default(2), not null
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  property_id              :string           not null
 #
 # Indexes
 #

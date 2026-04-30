@@ -48,6 +48,6 @@ class SitesController < ApplicationController
   end
 
   def site_params
-    params.require(:site).permit(:name, :salt_duration, :display_hostname)
+    params.require(:site).permit(:name, :salt_duration, :display_hostname, :stats_retention_duration, :stats_retention_unit)
   end
 end

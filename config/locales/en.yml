@@ -33,10 +33,20 @@ en:
       salt_duration_help: "Controls how often the site's visitor salt is rotated"
       display_hostname_label: "Display Hostname"
       display_hostname_help: "When enabled, stats are grouped by hostname and pathname. When disabled, stats are grouped by pathname only."
+      stats_retention_title: "Stats Retention Policy"
+      stats_retention_duration_label: "Retention Duration"
+      stats_retention_duration_help: "Number of time units to retain aggregated statistics"
+      stats_retention_unit_label: "Time Unit"
+      stats_retention_unit_help: "The unit of time for the retention duration"
     salt_durations:
       daily: "Daily"
       weekly: "Weekly"
       monthly: "Monthly"
+    stats_retention_units:
+      days: "Days"
+      weeks: "Weeks"
+      months: "Months"
+      years: "Years"
     update:
       success: "Site settings updated successfully"
     instructions:

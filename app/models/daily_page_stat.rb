@@ -55,6 +55,7 @@ class DailyPageStat < ApplicationRecord
   scope :for_dimension_type, ->(type) { where(dimension_type: type) }
   scope :ordered_by_pageviews, -> { order(pageviews: :desc) }
   scope :ordered_by_date, -> { order(date: :desc) }
+  scope :older_than, ->(cutoff) { where(date: ...cutoff.to_date) }
 
   validates :hostname, :pathname, :date, :dimension_type, presence: true
 

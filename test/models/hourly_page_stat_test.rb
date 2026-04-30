@@ -57,4 +57,27 @@ class HourlyPageStatTest < ActiveSupport::TestCase
 
     assert_equal ["b.com", "a.com", "c.com"], stats.pluck(:hostname)
   end
+
+  test "older_than scope filters by time_bucket" do
+    create_hourly_stat(sites(:my_blog), hostname: "old.com", time_bucket: @time_bucket - 10.days)
+    create_hourly_stat(sites(:my_blog), hostname: "recent.com", time_bucket: @time_bucket)
+
+    cutoff = @time_bucket - 5.days
+    stats = HourlyPageStat.older_than(cutoff)
+
+    assert_equal 1, stats.count
+    assert_equal "old.com", stats.first.hostname
+  end
+
+  test "older_than scope excludes stats at or after cutoff" do
+    create_hourly_stat(sites(:my_blog), hostname: "a.com", time_bucket: @time_bucket - 10.days)
+    create_hourly_stat(sites(:my_blog), hostname: "b.com", time_bucket: @time_bucket - 5.days)
+    create_hourly_stat(sites(:my_blog), hostname: "c.com", time_bucket: @time_bucket)
+
+    cutoff = @time_bucket - 5.days
+    stats = HourlyPageStat.older_than(cutoff)
+
+    assert_equal 1, stats.count
+    assert_equal ["a.com"], stats.pluck(:hostname)
+  end
 end

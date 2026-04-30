@@ -9,6 +9,11 @@ periodic_jobs: &periodic_jobs
     queue: default
     args: []
     schedule: every hour
+  daily_stats_retention:
+    class: StatsRetentionJob
+    queue: default
+    args: []
+    schedule: every day at 3am
 
 development:
   <<: *periodic_jobs

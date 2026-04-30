@@ -57,4 +57,27 @@ class WeeklyPageStatTest < ActiveSupport::TestCase
 
     assert_equal ["b.com", "a.com", "c.com"], stats.pluck(:hostname)
   end
+
+  test "older_than scope filters by week_start" do
+    create_weekly_stat(sites(:my_blog), hostname: "old.com", week_start: @week_start - 10.weeks)
+    create_weekly_stat(sites(:my_blog), hostname: "recent.com", week_start: @week_start)
+
+    cutoff = (@week_start - 5.weeks).to_datetime
+    stats = WeeklyPageStat.older_than(cutoff)
+
+    assert_equal 1, stats.count
+    assert_equal "old.com", stats.first.hostname
+  end
+
+  test "older_than scope excludes stats at or after cutoff date" do
+    create_weekly_stat(sites(:my_blog), hostname: "a.com", week_start: @week_start - 10.weeks)
+    create_weekly_stat(sites(:my_blog), hostname: "b.com", week_start: @week_start - 5.weeks)
+    create_weekly_stat(sites(:my_blog), hostname: "c.com", week_start: @week_start)
+
+    cutoff = (@week_start - 5.weeks).to_datetime
+    stats = WeeklyPageStat.older_than(cutoff)
+
+    assert_equal 1, stats.count
+    assert_equal ["a.com"], stats.pluck(:hostname)
+  end
 end

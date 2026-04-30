@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_21_102400) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_095902) do
   create_table "aggregation_logs", force: :cascade do |t|
     t.string "aggregation_type", null: false
     t.datetime "completed_at"
@@ -91,6 +91,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_21_102400) do
     t.datetime "salt_last_cycled_at", null: false
     t.integer "salt_version", default: 0, null: false
     t.integer "session_timeout_minutes", default: 30
+    t.integer "stats_retention_duration", default: 12, null: false
+    t.integer "stats_retention_unit", default: 2, null: false
     t.datetime "updated_at", null: false
     t.index ["property_id"], name: "index_sites_on_property_id", unique: true
   end

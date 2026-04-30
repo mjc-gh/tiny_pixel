@@ -55,6 +55,7 @@ class WeeklyPageStat < ApplicationRecord
   scope :for_dimension_type, ->(type) { where(dimension_type: type) }
   scope :ordered_by_pageviews, -> { order(pageviews: :desc) }
   scope :ordered_by_week, -> { order(week_start: :desc) }
+  scope :older_than, ->(cutoff) { where(week_start: ...cutoff.to_date) }
 
   validates :hostname, :pathname, :week_start, :dimension_type, presence: true
 

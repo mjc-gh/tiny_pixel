@@ -55,6 +55,7 @@ class HourlyPageStat < ApplicationRecord
   scope :for_dimension_type, ->(type) { where(dimension_type: type) }
   scope :ordered_by_pageviews, -> { order(pageviews: :desc) }
   scope :ordered_by_time, -> { order(time_bucket: :desc) }
+  scope :older_than, ->(cutoff) { where(time_bucket: ...cutoff) }
 
   validates :hostname, :pathname, :time_bucket, :dimension_type, presence: true
 
