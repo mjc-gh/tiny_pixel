@@ -3,6 +3,8 @@ en:
     save: "Save"
     back: "Back"
     settings: "Settings"
+    copy: "Copy"
+    copied: "Copied!"
   visitors:
     browsers:
       chrome: "Chrome"
@@ -108,6 +110,35 @@ en:
         view_dashboard: "View Dashboard"
         site_settings: "Site Settings"
   admin:
+    sites:
+      index:
+        title: "Sites"
+        create_new: "Create New Site"
+        no_sites: "No sites created yet."
+      new:
+        title: "Create New Site"
+        name_label: "Site Name"
+        name_help: "Enter a name for the site (max 60 characters)"
+      show:
+        title: "Site Details"
+        property_id_label: "Property ID"
+        created_at_label: "Created"
+        memberships_title: "Site Memberships"
+        no_memberships: "No users are members of this site."
+        edit: "Edit Site"
+        delete: "Delete Site"
+      edit:
+        title: "Edit Site"
+        property_id_help: "Auto-generated property ID (read-only)"
+        session_timeout_minutes_label: "Session Timeout (minutes)"
+        session_timeout_minutes_help: "Number of minutes before a visitor session expires (5-1440 minutes)"
+      create:
+        success: "Site created successfully"
+      update:
+        success: "Site updated successfully"
+      destroy:
+        success: "Site deleted successfully"
+        confirm: "Are you sure you want to delete this site? All associated data including memberships and stats will be permanently removed."
     users:
       index:
         title: "Users"

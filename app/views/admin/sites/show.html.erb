@@ -1,0 +1,46 @@
+<div class="w-full max-w-2xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-content-primary"><%= t("admin.sites.show.title") %></h1>
+    <%= back_link %>
+  </div>
+
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8 space-y-6">
+    <div class="space-y-2">
+      <p class="text-sm font-semibold text-content-primary"><%= t("admin.sites.show.property_id_label") %></p>
+      <div class="flex items-center gap-2">
+        <code class="text-sm bg-surface-hover rounded px-3 py-2 flex-1 text-content-primary font-mono"><%= @site.property_id %></code>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <p class="text-sm font-semibold text-content-primary"><%= t("admin.sites.show.created_at_label") %></p>
+      <p class="text-sm text-content-secondary"><%= @site.created_at.strftime("%b %d, %Y at %I:%M %p") %></p>
+    </div>
+
+    <div class="border-t border-border pt-6">
+      <h2 class="text-lg font-semibold text-content-primary mb-4"><%= t("admin.sites.show.memberships_title") %></h2>
+
+      <% if @memberships.any? %>
+        <div class="space-y-3">
+          <% @memberships.each do |membership| %>
+            <div class="flex items-center justify-between p-3 bg-surface-hover rounded-lg border border-border">
+              <div>
+                <p class="text-sm font-medium text-content-primary"><%= membership.user.email %></p>
+                <p class="text-xs text-content-secondary"><%= t("sites.memberships.roles.#{membership.role}") %></p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-content-muted"><%= t("admin.sites.show.no_memberships") %></p>
+      <% end %>
+    </div>
+
+    <div class="flex gap-2 pt-6 border-t border-border">
+      <%= link_to t("admin.sites.show.edit"), edit_admin_site_path(@site), class: "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" %>
+      <%= form_with url: admin_site_path(@site), method: :delete, local: true do |form| %>
+        <%= form.button t("admin.sites.show.delete"), data: { turbo_confirm: t("admin.sites.destroy.confirm") }, class: "px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors text-sm font-medium" %>
+      <% end %>
+    </div>
+  </div>
+</div>

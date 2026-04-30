@@ -1,0 +1,31 @@
+<div class="w-full max-w-2xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-content-primary"><%= t("admin.sites.new.title") %></h1>
+    <%= back_link %>
+  </div>
+
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+    <%= default_form_with model: @site, url: admin_sites_path, local: true do |form| %>
+      <% if @site.errors.any? %>
+        <div class="bg-danger-bg border border-danger-border rounded-md p-4 mb-4">
+          <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
+            <% @site.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="space-y-4">
+        <div>
+          <%= form.text_field :name, label: t("admin.sites.new.name_label") %>
+          <p class="text-xs text-content-muted mt-1"><%= t("admin.sites.new.name_help") %></p>
+        </div>
+
+        <div>
+          <%= form.button t("common.save") %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

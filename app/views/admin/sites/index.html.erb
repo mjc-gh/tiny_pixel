@@ -1,0 +1,35 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-bold text-2xl text-content-primary"><%= t("admin.sites.index.title") %></h1>
+  <%= link_to t("admin.sites.index.create_new"), new_admin_site_path, class: "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" %>
+</div>
+
+<% if @sites.any? %>
+  <div class="overflow-x-auto bg-surface border border-border rounded-lg">
+    <table class="min-w-full divide-y divide-border">
+      <thead class="bg-surface-hover">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-content-secondary">Name</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-content-secondary">Property ID</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-content-secondary">Created</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-content-secondary">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        <% @sites.each do |site| %>
+          <tr class="hover:bg-surface-hover transition-colors">
+            <td class="px-6 py-4 text-sm text-content-primary"><%= link_to site.name, admin_site_path(site), class: "text-primary hover:underline" %></td>
+            <td class="px-6 py-4 text-sm text-content-secondary"><code class="bg-surface-hover rounded px-2 py-1 font-mono text-xs"><%= site.property_id %></code></td>
+            <td class="px-6 py-4 text-sm text-content-secondary"><%= site.created_at.strftime("%b %d, %Y") %></td>
+            <td class="px-6 py-4 text-sm space-x-2 flex items-center gap-2">
+              <%= link_to edit_admin_site_path(site), title: "Edit", class: "text-primary hover:text-primary/80 transition-colors" do %>
+                <%= heroicon "pencil", type: :outline, class: "h-4 w-4" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-content-muted"><%= t("admin.sites.index.no_sites") %></p>
+<% end %>

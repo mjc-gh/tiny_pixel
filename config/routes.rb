@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   # System Admin
   namespace :admin do
     get "/" => "dashboard#index"
+    resources :sites
     resources :users, only: [:index, :new, :create, :show, :edit, :update, :destroy] do
       resources :memberships, only: [:new, :create, :destroy], module: :users
     end

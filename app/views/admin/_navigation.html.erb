@@ -11,6 +11,7 @@
       <!-- Desktop navigation (hidden on mobile) -->
       <div class="hidden md:flex items-center space-x-6">
         <div class="flex items-center space-x-4">
+          <%= link_to "Sites", admin_sites_path, class: "text-sm text-content-secondary hover:text-content-primary transition-colors" %>
           <%= link_to "Users", admin_users_path, class: "text-sm text-content-secondary hover:text-content-primary transition-colors" %>
         </div>
 
@@ -46,6 +47,7 @@
     <!-- Mobile menu (shown/hidden by mobile-menu controller) -->
     <div class="hidden md:hidden border-t border-border" data-mobile-menu-target="menu">
       <div class="flex flex-col space-y-2 px-5 py-4">
+        <%= link_to "Sites", admin_sites_path, class: "px-3 py-2 rounded-md text-sm text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors" %>
         <%= link_to "Users", admin_users_path, class: "px-3 py-2 rounded-md text-sm text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors" %>
       </div>
     </div>

@@ -1,0 +1,74 @@
+<div class="w-full max-w-2xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-content-primary"><%= t("admin.sites.edit.title") %></h1>
+    <%= back_link %>
+  </div>
+
+  <div class="bg-surface border border-border rounded-lg p-6 sm:p-8">
+    <%= default_form_with model: @site, url: admin_site_path(@site), local: true do |form| %>
+      <% if @site.errors.any? %>
+        <div class="bg-danger-bg border border-danger-border rounded-md p-4 mb-4">
+          <ul class="list-disc list-inside text-sm text-danger-text space-y-1">
+            <% @site.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <fieldset>
+        <legend class="text-lg font-semibold text-content-primary mb-4"><%= t("sites.edit.settings") %></legend>
+
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm font-semibold text-content-primary"><%= t("admin.sites.show.property_id_label") %></p>
+            <p class="text-sm text-content-secondary bg-surface-hover rounded px-3 py-2 mt-1 font-mono"><%= @site.property_id %></p>
+            <p class="text-xs text-content-muted mt-1"><%= t("admin.sites.edit.property_id_help") %></p>
+          </div>
+
+          <div>
+            <%= form.text_field :name, label: t("sites.edit.name_label") %>
+            <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.name_help") %></p>
+          </div>
+
+          <div>
+            <%= form.select :salt_duration, Site.salt_durations.keys.map { |key| [t("sites.salt_durations.#{key}"), key] }, {}, label: t("sites.edit.salt_duration_label") %>
+            <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.salt_duration_help") %></p>
+          </div>
+
+          <div>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <%= form.check_box :display_hostname %>
+            </label>
+            <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.display_hostname_help") %></p>
+          </div>
+
+          <div>
+            <%= form.number_field :session_timeout_minutes, label: t("admin.sites.edit.session_timeout_minutes_label"), min: 5, max: 1440 %>
+            <p class="text-xs text-content-muted mt-1"><%= t("admin.sites.edit.session_timeout_minutes_help") %></p>
+          </div>
+
+          <fieldset>
+            <legend class="text-base font-semibold text-content-primary mb-3"><%= t("sites.edit.stats_retention_title") %></legend>
+
+            <div class="space-y-4">
+              <div>
+                <%= form.number_field :stats_retention_duration, label: t("sites.edit.stats_retention_duration_label"), min: 1 %>
+                <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.stats_retention_duration_help") %></p>
+              </div>
+
+              <div>
+                <%= form.select :stats_retention_unit, Site.stats_retention_units.keys.map { |key| [t("sites.stats_retention_units.#{key}"), key] }, {}, label: t("sites.edit.stats_retention_unit_label") %>
+                <p class="text-xs text-content-muted mt-1"><%= t("sites.edit.stats_retention_unit_help") %></p>
+              </div>
+            </div>
+          </fieldset>
+
+          <div>
+            <%= form.button t("common.save") %>
+          </div>
+        </div>
+      </fieldset>
+    <% end %>
+  </div>
+</div>
