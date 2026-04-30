@@ -47,6 +47,10 @@
 - Prefer less test cases while maximizing code coverage
 - Don't test framework features (validations, relations, other declarative APIs)
 
+**Integration Tests**:
+- Prefer `assert_select`; never assert against `response.body` for HTML or Turbo Stream actions
+- Never use `assert_template`
+
 ## References
 
 - **Authentication & Authorization**: See `doc/AUTH.md` for ReviseAuth integration, multi-tenant authorization patterns, user creation, conditional email delivery, and testing patterns
