@@ -116,7 +116,7 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", I18n.t("admin.users.show.title")
-    assert_match new_user.email, response.body
+    assert_select "p", text: new_user.email
   end
 
   test "show without auth headers is unauthorized" do
@@ -229,7 +229,7 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", I18n.t("admin.users.edit.title")
-    assert_match @user.email, response.body
+    assert_select "p", text: @user.email
   end
 
   test "edit without auth headers is unauthorized" do
@@ -245,7 +245,7 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     get edit_admin_user_path(@user), headers: admin_auth_headers
 
     assert_response :success
-    assert_match site.name, response.body
+    assert_select "p", text: site.name
   end
 
   test "update with password regeneration creates new password" do

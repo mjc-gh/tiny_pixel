@@ -43,9 +43,9 @@ module Sites
       get site_memberships_url(sites(:my_blog))
 
       assert_select "table"
-      assert_includes response.body, users(:alice).email
-      assert_includes response.body, users(:bob).email
-      assert_includes response.body, users(:charlie).email
+      assert_select "td", text: users(:alice).email
+      assert_select "td", text: users(:bob).email
+      assert_select "td", text: users(:charlie).email
     end
 
     test "index displays member roles" do
@@ -53,8 +53,8 @@ module Sites
 
       get site_memberships_url(sites(:my_blog))
 
-      assert_includes response.body, I18n.t("sites.memberships.roles.admin")
-      assert_includes response.body, I18n.t("sites.memberships.roles.member")
+      assert_select "span", text: I18n.t("sites.memberships.roles.admin")
+      assert_select "span", text: I18n.t("sites.memberships.roles.member")
     end
 
     test "index shows page title" do
@@ -62,7 +62,7 @@ module Sites
 
       get site_memberships_url(sites(:my_blog))
 
-      assert_includes response.body, I18n.t("sites.memberships.index.title")
+      assert_select "h1", text: I18n.t("sites.memberships.index.title")
     end
 
     test "index hides remove button for current user" do
@@ -114,8 +114,8 @@ module Sites
 
       get edit_site_membership_url(sites(:my_blog), memberships(:bob_my_blog_member))
 
-      assert_includes response.body, I18n.t("sites.memberships.roles.member")
-      assert_includes response.body, I18n.t("sites.memberships.roles.admin")
+      assert_select "option", text: I18n.t("sites.memberships.roles.member")
+      assert_select "option", text: I18n.t("sites.memberships.roles.admin")
     end
 
     test "edit shows warning for self-demotion attempt" do
@@ -123,7 +123,7 @@ module Sites
 
       get edit_site_membership_url(sites(:my_blog), memberships(:alice_my_blog_admin))
 
-      assert_includes response.body, I18n.t("sites.memberships.update.cannot_demote_self")
+      assert_select "p", text: I18n.t("sites.memberships.update.cannot_demote_self")
     end
 
     test "edit disables role dropdown for self when admin" do
@@ -192,7 +192,7 @@ module Sites
 
       assert_response :unprocessable_entity
       assert_equal "admin", memberships(:alice_my_blog_admin).reload.role
-      assert_includes response.body, I18n.t("sites.memberships.update.cannot_demote_self")
+      assert_select "p", text: I18n.t("sites.memberships.update.cannot_demote_self")
     end
 
     # Destroy action tests
@@ -305,7 +305,7 @@ module Sites
       TinyPixel.stub :email_delivery_supported?, false do
         get new_site_membership_url(sites(:my_blog))
 
-        assert_includes response.body, I18n.t("sites.memberships.new.no_email_warning")
+        assert_select "p", text: I18n.t("sites.memberships.new.no_email_warning")
       end
     end
 

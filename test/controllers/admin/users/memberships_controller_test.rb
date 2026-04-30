@@ -28,8 +28,8 @@ class Admin::Users::MembershipsControllerTest < ActionDispatch::IntegrationTest
     get new_admin_user_membership_path(@user), headers: admin_auth_headers
 
     assert_response :success
-    assert_match new_site.name, response.body
-    assert_no_match /#{Regexp.escape(@site.name)}(?!.*?selected)/, response.body
+    assert_select "option", text: new_site.name
+    assert_select "option", text: @site.name, count: 0
   end
 
   test "create with valid params creates membership" do

@@ -42,7 +42,7 @@ module Sites
       get site_instructions_url(site)
 
       assert_response :success
-      assert_includes response.body, "data-property-id=&quot;#{site.property_id}&quot;"
+      assert_select "div[data-clipboard-target='source']", text: /data-property-id="#{Regexp.escape(site.property_id)}"/
     end
 
     test "includes tracking snippet with server parameter" do
@@ -51,7 +51,7 @@ module Sites
       get site_instructions_url(sites(:tech_blog))
 
       assert_response :success
-      assert_includes response.body, "data-server="
+      assert_select "div[data-clipboard-target='source']", text: /data-server=/
     end
 
     test "returns 404 for unauthorized site" do
@@ -76,7 +76,7 @@ module Sites
       get site_instructions_url(sites(:tech_blog))
 
       assert_response :success
-      assert_includes response.body, I18n.t("sites.instructions.copy")
+      assert_select "button", text: I18n.t("sites.instructions.copy")
     end
 
     test "includes close button in response" do
@@ -85,7 +85,7 @@ module Sites
       get site_instructions_url(sites(:tech_blog))
 
       assert_response :success
-      assert_includes response.body, I18n.t("sites.instructions.close")
+      assert_select "button", text: I18n.t("sites.instructions.close")
     end
   end
 end

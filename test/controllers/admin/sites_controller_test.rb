@@ -33,7 +33,7 @@ class Admin::SitesControllerTest < ActionDispatch::IntegrationTest
     get admin_sites_path, headers: admin_auth_headers
 
     assert_response :success
-    assert_match @site.property_id, response.body
+    assert_select "code", text: @site.property_id
   end
 
   test "new with auth headers is successful" do
@@ -107,7 +107,7 @@ class Admin::SitesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", I18n.t("admin.sites.show.title")
-    assert_match @site.property_id, response.body
+    assert_select "code", text: @site.property_id
   end
 
   test "show without auth headers is unauthorized" do
@@ -127,14 +127,14 @@ class Admin::SitesControllerTest < ActionDispatch::IntegrationTest
     get admin_site_path(@site), headers: admin_auth_headers
 
     assert_response :success
-    assert_match user.email, response.body
+    assert_select "p", text: user.email
   end
 
   test "show displays property ID as read-only" do
     get admin_site_path(@site), headers: admin_auth_headers
 
     assert_response :success
-    assert_match @site.property_id, response.body
+    assert_select "code", text: @site.property_id
   end
 
   test "edit with auth headers displays site" do
@@ -142,7 +142,7 @@ class Admin::SitesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", I18n.t("admin.sites.edit.title")
-    assert_match @site.name, response.body
+    assert_select "[name=?]", "site[name]"
   end
 
   test "edit without auth headers is unauthorized" do
@@ -167,7 +167,7 @@ class Admin::SitesControllerTest < ActionDispatch::IntegrationTest
     get edit_admin_site_path(@site), headers: admin_auth_headers
 
     assert_response :success
-    assert_match @site.property_id, response.body
+    assert_select "p", text: @site.property_id
   end
 
   test "update with valid params succeeds" do
