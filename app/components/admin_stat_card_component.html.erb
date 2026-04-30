@@ -1,0 +1,11 @@
+<%= link_to @href, class: "p-4 border border-border rounded bg-surface hover:border-primary transition-colors block hover:no-underline" do %>
+  <div class="flex items-start justify-between">
+    <div>
+      <div class="text-4xl font-bold text-content-primary"><%= @value %></div>
+      <div class="text-sm text-content-secondary mt-2"><%= @title %></div>
+    </div>
+    <div class="text-content-secondary">
+      <%= heroicon @icon, type: :outline, class: "h-8 w-8" %>
+    </div>
+  </div>
+<% end %>

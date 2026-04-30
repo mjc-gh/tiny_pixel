@@ -1,4 +1,18 @@
-<div>
-  <h1 class="font-bold text-4xl">Admin::Root#index</h1>
-  <p>Find me in app/views/admin/root/index.html.erb</p>
+<h1 class="font-bold text-2xl text-content-primary mb-6">Dashboard</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <%= render(AdminStatCardComponent.new(
+    title: "Total Sites",
+    value: @total_sites,
+    icon: "building-office-2",
+    href: admin_sites_path
+  )) %>
+
+  <%= render(AdminStatCardComponent.new(
+    title: "Total Users",
+    value: @total_users,
+    icon: "users",
+    href: admin_users_path
+  )) %>
 </div>
+
