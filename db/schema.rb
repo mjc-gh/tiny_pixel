@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_30_095902) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_123717) do
   create_table "aggregation_logs", force: :cascade do |t|
     t.string "aggregation_type", null: false
     t.datetime "completed_at"
@@ -95,6 +95,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_095902) do
     t.integer "stats_retention_unit", default: 2, null: false
     t.datetime "updated_at", null: false
     t.index ["property_id"], name: "index_sites_on_property_id", unique: true
+  end
+
+  create_table "system_settings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "name", null: false
+    t.datetime "updated_at", null: false
+    t.string "value", null: false
+    t.index ["name", "value"], name: "index_system_settings_on_name_and_value", unique: true
   end
 
   create_table "users", force: :cascade do |t|
