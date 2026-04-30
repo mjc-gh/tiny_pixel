@@ -85,6 +85,14 @@ class StatsRetentionJobTest < ActiveJob::TestCase
     create_hourly_stat(site, time_bucket: cutoff_time - 1.day)
 
     # Just verify job runs without raising
-    StatsRetentionJob.new.perform
+    logger_mock = Minitest::Mock.new
+    logger_mock.expect :info, nil, [String]
+    logger_mock.expect :info, nil, [String]
+
+    Rails.stub :logger, logger_mock do
+      StatsRetentionJob.new.perform
+    end
+
+    assert_mock logger_mock
   end
 end

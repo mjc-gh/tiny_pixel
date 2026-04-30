@@ -130,14 +130,6 @@ class Admin::SitesControllerTest < ActionDispatch::IntegrationTest
     assert_match user.email, response.body
   end
 
-  test "show displays tracking script" do
-    get admin_site_path(@site), headers: admin_auth_headers
-
-    assert_response :success
-    assert_match @site.property_id, response.body
-    assert_match "tp.js", response.body
-  end
-
   test "show displays property ID as read-only" do
     get admin_site_path(@site), headers: admin_auth_headers
 

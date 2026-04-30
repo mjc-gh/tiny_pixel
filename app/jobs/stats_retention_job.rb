@@ -12,6 +12,7 @@ class StatsRetentionJob < ApplicationJob
       weekly_deleted = WeeklyPageStat.for_site(site.id).older_than(cutoff).delete_all
 
       total_deleted = hourly_deleted + daily_deleted + weekly_deleted
+
       Rails.logger.info("StatsRetentionJob: Deleted #{total_deleted} stat records for site #{site.id}")
     end
   end
