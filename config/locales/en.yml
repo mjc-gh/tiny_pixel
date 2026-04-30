@@ -23,6 +23,7 @@ en:
     new:
       title: "Create New Site"
     create:
+      foo: "bar"
       success: "Site created successfully"
     edit:
       title: "Site Settings"
@@ -119,18 +120,17 @@ en:
         creation_method_label: Create via
         creation_method_password: Temporary password
         creation_method_invite: Email invite
-        email_help: Enter the new users email address
       show:
-        title: "User Created"
-        password_label: "Temporary Password"
         copy: "Copy"
         copy_success: "Copied!"
-        instructions: "Share this password with the new user. They will be required to change their password upon their first login."
-        user_email: "User Email"
-        edit: "Edit User"
         delete: "Delete User"
+        edit: "Edit User"
+        instructions: "Share this password with the new user. They will be required to change their password upon their first login."
         memberships_title: "Site Memberships"
         no_memberships: "This user is not a member of any sites yet."
+        password_label: "Temporary Password"
+        title: "User Created"
+        user_email: "User Email"
       edit:
         title: "Edit User"
         regenerate_password: "Regenerate Password"
@@ -157,13 +157,6 @@ en:
           success: "User removed from site successfully"
           remove_confirm: "Are you sure you want to remove this user from this site?"
         remove_confirm: "Are you sure you want to remove this user from this site?"
-      show:
-        title: "User Created"
-        password_label: "Temporary Password"
-        copy: "Copy"
-        copy_success: "Copied!"
-        instructions: "Share this password with the new user. They will be required to change their password upon their first login."
-        user_email: "User Email"
   users:
     registrations:
       not_allowed: Registration is not allowed
