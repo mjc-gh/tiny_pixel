@@ -31,6 +31,8 @@ class User < ApplicationRecord
   has_many :memberships, dependent: :destroy
   has_many :sites, through: :memberships
 
+  validate :email_domain_allowed, on: :create
+
   def self.invite(email)
     raise EmailDeliveryNotSupportedError unless TinyPixel.email_delivery_supported?
 
@@ -62,5 +64,17 @@ class User < ApplicationRecord
 
   def complete_invitation!
     update!(invitation_completed_at: Time.current) if invitation_completed_at.nil?
+  end
+
+  private
+
+  def email_domain_allowed
+    allowed_domains = SystemSetting.allowed_registration_domain.pluck(:value)
+    return if allowed_domains.empty?
+
+    email_domain = Mail::Address.new(email).domain&.downcase
+    return if email_domain.in?(allowed_domains.map(&:downcase))
+
+    errors.add(:email, :domain_not_allowed)
   end
 end

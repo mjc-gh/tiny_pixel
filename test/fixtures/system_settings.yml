@@ -16,3 +16,7 @@
 allowed_domain:
   name: allowed_registration_domain
   value: example.com
+
+another_allowed_domain:
+  name: allowed_registration_domain
+  value: otherdomain.com

@@ -210,3 +210,10 @@ en:
   user_mailer:
     invitation:
       subject: "You're invited to join tiny_pixel"
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              domain_not_allowed: "is not from an allowed domain"

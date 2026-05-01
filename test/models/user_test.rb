@@ -126,4 +126,43 @@ class UserTest < ActiveSupport::TestCase
 
     assert_not user.pending_invitation?
   end
+
+  test "registration is blocked when domain restrictions exist and email domain is not allowed" do
+    # Ensure allowed_domain fixture exists
+    assert SystemSetting.allowed_registration_domain.where(value: "example.com").exists?
+
+    user = User.new(
+      email: "user@notallowed.com",
+      password: "password123456"
+    )
+
+    assert_not user.valid?
+    assert_includes user.errors[:email], "is not from an allowed domain"
+  end
+
+  test "registration succeeds when domain restrictions exist and email domain matches" do
+    # Ensure allowed_domain fixture exists
+    assert SystemSetting.allowed_registration_domain.where(value: "example.com").exists?
+
+    user = User.create!(
+      email: "user@example.com",
+      password: "password123456"
+    )
+
+    assert user.persisted?
+    assert_empty user.errors[:email]
+  end
+
+  test "registration succeeds when no domain restrictions are configured" do
+    # Clear all allowed_registration_domain settings
+    SystemSetting.allowed_registration_domain.delete_all
+
+    user = User.create!(
+      email: "user@anydomain.com",
+      password: "password123456"
+    )
+
+    assert user.persisted?
+    assert_empty user.errors[:email]
+  end
 end
