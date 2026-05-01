@@ -164,7 +164,7 @@ en:
         user_email: "User Email"
       edit:
         title: "Edit User"
-        regenerate_password: "Regenerate Password"
+        actions: "Actions"
         regenerate_confirm: "Are you sure you want to regenerate the password? A new temporary password will be generated."
       create:
         success_invited: "User invited. An invitation email has been sent."

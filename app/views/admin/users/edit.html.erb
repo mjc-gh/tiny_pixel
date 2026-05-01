@@ -36,19 +36,18 @@
       <%= link_to t("admin.users.memberships.add"), new_admin_user_membership_path(@user), class: "px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" %>
     </div>
 
-    <div class="border-t border-border pt-6">
-      <h2 class="text-lg font-semibold text-content-primary mb-4"><%= t("admin.users.edit.regenerate_password") %></h2>
+    <div class="border-t border-border pt-6 space-y-6">
+      <h2 class="text-lg font-semibold text-content-primary mb-4"><%= t("admin.users.edit.actions") %></h2>
+
       <%= form_with model: @user, url: admin_user_path(@user), method: :patch, local: true do |form| %>
         <div class="flex gap-2">
           <%= form.hidden_field :regenerate_password, value: "true" %>
-          <%= form.button t("admin.users.edit.regenerate_password"), data: { turbo_confirm: t("admin.users.edit.regenerate_confirm") }, class: "px-4 py-2 bg-warning text-white rounded-lg hover:bg-warning/90 transition-colors text-sm font-medium" %>
+           <%= form.button t("admin.users.edit.regenerate_password"), data: { turbo_confirm: t("admin.users.edit.regenerate_confirm") }, class: "bg-secondary text-secondary-foreground py-2 px-4 rounded-md hover:bg-secondary-hover focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 font-medium" %>
         </div>
       <% end %>
-    </div>
 
-     <div class="border-t border-border pt-6">
        <%= form_with url: admin_user_path(@user), method: :delete, local: true do |form| %>
-         <%= form.button t("admin.users.show.delete"), data: { turbo_confirm: t("admin.users.destroy.confirm") }, class: "px-4 py-2 bg-destructive text-white rounded-lg hover:bg-destructive/90 transition-colors text-sm font-medium" %>
+          <%= form.button t("admin.users.show.delete"), data: { turbo_confirm: t("admin.users.destroy.confirm") }, class: "bg-danger text-white py-2 px-4 rounded-md hover:bg-danger-hover focus:outline-none focus:ring-2 focus:ring-danger focus:ring-offset-2 font-medium" %>
        <% end %>
      </div>
   </div>

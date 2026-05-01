@@ -18,13 +18,18 @@
    --color-content-muted: #6b7280;
    --color-content-label: #374151;
 
-  /* Primary action colors */
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
+   /* Primary action colors */
+   --color-primary: #2563eb;
+   --color-primary-hover: #1d4ed8;
 
-  /* Danger/destructive colors */
-  --color-danger: #dc2626;
-  --color-danger-hover: #b91c1c;
+   /* Secondary action colors */
+   --color-secondary: #6b7280;
+   --color-secondary-hover: #4b5563;
+   --color-secondary-foreground: #ffffff;
+
+   /* Danger/destructive colors */
+   --color-danger: #dc2626;
+   --color-danger-hover: #b91c1c;
   --color-danger-bg: #fef2f2;
   --color-danger-border: #fecaca;
   --color-danger-text: #dc2626;
@@ -61,13 +66,18 @@
    --color-content-muted: #6b7280;
    --color-content-label: #d1d5db;
 
-  /* Primary action colors */
-  --color-primary: #3b82f6;
-  --color-primary-hover: #2563eb;
+   /* Primary action colors */
+   --color-primary: #3b82f6;
+   --color-primary-hover: #2563eb;
 
-  /* Danger/destructive colors */
-  --color-danger: #ef4444;
-  --color-danger-hover: #dc2626;
+   /* Secondary action colors */
+   --color-secondary: #9ca3af;
+   --color-secondary-hover: #d1d5db;
+   --color-secondary-foreground: #111827;
+
+   /* Danger/destructive colors */
+   --color-danger: #ef4444;
+   --color-danger-hover: #dc2626;
   --color-danger-bg: #450a0a;
   --color-danger-border: #7f1d1d;
   --color-danger-text: #fca5a5;
@@ -92,7 +102,7 @@ dialog.slideover[open] {
   animation: slide-in-from-right 250ms forwards ease;
 }
 
-button[type="button"] {
+button[type="button"], button[type="submit"] {
   cursor: pointer;
 }
 
