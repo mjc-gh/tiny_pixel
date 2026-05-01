@@ -57,13 +57,6 @@ class Site < ApplicationRecord
   }
 
   class << self
-    def perform_periodic_operations
-      # Update site salt
-      cycle_stale_salts!
-
-      # TODO: remove visitors with older salt_version
-    end
-
     def cycle_stale_salts!
       need_to_cycle_salt.find_each do |site|
         site.cycle_salt

@@ -52,17 +52,6 @@ class SiteTest < ActiveSupport::TestCase
     assert_equal new_salt, new_site.salt
   end
 
-  test "::perform_periodic_operations calls cycle_stale_salts!" do
-    old_site = sites(:my_blog)
-    old_site.update(salt_last_cycled_at: 2.days.ago)
-    old_salt = old_site.salt
-
-    Site.perform_periodic_operations
-
-    old_site.reload
-    assert_not_equal old_salt, old_site.salt
-  end
-
   test "need_to_cycle_salt scope returns only stale sites" do
     # Create a site with recent salt cycle (within last day)
     recent_site = Site.create!(
