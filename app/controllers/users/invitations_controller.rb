@@ -5,6 +5,7 @@ class Users::InvitationsController < ApplicationController
     user = User.find_by_token_for(:invitation_code, params[:token])
 
     if user
+      user.complete_invitation!
       login(user)
       redirect_to edit_users_password_reset_path
     else

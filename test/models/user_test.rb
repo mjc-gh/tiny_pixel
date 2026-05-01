@@ -59,6 +59,7 @@ class UserTest < ActiveSupport::TestCase
 
       assert_equal email, user.email
       assert user.password_reset_required?
+      assert_not_nil user.invited_at
     end
   end
 
@@ -94,5 +95,35 @@ class UserTest < ActiveSupport::TestCase
       found_user = User.find_by_token_for(:invitation_code, token)
       assert_nil found_user
     end
+  end
+
+  test "pending_invitation? returns true when invited_at is set and invitation_completed_at is nil" do
+    user = User.create!(
+      email: "pending@example.com",
+      password: "password123456",
+      invited_at: Time.current
+    )
+
+    assert user.pending_invitation?
+  end
+
+  test "pending_invitation? returns false when invitation_completed_at is set" do
+    user = User.create!(
+      email: "completed@example.com",
+      password: "password123456",
+      invited_at: Time.current,
+      invitation_completed_at: Time.current
+    )
+
+    assert_not user.pending_invitation?
+  end
+
+  test "pending_invitation? returns false when invited_at is nil" do
+    user = User.create!(
+      email: "not_invited@example.com",
+      password: "password123456"
+    )
+
+    assert_not user.pending_invitation?
   end
 end

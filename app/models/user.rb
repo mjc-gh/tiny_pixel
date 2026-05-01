@@ -8,6 +8,8 @@
 #  id                      :integer          not null, primary key
 #  confirmed_at            :datetime
 #  email                   :string           not null
+#  invitation_completed_at :datetime
+#  invited_at              :datetime
 #  password_digest         :string           not null
 #  password_reset_required :boolean          default(FALSE), not null
 #  unconfirmed_email       :string
@@ -37,7 +39,8 @@ class User < ApplicationRecord
       email: email,
       password: temp_password,
       password_confirmation: temp_password,
-      password_reset_required: true
+      password_reset_required: true,
+      invited_at: Time.current
     )
 
     UserMailer.invitation(user).deliver_later
@@ -51,5 +54,13 @@ class User < ApplicationRecord
 
   def member_of?(site)
     memberships.exists?(site: site)
+  end
+
+  def pending_invitation?
+    invited_at.present? && invitation_completed_at.nil?
+  end
+
+  def complete_invitation!
+    update!(invitation_completed_at: Time.current) if invitation_completed_at.nil?
   end
 end

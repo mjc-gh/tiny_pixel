@@ -144,6 +144,8 @@ en:
         title: "Users"
         create_new: "Create New User"
         no_users: "No users created yet."
+        resend_invitation: "Resend invitation"
+        resend_confirm: "Are you sure you want to resend the invitation email?"
       new:
         title: "Create New User"
         email_label: "Email"
@@ -165,7 +167,7 @@ en:
       edit:
         title: "Edit User"
         actions: "Actions"
-        regenerate_confirm: "Are you sure you want to regenerate the password? A new temporary password will be generated."
+        regenerate_confirm: "Are you sure you want to regenerate the password? A new temporary password will be generated?"
       create:
         success_invited: "User invited. An invitation email has been sent."
       update:
@@ -174,6 +176,10 @@ en:
       destroy:
         success: "User deleted successfully"
         confirm: "Are you sure you want to delete this user? This action cannot be undone."
+      resend_invitations:
+        create:
+          success: "Invitation email has been resent"
+          not_pending: "This user does not have a pending invitation"
       memberships:
         title: "Site Memberships"
         empty: "This user is not a member of any sites yet."

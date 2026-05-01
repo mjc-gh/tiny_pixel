@@ -19,6 +19,15 @@
             <td class="px-6 py-4 text-sm text-content-primary"><%= link_to user.email, admin_user_path(user), class: "text-primary hover:underline" %></td>
             <td class="px-6 py-4 text-sm text-content-secondary"><%= user.created_at.strftime("%b %d, %Y") %></td>
             <td class="px-6 py-4 text-sm space-x-2 flex items-center gap-2">
+              <% if TinyPixel.email_delivery_supported? && user.pending_invitation? %>
+                <%= button_to admin_user_resend_invitation_path(user),
+                    method: :post,
+                    form: { data: { turbo_confirm: t("admin.users.index.resend_confirm") } },
+                    title: t("admin.users.index.resend_invitation"),
+                    class: "text-primary hover:text-primary/80 transition-colors" do %>
+                  <%= heroicon "envelope", type: :outline, class: "h-4 w-4" %>
+                <% end %>
+              <% end %>
               <%= link_to edit_admin_user_path(user), title: "Edit", class: "text-primary hover:text-primary/80 transition-colors" do %>
                 <%= heroicon "pencil", type: :outline, class: "h-4 w-4" %>
               <% end %>

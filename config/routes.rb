@@ -40,6 +40,7 @@ Rails.application.routes.draw do
     resources :sites
     resources :users, only: [:index, :new, :create, :show, :edit, :update, :destroy] do
       resources :memberships, only: [:new, :create, :destroy], module: :users
+      resource :resend_invitation, only: [:create], module: :users
     end
   end
 
