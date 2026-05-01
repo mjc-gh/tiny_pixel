@@ -117,7 +117,7 @@ class PixelRequest
   end
 
   def property
-    @property ||= SiteCache[property_id]
+    @property ||= Site.find_by(property_id:)
   end
 
   def visitor_browser

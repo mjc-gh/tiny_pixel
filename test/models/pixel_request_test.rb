@@ -289,7 +289,6 @@ class PixelRequestTest < ActiveSupport::TestCase
   test "is_unique resets at beginning of week for weekly salt cycle" do
     site = Site.create!(name: "Weekly Site", salt: "placeholder_weekly", salt_duration: :weekly)
     property_id = site.property_id
-    SiteCache.clear
 
     # Create first pageview on a Monday
     monday = Time.current.beginning_of_week
@@ -325,7 +324,6 @@ class PixelRequestTest < ActiveSupport::TestCase
   test "is_unique resets at beginning of month for monthly salt cycle" do
     site = Site.create!(name: "Monthly Site", salt: "placeholder_monthly", salt_duration: :monthly)
     property_id = site.property_id
-    SiteCache.clear
 
     # Create first pageview on the 5th of the month
     month_start = Time.current.beginning_of_month
@@ -364,7 +362,6 @@ class PixelRequestTest < ActiveSupport::TestCase
     %i[daily weekly monthly].each do |duration|
       site = Site.create!(name: "Test #{duration}", salt: "test_#{duration}", salt_duration: duration)
       property_id = site.property_id
-      SiteCache.clear
 
       req = FakeRequest.new("30.31.32.33", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
       pr = PixelRequest.from_incoming(req, { pid: property_id, p: "/test", h: "test.net" })
@@ -374,7 +371,6 @@ class PixelRequestTest < ActiveSupport::TestCase
 
       # Clean up
       site.destroy
-      SiteCache.clear
     end
   end
 
@@ -382,7 +378,6 @@ class PixelRequestTest < ActiveSupport::TestCase
     %i[daily weekly monthly].each do |duration|
       site = Site.create!(name: "Path Test #{duration}", salt: "path_test_#{duration}", salt_duration: duration)
       property_id = site.property_id
-      SiteCache.clear
 
       first_req = FakeRequest.new("31.32.33.34", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
       first_pr = PixelRequest.from_incoming(first_req, { pid: property_id, p: "/path1", h: "path-test.net" })
@@ -398,7 +393,6 @@ class PixelRequestTest < ActiveSupport::TestCase
 
       # Clean up
       site.destroy
-      SiteCache.clear
     end
   end
 
@@ -424,7 +418,6 @@ class PixelRequestTest < ActiveSupport::TestCase
   test "session timeout uses site configuration instead of hardcoded value" do
     site = Site.create!(name: "Short Timeout Site", salt: "placeholder", session_timeout_minutes: 10)
     property_id = site.property_id
-    SiteCache.clear
 
     req_1 = FakeRequest.new("111.112.113.114", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
     pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "short-timeout.net" })
@@ -444,7 +437,6 @@ class PixelRequestTest < ActiveSupport::TestCase
   test "pageview within custom session timeout is same session" do
     site = Site.create!(name: "Long Timeout Site", salt: "placeholder", session_timeout_minutes: 60)
     property_id = site.property_id
-    SiteCache.clear
 
     req_1 = FakeRequest.new("112.113.114.115", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
     pr_1 = PixelRequest.from_incoming(req_1, { pid: property_id, p: "/", h: "long-timeout.net" })
@@ -713,7 +705,6 @@ class PixelRequestTest < ActiveSupport::TestCase
   test "different sites with different timeouts work independently" do
     site_1 = Site.create!(name: "Site One Short", salt: "placeholder1", session_timeout_minutes: 10)
     site_2 = Site.create!(name: "Site Two Long", salt: "placeholder2", session_timeout_minutes: 60)
-    SiteCache.clear
 
     req_1 = FakeRequest.new("123.124.125.126", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
     pr_1 = PixelRequest.from_incoming(req_1, { pid: site_1.property_id, p: "/", h: "short.net" })

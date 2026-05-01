@@ -191,17 +191,6 @@ class SiteTest < ActiveSupport::TestCase
     assert_not_includes Site.need_to_cycle_salt, site
   end
 
-  test "::cycle_stale_salts! invalidates SiteCache for cycled sites" do
-    site = sites(:my_blog)
-    site.update(salt_last_cycled_at: 2.days.ago)
-
-    SiteCache[site.property_id]
-    assert_not_nil SiteCache::STORE.read("site:#{site.property_id}")
-
-    Site.cycle_stale_salts!
-
-    assert_nil SiteCache::STORE.read("site:#{site.property_id}")
-  end
 
   test "session_timeout_minutes defaults to 30" do
     site = Site.create!(name: "Timeout Test", salt: "placeholder")

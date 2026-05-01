@@ -61,7 +61,6 @@ class Site < ApplicationRecord
       need_to_cycle_salt.find_each do |site|
         site.cycle_salt
         site.save!
-        SiteCache.invalidate(site.property_id)
       end
     end
   end
