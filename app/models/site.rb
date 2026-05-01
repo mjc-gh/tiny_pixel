@@ -59,8 +59,14 @@ class Site < ApplicationRecord
   class << self
     def cycle_stale_salts!
       need_to_cycle_salt.find_each do |site|
+        stale_salt_version = site.salt_version
         site.cycle_salt
         site.save!
+
+        # Destroy stale visitors and their page views
+        Visitor.where(property_id: site.id)
+               .where(salt_version: ...stale_salt_version)
+               .destroy_all
       end
     end
   end

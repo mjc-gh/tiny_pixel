@@ -277,4 +277,67 @@ class SiteTest < ActiveSupport::TestCase
 
     assert_equal 12, site.stats_retention_duration
   end
+
+  test "cycle_stale_salts! destroys stale visitors and their page views" do
+    site = sites(:my_blog)
+    site.update(salt_last_cycled_at: 2.days.ago)
+
+    current_salt_version = site.salt_version
+
+    # Create a stale visitor (from an older salt version)
+    stale_visitor = Visitor.create!(
+      property_id: site.id,
+      digest: "stale_visitor_digest",
+      salt_version: current_salt_version - 1,
+      browser: :chrome,
+      device_type: :desktop,
+      country: "US"
+    )
+
+    # Create a current visitor (from the current salt version)
+    current_visitor = Visitor.create!(
+      property_id: site.id,
+      digest: "current_visitor_digest",
+      salt_version: current_salt_version,
+      browser: :chrome,
+      device_type: :desktop,
+      country: "US"
+    )
+
+    # Create page views for both visitors
+    PageView.create!(
+      visitor_digest: stale_visitor.digest,
+      digest: "stale_page_view_1",
+      hostname: "example.com",
+      pathname: "/page1"
+    )
+
+    PageView.create!(
+      visitor_digest: stale_visitor.digest,
+      digest: "stale_page_view_2",
+      hostname: "example.com",
+      pathname: "/page2"
+    )
+
+    PageView.create!(
+      visitor_digest: current_visitor.digest,
+      digest: "current_page_view",
+      hostname: "example.com",
+      pathname: "/page1"
+    )
+
+    # Verify records exist before cycling
+    assert_equal 2, Visitor.where(property_id: site.id).count
+    assert_equal 3, PageView.count
+
+    Site.cycle_stale_salts!
+
+    site.reload
+
+    # After cycling, stale visitors should be destroyed along with their page views
+    assert_equal 1, Visitor.where(property_id: site.id).count
+    assert_equal current_visitor.digest, Visitor.where(property_id: site.id).pluck(:digest).first
+    assert_equal 1, PageView.count
+    assert_not_nil PageView.find_by(digest: "current_page_view")
+  end
 end

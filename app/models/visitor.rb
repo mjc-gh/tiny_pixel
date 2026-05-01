@@ -17,7 +17,9 @@
 #  index_visitors_on_digest  (digest) UNIQUE
 #
 class Visitor < AnalyticsRecord
-  has_many :page_views, foreign_key: :visitor_digest, primary_key: :digest
+  self.primary_key = :digest
+
+  has_many :page_views, foreign_key: :visitor_digest, primary_key: :digest, dependent: :delete_all
 
   enum :device_type, {
     desktop: 1,
