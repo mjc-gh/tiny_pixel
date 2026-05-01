@@ -42,6 +42,9 @@ Rails.application.routes.draw do
       resources :memberships, only: [:new, :create, :destroy], module: :users
       resource :resend_invitation, only: [:create], module: :users
     end
+    resource :system_settings, only: [:show] do
+      resource :allowed_registration_domains, only: [:update], module: :system_settings
+    end
   end
 
   # PWA routes

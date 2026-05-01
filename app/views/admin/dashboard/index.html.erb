@@ -14,5 +14,12 @@
     icon: "users",
     href: admin_users_path
   )) %>
+
+  <%= render(AdminStatCardComponent.new(
+    title: "System Settings",
+    value: @total_system_settings,
+    icon: "cog-6-tooth",
+    href: admin_system_settings_path
+  )) %>
 </div>
 
