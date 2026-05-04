@@ -59,12 +59,10 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
-
   # Configure email delivery, if one is configured
   case config.runtime_settings.action_mailer_delivery
   when "smtp"
+    config.action_mailer.default_url_options = { host: Environ["TP_DOMAIN_NAME"] }
     config.action_mailer.smtp_settings = {
       user_name: Environ["TP_SMTP_USER_NAME"],
       password: Environ["TP_SMTP_PASSWORD"],
@@ -73,11 +71,18 @@ Rails.application.configure do
       authentication: :plain
     }
   when "postmark"
+    config.action_mailer.default_url_options = { host: Environ["TP_DOMAIN_NAME"] }
     config.action_mailer.delivery_method = :postmark
     config.action_mailer.postmark_settings = {
       api_token: Environ["TP_POSTMARK_API_TOKEN"]
     }
   else
+    # Try set default_url_options if TP_DOMAIN_NAME is set. This will get used
+    # in the system admin password rake task.
+    if ENV["TP_DOMAIN_NAME"].present?
+      config.action_mailer.default_url_options = { host: ENV["TP_DOMAIN_NAME"] }
+    end
+
     # Disable email deliveries
     config.action_mailer.perform_deliveries = false
   end
