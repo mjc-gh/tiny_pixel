@@ -18,6 +18,8 @@ volumes:
 builder:
   arch: amd64
 env:
+  clear:
+    TP_DOMAIN_NAME: "<%= ENV["TP_DOMAIN_NAME"] %>"
   secret:
     - RAILS_SECRET_KEY_BASE
 proxy:

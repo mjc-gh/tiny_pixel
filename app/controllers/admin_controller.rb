@@ -3,11 +3,18 @@
 class AdminController < ApplicationController
   layout "admin"
 
+  before_action :authenticate_admin
+
   def self.secret_password
     key = Rails.application.key_generator.generate_key("tiny_pixel_admin")
 
     [key].pack("m0")[0..31]
   end
 
-  http_basic_authenticate_with name: "tiny_pixel", password: secret_password
+  private
+
+  def authenticate_admin
+    authenticate_with_http_basic { |u, p| u == "tiny_pixel" && p == self.class.secret_password } ||
+      request_http_basic_authentication
+  end
 end
