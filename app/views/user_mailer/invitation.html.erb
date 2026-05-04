@@ -1,7 +1,11 @@
 <h1>Welcome to tiny_pixel!</h1>
 
-<p>You've been invited to join tiny_pixel. Click the link below to set up your account:</p>
+<p>You've been invited to join tiny_pixel. Click the button below to set up your account:</p>
 
-<p><%= link_to "Accept Invitation", @invitation_url %></p>
+<p style="text-align: center; margin: 24px 0;">
+  <a href="<%= @invitation_url %>" class="button" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
+    Accept Invitation
+  </a>
+</p>
 
-<p>This invitation link will expire in 7 days.</p>
+<p class="secondary-text" style="color: #4b5563; font-size: 13px;">This invitation link will expire in 7 days.</p>

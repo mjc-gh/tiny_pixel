@@ -47,4 +47,48 @@ class UserMailerTest < ActionMailer::TestCase
 
     assert_equal "You're invited to join tiny_pixel", email.subject
   end
+
+  test "invitation email includes logo SVG" do
+    user = User.create!(
+      email: "test@example.com",
+      password: "password123456",
+    )
+
+    email = UserMailer.invitation(user)
+
+    assert_includes email.body.encoded, "<svg"
+  end
+
+  test "invitation email includes styled button" do
+    user = User.create!(
+      email: "test@example.com",
+      password: "password123456",
+    )
+
+    email = UserMailer.invitation(user)
+
+    assert_includes email.body.encoded, 'class="button"'
+  end
+
+  test "invitation email includes welcome heading" do
+    user = User.create!(
+      email: "test@example.com",
+      password: "password123456",
+    )
+
+    email = UserMailer.invitation(user)
+
+    assert_includes email.body.encoded, "Welcome to tiny_pixel!"
+  end
+
+  test "invitation email includes dark mode styles" do
+    user = User.create!(
+      email: "test@example.com",
+      password: "password123456",
+    )
+
+    email = UserMailer.invitation(user)
+
+    assert_includes email.body.encoded, "@media (prefers-color-scheme: dark)"
+  end
 end
