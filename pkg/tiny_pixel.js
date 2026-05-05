@@ -1,7 +1,6 @@
 const TinyPixel = (function() {
-  // TODO: Add "ref" parameter for additional attribution
   const QS_KEY_NAMES = [
-    "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"
+    "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "ref"
   ];
 
   let propertyId, server;
@@ -33,8 +32,7 @@ const TinyPixel = (function() {
 
     cryptoObj.getRandomValues(arr);
 
-    // TODO: don't allow / or - chars?
-    return btoa(String.fromCharCode.apply(null, arr)).replace(/=/g, "");
+    return btoa(String.fromCharCode.apply(null, arr)).replace(/[=/\-]/g, "");
   }
 
   const send = (eventType) => {
@@ -63,13 +61,6 @@ const TinyPixel = (function() {
     img.addEventListener("error", cleanup);
 
     document.body.appendChild(img);
-
-    // TODO: can we use sendBeacon reliably with dealing with CORS?
-    // if (navigator.sendBeacon) w{
-    //   navigator.sendBeacon(`${server}/v1/beacons`);
-    // } else {
-    //   // fallback to load an <img> element?
-    // }
   }
 
   return {

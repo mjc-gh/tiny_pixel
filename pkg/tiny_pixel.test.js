@@ -215,6 +215,41 @@ describe('TinyPixel', () => {
       expect(imgElement.src).not.toContain('sort=name');
       expect(imgElement.src).toContain('qs=');
     });
+
+    it('extracts ref parameter for additional attribution', () => {
+      global.location.search = '?utm_source=google&ref=campaign123&utm_medium=cpc';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView();
+
+      const calls = global.document.body.appendChild.mock.calls;
+      const imgElement = calls[0][0];
+
+      const url = new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+      const qs = url.searchParams.get('qs');
+
+      expect(qs).toContain('utm_source=google');
+      expect(qs).toContain('ref=campaign123');
+      expect(qs).toContain('utm_medium=cpc');
+    });
+
+    it('filters out non-tracked parameters when ref is present', () => {
+      global.location.search = '?utm_source=google&ref=campaign123&page=1&other=value';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView();
+
+      const calls = global.document.body.appendChild.mock.calls;
+      const imgElement = calls[0][0];
+
+      const url = new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+      const qs = url.searchParams.get('qs');
+
+      expect(qs).toContain('utm_source=google');
+      expect(qs).toContain('ref=campaign123');
+      expect(qs).not.toContain('page=1');
+      expect(qs).not.toContain('other=value');
+    });
   });
 
   describe('getRandom()', () => {
@@ -232,8 +267,32 @@ describe('TinyPixel', () => {
       expect(nParam).not.toBeNull();
       expect(typeof nParam).toBe('string');
       expect(nParam.length).toBeGreaterThan(0);
-      // Should be base64-encoded (alphanumeric, +, /, -, _)
-      expect(/^[A-Za-z0-9+/_-]+$/.test(nParam)).toBe(true);
+      // Should be base64-encoded (alphanumeric, +, /, -, _) but without / and -
+      expect(/^[A-Za-z0-9+_]+$/.test(nParam)).toBe(true);
+    });
+
+    it('excludes forward slashes and hyphens from random values', () => {
+      // Generate multiple random values to verify consistency
+      TinyPixel.setup(mockScript);
+      
+      for (let i = 0; i < 10; i++) {
+        // Reset document calls
+        global.document.body.appendChild.mock.calls.length = 0;
+        
+        TinyPixel.emitPageView();
+
+        const calls = global.document.body.appendChild.mock.calls;
+        const imgElement = calls[0][0];
+
+        const url = new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+        const nParam = url.searchParams.get('n');
+
+        // Should NOT contain / or -
+        expect(nParam).not.toContain('/');
+        expect(nParam).not.toContain('-');
+        // Should only contain alphanumeric, +, and _
+        expect(/^[A-Za-z0-9+_]+$/.test(nParam)).toBe(true);
+      }
     });
 
     it('falls back to Math.random when crypto is unavailable', () => {
@@ -253,7 +312,7 @@ describe('TinyPixel', () => {
 
       expect(nParam).not.toBeNull();
       // Math.random fallback returns a number as string
-      expect(/^\d+$/.test(nParam) || /^[A-Za-z0-9_+-]+$/.test(nParam)).toBe(true);
+      expect(/^\d+$/.test(nParam) || /^[A-Za-z0-9_+]+$/.test(nParam)).toBe(true);
 
       global.crypto = originalCrypto;
     });
