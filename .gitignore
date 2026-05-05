@@ -1,8 +1,9 @@
 # Ignore agent plans
 /.plans/*
 
-# Ignore kamal secrets
+# Ignore kamal deploy files and secrets
 /.kamal/secrets
+/config/deploy.yml
 
 # Ignore bundler config.
 /.bundle
