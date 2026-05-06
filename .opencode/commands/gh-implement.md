@@ -3,7 +3,7 @@ description: Fetch a GitHub issue and implement it
 model: openrouter/anthropic/claude-haiku-4.5
 ---
 
-Here is the GitHub issue to implement:
+Fetch the issue to content using:
 
 `gh api repos/mjc-gh/tiny_pixel/issues/$1 | jq -r '"### \(.title)\n\(.body)"'`
 
