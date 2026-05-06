@@ -7,7 +7,7 @@ en:
     copied: "Copied!"
   home:
     setup:
-      title: "Welcome to tiny_pixel"
+      title: "Welcome to TinyPixel"
       subtitle: "Let's get your analytics platform set up"
       step_1_title: "Get the admin password"
       step_1_description: "Run this command on your server to retrieve the auto-generated system admin password:"
@@ -116,7 +116,7 @@ en:
   onboarding:
     sites:
       new:
-        title: "Welcome to tiny_pixel"
+        title: "Welcome to TinyPixel"
         description: "Create your first site to start tracking visitors."
         name_label: "Site Name"
         name_help: "Enter a name for your website (e.g., 'My Blog')"
@@ -238,7 +238,7 @@ en:
         success: "Password updated successfully"
   user_mailer:
     invitation:
-      subject: "You're invited to join tiny_pixel"
+      subject: "You're invited to join TinyPixel"
   activerecord:
     errors:
       models:
