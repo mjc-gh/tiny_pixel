@@ -1,4 +1,4 @@
-# TinyPixel [![CI](https://github.com/mjc-gh/tiny_pixel/actions/workflows/ci.yml/badge.svg)](https://github.com/mjc-gh/tiny_pixel/actions/workflows/ci.yml)
+# TinyPixel [![CI](https://github.com/mjc-gh/tiny_pixel/actions/workflows/ci.yml/badge.svg)](https://github.com/mjc-gh/tiny_pixel/actions/workflows/ci.yml) ![GitHub Tag](https://img.shields.io/github/v/tag/mjc-gh/tiny_pixel?label=latest)
 
 **Privacy-First Web Analytics** — Self-hosted analytics that respects
 user privacy. Built with Rails and SQLite.
