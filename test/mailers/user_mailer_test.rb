@@ -45,7 +45,7 @@ class UserMailerTest < ActionMailer::TestCase
 
     email = UserMailer.invitation(user)
 
-    assert_equal "You're invited to join tiny_pixel", email.subject
+    assert_equal "You're invited to join TinyPixel", email.subject
   end
 
   test "invitation email includes logo SVG" do
@@ -78,7 +78,7 @@ class UserMailerTest < ActionMailer::TestCase
 
     email = UserMailer.invitation(user)
 
-    assert_includes email.body.encoded, "Welcome to tiny_pixel!"
+    assert_includes email.body.encoded, "Welcome to TinyPixel!"
   end
 
   test "invitation email includes dark mode styles" do
