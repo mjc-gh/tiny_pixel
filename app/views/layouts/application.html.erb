@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="scroll-pt-16">
   <head>
     <title><%= content_for(:title) || "TinyPixel" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -35,10 +35,10 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-background text-content-primary min-h-screen pb-8">
+  <body class="bg-background text-content-primary pb-8">
     <%= render "layouts/navigation", user: current_user %>
 
-    <main class="container mx-auto mt-20 sm:mt-28 px-4 sm:px-5 w-full">
+    <main class="container mx-auto mt-16 sm:mt-24 px-4 sm:px-5 w-full">
       <%= render "layouts/flash" %>
       <%= yield %>
     </main>

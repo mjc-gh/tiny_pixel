@@ -5,6 +5,26 @@ en:
     settings: "Settings"
     copy: "Copy"
     copied: "Copied!"
+  home:
+    setup:
+      title: "Welcome to tiny_pixel"
+      subtitle: "Let's get your analytics platform set up"
+      step_1_title: "Get the admin password"
+      step_1_description: "Run this command on your server to retrieve the auto-generated system admin password:"
+      step_1_help_html:
+        'Refer to the our <a href="https://tinypixel.tech/deploy" class="underline">deploy guides</a> on how to run rails commands for your method of deployment.'
+      step_2_title: "Access System Admin"
+      step_2_description: "Log in to the system admin panel to create your first user account."
+      step_2_link: "Open System Admin"
+      step_3_title: "Create a user"
+      step_3_description: "In the system admin, navigate to Users and create your first user account. You can then log in and start adding sites to track."
+    hot:
+      title: "TinyPixel"
+      description: "This is a self-hosted instance of TinyPixel, a privacy-friendly web analytics platform."
+      learn_more: "Learn more about TinyPixel"
+      learn_more_url: "https://tinypixel.tech/"
+      login: "Log In"
+      sign_up: "Sign Up"
   visitors:
     browsers:
       chrome: "Chrome"

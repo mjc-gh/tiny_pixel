@@ -1,4 +1,52 @@
-<div class="w-full">
-  <h1 class="font-bold text-2xl sm:text-4xl text-content-primary">Home#show</h1>
-  <p class="mt-2 text-content-secondary">Find me in app/views/home/show.html.erb</p>
-</div>
+<% if cold_start? %>
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-2xl px-6">
+      <div class="bg-surface border border-border rounded-lg p-8 md:p-12">
+        <h1 class="font-bold text-2xl md:text-3xl text-content-primary mb-2"><%= t("home.setup.title") %></h1>
+        <p class="text-content-secondary mb-8"><%= t("home.setup.subtitle") %></p>
+
+        <ol class="space-y-8 list-decimal list-outside">
+          <!-- Step 1 -->
+          <li class="ml-6 pl-6">
+            <h2 class="font-semibold text-lg text-content-primary mb-2"><%= t("home.setup.step_1_title") %></h2>
+            <p class="text-content-secondary mb-4"><%= t("home.setup.step_1_description") %></p>
+            <div class="bg-background rounded p-4 border border-border overflow-x-auto">
+              <code class="text-content-primary font-mono text-sm whitespace-nowrap">./bin/rails tiny_pixel:system_admin_password</code>
+            </div>
+            <p class="text-content-secondary mt-4"><%= t("home.setup.step_1_help_html") %></p>
+          </li>
+
+          <!-- Step 2 -->
+          <li class="ml-6 pl-6">
+            <h2 class="font-semibold text-lg text-content-primary mb-2"><%= t("home.setup.step_2_title") %></h2>
+            <p class="text-content-secondary mb-4"><%= t("home.setup.step_2_description") %></p>
+            <%= link_to t("home.setup.step_2_link"), admin_path, class: "inline-block px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" %>
+          </li>
+
+          <!-- Step 3 -->
+          <li class="ml-6 pl-6">
+            <h2 class="font-semibold text-lg text-content-primary mb-2"><%= t("home.setup.step_3_title") %></h2>
+            <p class="text-content-secondary"><%= t("home.setup.step_3_description") %></p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <div class="flex items-center justify-center min-h-[calc(100vh-4em)]">
+    <div class="w-full max-w-2xl px-6">
+      <div class="bg-surface border border-border rounded-lg p-8 md:p-12 text-center">
+        <h1 class="font-bold text-3xl md:text-4xl text-content-primary mb-4"><%= t("home.hot.title") %></h1>
+        <p class="text-lg text-content-secondary mb-8"><%= t("home.hot.description") %></p>
+        <div class="grid gap-4">
+          <%= link_to t("home.hot.learn_more_url"), target: "_blank", rel: "noopener noreferrer", class: "inline-flex justify-center items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium" do %>
+            <%= t("home.hot.learn_more") -%>
+            <%= heroicon "arrow-top-right-on-square", class: "h-4 w-4" -%>
+          <% end -%>
+          <%= link_to t("home.hot.login"), login_path, class: "flex-1 px-4 py-2 border border-primary text-primary rounded-lg transition-colors font-medium" %>
+          <%= link_to t("home.hot.sign_up"), sign_up_path, class: "flex-1 px-4 py-2 border border-secondary text-white rounded-lg transition-colors font-medium" %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
