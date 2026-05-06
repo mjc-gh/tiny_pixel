@@ -21,32 +21,10 @@ module Sites
         .public_send(stats_ordered_scope)
         .paginate(page: params[:page], per_page: PER_PAGE)
 
-      scope = base_scope
-      scope = scope.for_pathname(current_pathname) if current_pathname.present?
-      scope = scope.where(hostname: current_hostname) if current_hostname.present?
-      scope = apply_date_range_filter(scope)
-
-      aggregated = scope
-        .group(stats_time_column)
-        .select(
-          stats_time_column,
-          "SUM(visits) as visits",
-          "SUM(sessions) as sessions"
-        )
-
-      visits_data = {}
-      sessions_data = {}
-
-      aggregated.each do |row|
-        time_key = row.public_send(stats_time_column)
-        visits_data[time_key] = row.visits
-        sessions_data[time_key] = row.sessions
-      end
-
-      @chart_data = {
-        "Visits" => visits_data,
-        "Sessions" => sessions_data
-      }
+      @chart_data = build_time_series_chart(
+        select_columns: [stats_time_column, "SUM(visits) as visits", "SUM(sessions) as sessions"],
+        series: { "Visits" => :visits, "Sessions" => :sessions }
+      )
     end
   end
 end

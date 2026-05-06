@@ -189,5 +189,35 @@ module Sites
 
       assert_response :success
     end
+
+    test "zero-fills missing days in date range with daily interval" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 1),
+        total_duration: 500.0,
+        duration_count: 50
+      )
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 3),
+        total_duration: 300.0,
+        duration_count: 30
+      )
+
+      get site_avg_duration_index_url(
+        sites(:tech_blog),
+        interval: "daily",
+        start_date: "2024-01-01",
+        end_date: "2024-01-05"
+      )
+
+      assert_response :success
+      # Chart data should have 5 days with zeros for missing days
+      assert_equal 5, assigns(:chart_data)["Avg Duration (s)"].size
+      assert_equal 10.0, assigns(:chart_data)["Avg Duration (s)"][Date.new(2024, 1, 1)]
+      assert_equal 0, assigns(:chart_data)["Avg Duration (s)"][Date.new(2024, 1, 2)]
+      assert_equal 10.0, assigns(:chart_data)["Avg Duration (s)"][Date.new(2024, 1, 3)]
+    end
   end
 end

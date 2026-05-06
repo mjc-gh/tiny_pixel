@@ -14,6 +14,44 @@ module FilterStats
                   :current_start_date, :current_end_date, :current_dimension_type, :current_dimension_value
   end
 
+  def build_time_series_chart(select_columns:, series:)
+    scope = filtered_stats_scope
+    aggregated = scope.group(stats_time_column).select(*select_columns)
+
+    # Convert series config to lambdas if needed
+    series_configs = series.transform_values do |column_or_lambda|
+      column_or_lambda.is_a?(Symbol) ? column_or_lambda : column_or_lambda
+    end
+
+    builder = TimeSeriesBuilder.new(
+      interval: current_interval,
+      start_date: current_start_date,
+      end_date: current_end_date
+    )
+
+    builder.build(aggregated, series_configs)
+  end
+
+  def filtered_stats_scope
+    scope = stats_model.for_site(@site.id)
+
+    # Apply dimension filter
+    if current_dimension_type.present? && current_dimension_value.present?
+      scope = scope.for_dimension(current_dimension_type, current_dimension_value)
+    else
+      scope = scope.global
+    end
+
+    # Apply pathname filter
+    scope = scope.for_pathname(current_pathname) if current_pathname.present?
+
+    # Apply hostname filter
+    scope = scope.where(hostname: current_hostname) if current_hostname.present?
+
+    # Apply date range filter
+    apply_date_range_filter(scope)
+  end
+
   def current_interval
     @current_interval ||= begin
       interval = params[:interval]

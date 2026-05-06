@@ -16,6 +16,7 @@ class StatsChartComponent < ViewComponent::Base
   def chart_options
     {
       id: @chart_id,
+      min: 0,
       library: {
         scales: {
           x: {

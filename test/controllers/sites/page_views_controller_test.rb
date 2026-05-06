@@ -228,5 +228,104 @@ module Sites
 
       assert_response :success
     end
+
+    test "zero-fills missing days in date range with daily interval" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 1),
+        pageviews: 100,
+        unique_pageviews: 50
+      )
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 3),
+        pageviews: 200,
+        unique_pageviews: 100
+      )
+
+      get site_page_views_url(
+        sites(:tech_blog),
+        interval: "daily",
+        start_date: "2024-01-01",
+        end_date: "2024-01-05"
+      )
+
+      assert_response :success
+      # Chart data should have 5 days with zeros for missing days
+      assert_equal 5, assigns(:chart_data)["Page Views"].size
+      assert_equal 100, assigns(:chart_data)["Page Views"][Date.new(2024, 1, 1)]
+      assert_equal 0, assigns(:chart_data)["Page Views"][Date.new(2024, 1, 2)]
+      assert_equal 200, assigns(:chart_data)["Page Views"][Date.new(2024, 1, 3)]
+      assert_equal 0, assigns(:chart_data)["Page Views"][Date.new(2024, 1, 4)]
+      assert_equal 0, assigns(:chart_data)["Page Views"][Date.new(2024, 1, 5)]
+    end
+
+    test "zero-fills all series equally" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 1),
+        pageviews: 100,
+        unique_pageviews: 50
+      )
+
+      get site_page_views_url(
+        sites(:tech_blog),
+        interval: "daily",
+        start_date: "2024-01-01",
+        end_date: "2024-01-03"
+      )
+
+      assert_response :success
+      assert_equal 3, assigns(:chart_data)["Page Views"].size
+      assert_equal 3, assigns(:chart_data)["Unique Page Views"].size
+      assert_equal 0, assigns(:chart_data)["Page Views"][Date.new(2024, 1, 2)]
+      assert_equal 0, assigns(:chart_data)["Unique Page Views"][Date.new(2024, 1, 2)]
+    end
+
+    test "uses start_date only to fill forward to last data point" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 5),
+        pageviews: 100,
+        unique_pageviews: 50
+      )
+
+      get site_page_views_url(
+        sites(:tech_blog),
+        interval: "daily",
+        start_date: "2024-01-01"
+      )
+
+      assert_response :success
+      # Should fill from Jan 1 to Jan 5
+      assert_equal 5, assigns(:chart_data)["Page Views"].size
+      assert_equal(Date.new(2024, 1, 1), assigns(:chart_data)["Page Views"].keys.first)
+      assert_equal(Date.new(2024, 1, 5), assigns(:chart_data)["Page Views"].keys.last)
+    end
+
+    test "uses end_date only to fill back to first data point" do
+      login(users(:alice))
+      create_daily_stat(
+        sites(:tech_blog),
+        date: Date.new(2024, 1, 1),
+        pageviews: 100,
+        unique_pageviews: 50
+      )
+
+      get site_page_views_url(
+        sites(:tech_blog),
+        interval: "daily",
+        end_date: "2024-01-05"
+      )
+
+      assert_response :success
+      # Should fill from Jan 1 to Jan 5
+      assert_equal 5, assigns(:chart_data)["Page Views"].size
+      assert_equal(Date.new(2024, 1, 1), assigns(:chart_data)["Page Views"].keys.first)
+      assert_equal(Date.new(2024, 1, 5), assigns(:chart_data)["Page Views"].keys.last)
+    end
   end
 end
