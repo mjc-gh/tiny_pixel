@@ -8,7 +8,7 @@
 #  browser      :integer          not null
 #  country      :string           not null
 #  device_type  :integer          not null
-#  digest       :text             not null
+#  digest       :text             not null, primary key
 #  salt_version :integer          default(0), not null
 #  property_id  :integer          not null
 #
