@@ -8,7 +8,7 @@ class AdminController < ApplicationController
   def self.secret_password
     key = Rails.application.key_generator.generate_key("tiny_pixel_admin")
 
-    [key].pack("m0")[0..31]
+    Base64.urlsafe_encode64(key, padding: false)[0..31]
   end
 
   private
