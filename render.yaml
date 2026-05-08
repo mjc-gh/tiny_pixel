@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: tiny_pixel
+    runtime: ruby
+    repo: https://github.com/mjc-gh/tiny_pixel
+    region: virginia
+    plan: starter
+    numInstances: 1
+    buildCommand: ./bin/render-build
+    startCommand: ./bin/render-run
+    healthCheckPath: /up
+    disk:
+      name: db
+      mountPath: /storage
+      sizeGB: 2
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: "true"
+      - key: RAILS_SECRET_KEY_BASE
+        generateValue: true
+      - key: SOLID_QUEUE_IN_PUMA
+        value: "true"
+      - key: TP_DOMAIN_NAME
+        sync: false

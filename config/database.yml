@@ -29,7 +29,6 @@ test:
     database: storage/test_ingestion.sqlite3
     migrations_paths: db/migrate_ingestion
 
-# TODO: make DB paths easily configurable based upon deploy
 production:
   primary:
     <<: *default
