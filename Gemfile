@@ -14,6 +14,7 @@ gem "postmark-rails"
 gem "propshaft"
 gem "puma"
 gem "revise_auth"
+gem "skylight", require: false
 # gem "solid_cache"
 gem "solid_queue"
 gem "sqlite3"

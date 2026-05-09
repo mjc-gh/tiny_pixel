@@ -1,0 +1,2 @@
+---
+authentication: <%= ENV["TP_SKYLIGHT_AUTHENTICATION"] %>

@@ -422,6 +422,8 @@ GEM
       terminal-table
     simplecov-html (0.13.2)
     simplecov_json_formatter (0.1.4)
+    skylight (7.1.1)
+      activesupport (>= 7.2.0)
     solid_queue (1.4.0)
       activejob (>= 7.1)
       activerecord (>= 7.1)
@@ -547,6 +549,7 @@ DEPENDENCIES
   selenium-webdriver
   simplecov
   simplecov-console
+  skylight
   solid_queue
   sqlite3
   stimulus-rails
