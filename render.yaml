@@ -1,13 +1,12 @@
 services:
   - type: web
     name: tiny_pixel
-    runtime: ruby
-    repo: https://github.com/mjc-gh/tiny_pixel
+    runtime: image
+    image:
+      url: "ghcr.io/mjc-gh/tiny_pixel:0.0.2"
     region: virginia
     plan: starter
     numInstances: 1
-    buildCommand: ./bin/render-build
-    startCommand: ./bin/render-run
     healthCheckPath: /up
     disk:
       name: db
