@@ -4,7 +4,8 @@
   "description": "TinyPixel analytics JS script",
   "main": "tiny_pixel.js",
   "scripts": {
-    "test": "bun test"
+    "test": "bun test",
+    "build": "bun build --minify tiny_pixel.js --outfile ../public/tp.js"
   },
   "author": "mjc@hey.com",
   "license": "MIT"
