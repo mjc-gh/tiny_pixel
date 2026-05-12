@@ -97,6 +97,28 @@ The tracking script only captures standard UTM parameters in the query string:
 
 Other query parameters are not included, preserving privacy.
 
+## Opt-Out Mechanism
+
+Users can opt out of TinyPixel tracking by setting a browser cookie:
+
+| Cookie Name | Value | Effect |
+|-------------|-------|--------|
+| `tpOptOut` | `yes` | Disables all tracking pixel requests |
+
+### Setting the Opt-Out Cookie
+
+Website owners can provide an opt-out page that sets this cookie:
+
+```javascript
+// Opt out of tracking
+document.cookie = "tpOptOut=yes; path=/; max-age=31536000"; // 1 year
+
+// Opt back in (remove cookie)
+document.cookie = "tpOptOut=; path=/; max-age=0";
+```
+
+When the `tpOptOut` cookie is set to `"yes"`, `TinyPixel.emitPageView()` returns immediately without sending any tracking requests.
+
 ## Random Value Generation
 
 The script generates a random nonce using:

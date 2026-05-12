@@ -58,6 +58,7 @@ describe('TinyPixel', () => {
     global.document = {
       currentScript: null,
       referrer: '',
+      cookie: '',
       body: {
         appendChild: appendChildMock,
         children: []
@@ -384,6 +385,62 @@ describe('TinyPixel', () => {
 
       expect(imgElement.getAttribute('aria-hidden')).toBe('true');
       expect(imgElement.style.position).toBe('absolute');
+    });
+  });
+
+  describe('Opt-Out Mechanism (tpOptOut cookie)', () => {
+    it('does not send requests when tpOptOut=yes cookie is set', () => {
+      global.document.cookie = 'tpOptOut=yes';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView();
+
+      expect(global.document.body.appendChild).not.toHaveBeenCalled();
+    });
+
+    it('tracks normally when tpOptOut cookie is absent', () => {
+      global.document.cookie = '';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView();
+
+      expect(global.document.body.appendChild).toHaveBeenCalled();
+    });
+
+    it('tracks normally when tpOptOut is set to a value other than yes', () => {
+      global.document.cookie = 'tpOptOut=no';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView();
+
+      expect(global.document.body.appendChild).toHaveBeenCalled();
+    });
+
+    it('detects opt-out when tpOptOut=yes exists among multiple cookies', () => {
+      global.document.cookie = 'sessionId=abc123; tpOptOut=yes; userId=user456';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView();
+
+      expect(global.document.body.appendChild).not.toHaveBeenCalled();
+    });
+
+    it('tracks normally when opt-out cookie is not present among multiple cookies', () => {
+      global.document.cookie = 'sessionId=abc123; userId=user456; otherCookie=value';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView();
+
+      expect(global.document.body.appendChild).toHaveBeenCalled();
+    });
+
+    it('respects opt-out even with whitespace around cookie name', () => {
+      global.document.cookie = 'sessionId=abc123;  tpOptOut=yes  ;userId=user456';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView();
+
+      expect(global.document.body.appendChild).not.toHaveBeenCalled();
     });
   });
 });

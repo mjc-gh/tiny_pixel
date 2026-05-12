@@ -35,6 +35,12 @@ const TinyPixel = (function() {
     return btoa(String.fromCharCode.apply(null, arr)).replace(/[=/\-]/g, "");
   }
 
+  const isOptedOut = () => {
+    return document.cookie.split(';').some(c => 
+      c.trim().startsWith('tpOptOut=yes')
+    );
+  }
+
   const send = (eventType) => {
     const params = new URLSearchParams({
       pid: propertyId,
@@ -79,6 +85,7 @@ const TinyPixel = (function() {
 
     emitPageView: () => {
       if (!configured) return;
+      if (isOptedOut()) return;
 
       send("view");
     }
