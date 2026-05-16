@@ -24,12 +24,11 @@
 - Snake case naming: `req_1` not `req1`
 - One class per `.rb` file
 - Never add unnecessary code comments
-
-**Structure**:
-- Callbacks → Enums → Scopes → Validations (in class body)
-- Scopes as lambdas: `scope :name, -> { where(...) }`
+- Never raise runtime errors; use exception classes
 
 **Models**:
+- Callbacks → Enums → Scopes → Validations (in class body)
+- Scopes as lambdas: `scope :name, -> { where(...) }`
 - Inherit from `ApplicationRecord` (main) or `AnalyticsRecord` (analytics-only)
 - Use explicit foreign/primary keys when needed
 - Use `self.table_name` only if non-standard

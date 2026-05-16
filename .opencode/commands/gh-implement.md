@@ -5,7 +5,7 @@ model: openrouter/anthropic/claude-haiku-4.5
 
 Fetch the issue to content using:
 
-`gh api repos/mjc-gh/tiny_pixel/issues/$1 | jq -r '"### \(.title)\n\(.body)"'`
+`gh api repos/mjc-gh/tiny_pixel/issues/$1 | jq -r '"# \(.title)\n\(.body)"'`
 
 **Instructions:**
 
