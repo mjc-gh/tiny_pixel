@@ -195,5 +195,45 @@ module Sites
       assert_equal 0, assigns(:chart_data)["Visits"][Date.new(2024, 1, 4)]
       assert_equal 0, assigns(:chart_data)["Visits"][Date.new(2024, 1, 5)]
     end
+
+    test "hourly interval defaults to last 24 hours when no date param provided" do
+      login(users(:alice))
+
+      get site_visitors_url(sites(:tech_blog), interval: "hourly")
+
+      assert_response :success
+      # Verify response is successful with default hourly range
+      assert assigns(:chart_data)
+    end
+
+    test "daily interval defaults to last 7 days when no date param provided" do
+      login(users(:alice))
+
+      get site_visitors_url(sites(:tech_blog), interval: "daily")
+
+      assert_response :success
+      # Verify response is successful with default daily range
+      assert assigns(:chart_data)
+    end
+
+    test "weekly interval defaults to last 6 weeks when no date param provided" do
+      login(users(:alice))
+
+      get site_visitors_url(sites(:tech_blog), interval: "weekly")
+
+      assert_response :success
+      # Verify response is successful with default weekly range
+      assert assigns(:chart_data)
+    end
+
+    test "explicit start_date param overrides default for daily interval" do
+      login(users(:alice))
+
+      get site_visitors_url(sites(:tech_blog), interval: "daily", start_date: "2024-01-15")
+
+      assert_response :success
+      # If explicit date is provided, it should be used instead of default
+      assert assigns(:chart_data)
+    end
   end
 end

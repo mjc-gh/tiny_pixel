@@ -11,7 +11,8 @@ module FilterStats
 
   included do
     helper_method :current_interval, :current_pathname, :current_hostname, :stats_time_column,
-                  :current_start_date, :current_end_date, :current_dimension_type, :current_dimension_value
+                  :current_start_date, :current_end_date, :current_dimension_type, :current_dimension_value,
+                  :default_start_date
   end
 
   def build_time_series_chart(select_columns:, series:)
@@ -76,11 +77,22 @@ module FilterStats
   end
 
   def current_start_date
-    @current_start_date ||= parse_date_param(:start_date)
+    @current_start_date ||= parse_date_param(:start_date) || (parse_date_param(:end_date).nil? ? default_start_date : nil)
   end
 
   def current_end_date
     @current_end_date ||= parse_date_param(:end_date)
+  end
+
+  def default_start_date
+    case current_interval
+    when "hourly"
+      1.day.ago.beginning_of_day.to_date
+    when "weekly"
+      6.weeks.ago.beginning_of_week.to_date
+    else # daily
+      7.days.ago.to_date
+    end
   end
 
   def stats_model
