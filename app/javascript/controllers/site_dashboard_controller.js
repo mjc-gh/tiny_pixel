@@ -38,6 +38,16 @@ export default class extends Controller {
   }
 
   updateInterval(event) {
+    if (this.hasStartDateTarget) {
+      this.startDateTarget.value = ""
+    }
+
+    if (this.hasEndDateTarget) {
+      this.endDateTarget.value = ""
+    }
+
+    this.startDateValue = ""
+    this.endDateValue = ""
     this.intervalValue = event.currentTarget.value
     this.visit()
   }
