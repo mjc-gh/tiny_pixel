@@ -237,7 +237,6 @@ module Sites
       login(users(:alice))
       create_daily_stat_with_dimension(
         sites(:tech_blog),
-        date: Date.new(2024, 1, 15),
         dimension_type: "country",
         dimension_value: "US",
         pageviews: 100,
@@ -246,7 +245,6 @@ module Sites
       create_daily_stat_with_dimension(
         sites(:tech_blog),
         pathname: "/about",
-        date: Date.new(2024, 1, 15),
         dimension_type: "country",
         dimension_value: "US",
         pageviews: 50,
