@@ -14,6 +14,11 @@ periodic_jobs: &periodic_jobs
     queue: default
     args: []
     schedule: every day at 3am
+  weekly_summary:
+    class: WeeklySummaryJob
+    queue: default
+    args: []
+    schedule: every monday at 9am America/New_York
 
 development:
   <<: *periodic_jobs

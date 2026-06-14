@@ -239,8 +239,11 @@ en:
   user_mailer:
     invitation:
       subject: "You're invited to join TinyPixel"
+  sites_mailer:
+    weekly_summary:
+      subject: "Your Weekly Analytics Summary"
   activerecord:
-    errors:
+     errors:
       models:
         user:
           attributes:

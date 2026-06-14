@@ -1,0 +1,208 @@
+<style>
+  .site-card {
+    margin-top: 32px;
+    padding: 24px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .metric-label {
+    color: #4b5563;
+    font-size: 13px;
+  }
+
+  .metric-value {
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .top-pages-section {
+    margin-top: 16px;
+  }
+
+  .top-pages-heading {
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+  }
+
+  .page-item {
+    margin-bottom: 12px;
+  }
+
+  .page-label {
+    margin: 0 0 4px 0;
+    color: #4b5563;
+    font-size: 12px;
+  }
+
+  .page-name {
+    margin: 0;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .page-stat {
+    margin: 4px 0 0 0;
+    color: #4b5563;
+    font-size: 12px;
+  }
+
+  .empty-state {
+    padding: 16px;
+    background-color: #fef3c7;
+    border-radius: 6px;
+    border-left: 4px solid #f59e0b;
+    margin-top: 16px;
+  }
+
+  .empty-state-text {
+    margin: 0;
+    color: #92400e;
+    font-size: 13px;
+  }
+
+  .footer-text {
+    color: #4b5563;
+    font-size: 12px;
+    margin-top: 24px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .site-card {
+      background-color: #2d3748;
+      border-color: #4a5568;
+    }
+
+    .metric-label {
+      color: #a0aec0;
+    }
+
+    .metric-value {
+      color: #e2e8f0;
+    }
+
+    .top-pages-heading {
+      color: #e2e8f0;
+    }
+
+    .page-label {
+      color: #a0aec0;
+    }
+
+    .page-name {
+      color: #e2e8f0;
+    }
+
+    .page-stat {
+      color: #a0aec0;
+    }
+
+    .empty-state {
+      background-color: #2d3212;
+      border-left-color: #7c6f1a;
+    }
+
+    .empty-state-text {
+      color: #c6e478;
+    }
+
+    .footer-text {
+      color: #9ca3af;
+    }
+  }
+</style>
+
+<h1>Your Weekly Analytics Summary</h1>
+
+<p>Hi <%= @user.email %>,</p>
+
+<p>Here's your weekly analytics summary for the sites you're a member of.</p>
+
+<% @sites_data.each do |site_data| %>
+  <div class="site-card">
+    <h2 style="margin-top: 0;"><%= site_data[:site].name %></h2>
+
+    <table style="width: 100%; margin: 16px 0; border-collapse: collapse;">
+      <tbody>
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid currentColor; border-bottom-color: #e5e7eb; opacity: 0.2;">
+            <span class="metric-label">Daily Avg Pageviews</span>
+          </td>
+          <td style="padding: 8px 0; border-bottom: 1px solid currentColor; border-bottom-color: #e5e7eb; opacity: 0.2; text-align: right;">
+            <span class="metric-value"><%= number_with_precision(site_data[:avg_daily_pageviews], precision: 1) %></span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid currentColor; border-bottom-color: #e5e7eb; opacity: 0.2;">
+            <span class="metric-label">Daily Avg Sessions</span>
+          </td>
+          <td style="padding: 8px 0; border-bottom: 1px solid currentColor; border-bottom-color: #e5e7eb; opacity: 0.2; text-align: right;">
+            <span class="metric-value"><%= number_with_precision(site_data[:avg_daily_sessions], precision: 1) %></span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0;">
+            <span class="metric-label">Daily Avg Duration</span>
+          </td>
+          <td style="padding: 8px 0; text-align: right;">
+            <span class="metric-value">
+              <% if site_data[:avg_daily_duration] %>
+                <%= distance_of_time_in_words(site_data[:avg_daily_duration]) %>
+              <% else %>
+                N/A
+              <% end %>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <% if site_data[:top_page_by_sessions] || site_data[:top_page_by_duration] %>
+      <div class="top-pages-section">
+        <h3 class="top-pages-heading">Top Performing Pages</h3>
+
+        <% if site_data[:top_page_by_sessions] %>
+          <div class="page-item">
+            <p class="page-label">Most Sessions</p>
+            <p class="page-name"><%= site_data[:top_page_by_sessions][:pathname] %></p>
+            <p class="page-stat">
+              <%= site_data[:top_page_by_sessions][:sessions] %> sessions
+            </p>
+          </div>
+        <% end %>
+
+        <% if site_data[:top_page_by_duration] %>
+          <div class="page-item">
+            <p class="page-label">Longest Avg Duration</p>
+            <p class="page-name"><%= site_data[:top_page_by_duration][:pathname] %></p>
+            <p class="page-stat">
+              <%= distance_of_time_in_words(site_data[:top_page_by_duration][:avg_duration]) %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if site_data[:avg_daily_pageviews].zero? && site_data[:avg_daily_sessions].zero? %>
+      <div class="empty-state">
+        <p class="empty-state-text">No analytics data available for the past 7 days. Your tracking script may not be set up yet.</p>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<div style="margin-top: 32px; text-align: center;">
+  <p style="margin: 16px 0;">
+    <a href="<%= sites_url %>" class="button" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
+      View Dashboard
+    </a>
+  </p>
+</div>
+
+<p class="footer-text">
+  Questions? Check out the <a href="https://tinypixel.tech/docs">TinyPixel documentation</a>.
+</p>
