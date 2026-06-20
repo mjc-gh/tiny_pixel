@@ -4,7 +4,6 @@ require "test_helper"
 
 module Sites
   class AvgDurationControllerTest < ActionDispatch::IntegrationTest
-
     test "displays avg duration data with daily interval" do
       login(users(:alice))
       create_daily_stat(

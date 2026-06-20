@@ -4,7 +4,6 @@ require "test_helper"
 
 module Sites
   class PathnamesControllerTest < ActionDispatch::IntegrationTest
-
     test "displays pathname stats with daily interval" do
        login(users(:alice))
        create_daily_stat(sites(:tech_blog))

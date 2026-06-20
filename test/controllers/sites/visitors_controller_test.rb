@@ -4,7 +4,6 @@ require "test_helper"
 
 module Sites
   class VisitorsControllerTest < ActionDispatch::IntegrationTest
-
     test "displays visitors data with daily interval" do
       login(users(:alice))
       create_daily_stat(

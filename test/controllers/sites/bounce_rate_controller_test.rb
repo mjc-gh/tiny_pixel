@@ -4,7 +4,6 @@ require "test_helper"
 
 module Sites
   class BounceRateControllerTest < ActionDispatch::IntegrationTest
-
     test "displays bounce rate data with daily interval" do
       login(users(:alice))
       create_daily_stat(
