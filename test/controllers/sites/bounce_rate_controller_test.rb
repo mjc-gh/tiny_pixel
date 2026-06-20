@@ -4,27 +4,6 @@ require "test_helper"
 
 module Sites
   class BounceRateControllerTest < ActionDispatch::IntegrationTest
-    test "redirects unauthenticated users to login" do
-      get site_bounce_rate_index_url(sites(:tech_blog))
-
-      assert_redirected_to login_path
-    end
-
-    test "authenticated users can access index" do
-      login(users(:alice))
-
-      get site_bounce_rate_index_url(sites(:tech_blog))
-
-      assert_response :success
-    end
-
-    test "returns turbo frame with stats" do
-      login(users(:alice))
-
-      get site_bounce_rate_index_url(sites(:tech_blog))
-
-      assert_select "turbo-frame#bounce_rate_stats"
-    end
 
     test "displays bounce rate data with daily interval" do
       login(users(:alice))

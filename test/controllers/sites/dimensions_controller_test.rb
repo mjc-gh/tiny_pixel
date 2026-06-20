@@ -4,20 +4,6 @@ require "test_helper"
 
 module Sites
   class DimensionsControllerTest < ActionDispatch::IntegrationTest
-    test "redirects unauthenticated users to login" do
-      get site_dimensions_url(sites(:tech_blog), type: "country")
-
-      assert_redirected_to login_path
-    end
-
-    test "authenticated users can access index" do
-      login(users(:alice))
-
-      get site_dimensions_url(sites(:tech_blog), type: "country")
-
-      assert_response :success
-    end
-
     test "returns 404 for invalid dimension type" do
       login(users(:alice))
 

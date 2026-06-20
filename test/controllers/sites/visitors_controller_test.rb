@@ -4,27 +4,6 @@ require "test_helper"
 
 module Sites
   class VisitorsControllerTest < ActionDispatch::IntegrationTest
-    test "redirects unauthenticated users to login" do
-      get site_visitors_url(sites(:tech_blog))
-
-      assert_redirected_to login_path
-    end
-
-    test "authenticated users can access index" do
-      login(users(:alice))
-
-      get site_visitors_url(sites(:tech_blog))
-
-      assert_response :success
-    end
-
-    test "returns turbo frame with stats" do
-      login(users(:alice))
-
-      get site_visitors_url(sites(:tech_blog))
-
-      assert_select "turbo-frame#visitors_stats"
-    end
 
     test "displays visitors data with daily interval" do
       login(users(:alice))

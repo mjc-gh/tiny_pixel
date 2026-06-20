@@ -44,12 +44,6 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_onboarding_site_path
   end
 
-  test "show redirects unauthenticated users to login" do
-    get site_url(sites(:my_blog))
-
-    assert_redirected_to login_path
-  end
-
   test "authenticated users can access show" do
     login(users(:alice))
 

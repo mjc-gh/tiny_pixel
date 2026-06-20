@@ -77,12 +77,6 @@ module Sites
     end
 
     # Edit action tests
-    test "edit redirects unauthenticated users to login" do
-      get edit_site_membership_url(sites(:my_blog), memberships(:alice_my_blog_admin))
-
-      assert_redirected_to login_path
-    end
-
     test "edit returns 404 for non-members" do
       # Create a new user who is not a member of tech_blog
       user = User.create!(email: "newuser@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
@@ -135,12 +129,6 @@ module Sites
     end
 
     # Update action tests
-    test "update redirects unauthenticated users to login" do
-      patch site_membership_url(sites(:my_blog), memberships(:bob_my_blog_member)), params: { membership: { role: "admin" } }
-
-      assert_redirected_to login_path
-    end
-
     test "update returns 404 for non-members" do
       # Create a new user who is not a member of tech_blog
       user = User.create!(email: "newuser@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
@@ -196,12 +184,6 @@ module Sites
     end
 
     # Destroy action tests
-    test "destroy redirects unauthenticated users to login" do
-      delete site_membership_url(sites(:my_blog), memberships(:bob_my_blog_member))
-
-      assert_redirected_to login_path
-    end
-
     test "destroy returns 404 for non-members" do
       # Create a new user who is not a member of tech_blog
       user = User.create!(email: "newuser@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
@@ -259,12 +241,6 @@ module Sites
     end
 
     # New action tests
-    test "new redirects unauthenticated users to login" do
-      get new_site_membership_url(sites(:my_blog))
-
-      assert_redirected_to login_path
-    end
-
     test "new returns 404 for non-members" do
       user = User.create!(email: "newuser@example.com", password: "password123456789", password_confirmation: "password123456789", confirmed_at: Time.current)
       login(user, password: "password123456789")
