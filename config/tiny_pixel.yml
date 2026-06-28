@@ -1,6 +1,7 @@
 default: &default
   allow_registration: <%= ENV.fetch("TP_ALLOW_REGISTRAION", "false") %>
   action_mailer_delivery: <%= ENV.fetch("TP_ACTION_MAILER_DELIVERY", "none") %>
+  action_mailer_from_address: <%= ENV.fetch("TP_ACTION_MAILER_FROM_ADDRESS", "tiny-pixel") %>
 
 development:
   <<: *default

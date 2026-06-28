@@ -13,6 +13,7 @@ class SitesMailerTest < ActionMailer::TestCase
 
     email = SitesMailer.weekly_summary(user, sites_data)
 
+    assert_equal %w[tiny-pixel@tinypixel.localhost], email.from
     assert_equal [user.email], email.to
   end
 
