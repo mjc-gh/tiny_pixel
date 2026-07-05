@@ -35,7 +35,7 @@ module TinyPixel
     end
 
     def email_delivery_from_address
-      @email_delivery_from_address ||= "#{mailer_from_address}@#{mailer_from_domain}"
+      Rails.application.config.runtime_settings.action_mailer_from_address
     end
 
     def maxmind_db
@@ -43,14 +43,6 @@ module TinyPixel
     end
 
     private
-
-    def mailer_from_address
-      Rails.application.config.runtime_settings.action_mailer_from_address
-    end
-
-    def mailer_from_domain
-      ENV.fetch('TP_DOMAIN_NAME', 'tinypixel.localhost')
-    end
 
     def build_maxmind_db
       path = Rails.root.join("storage", "GeoLite2-Country.mmdb").to_s
