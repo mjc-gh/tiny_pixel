@@ -1,6 +1,6 @@
 ---
 description: Refine a GitHub issue with implementation plan and checklist
-model: openrouter/anthropic/claude-opus-4.5
+model: openrouter/anthropic/claude-sonnet-4.5
 ---
 
 Fetch GitHub issue #$1 and refine it with a detailed implementation plan.
