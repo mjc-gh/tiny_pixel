@@ -289,4 +289,94 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_select ".bg-danger-bg"
   end
+
+  test "index computes stats for each site" do
+    login(users(:alice))
+
+    site = sites(:my_blog)
+    # Create some stats for the site
+    start_date = 7.days.ago.to_date
+    (0..6).each do |offset|
+      date = start_date + offset.days
+      DailyPageStat.create!(
+        site_id: site.id,
+        hostname: "example.com",
+        pathname: "/page1",
+        date: date,
+        dimension_type: "global",
+        pageviews: 100,
+        sessions: 50,
+        total_duration: 500.0,
+        duration_count: 10
+      )
+    end
+
+    get sites_url
+
+    assert_response :success
+    # Stats should be assigned to the view
+    assert_not_nil assigns(:sites_stats)
+    assert_equal users(:alice).sites.count, assigns(:sites_stats).count
+  end
+
+  test "index displays stats for sites in cards" do
+    login(users(:alice))
+
+    site = sites(:my_blog)
+    # Create some stats for the site - make it a mid-age site
+    site.update(created_at: 7.days.ago)
+    start_date = 7.days.ago.to_date
+    (0..6).each do |offset|
+      date = start_date + offset.days
+      DailyPageStat.create!(
+        site_id: site.id,
+        hostname: "example.com",
+        pathname: "/page1",
+        date: date,
+        dimension_type: "global",
+        pageviews: 100,
+        sessions: 50,
+        total_duration: 500.0,
+        duration_count: 10
+      )
+    end
+
+    get sites_url
+
+    assert_response :success
+    # Should display pageviews in the card
+    assert_select "p", text: "Pageviews"
+    assert_select "p", text: "Sessions"
+  end
+
+  test "index handles multiple sites with stats" do
+    login(users(:alice))
+
+    sites(:my_blog).update(created_at: 7.days.ago)
+    sites(:tech_blog).update(created_at: 7.days.ago)
+
+    # Create stats for both sites
+    [sites(:my_blog), sites(:tech_blog)].each do |site|
+      start_date = 7.days.ago.to_date
+      (0..6).each do |offset|
+        date = start_date + offset.days
+        DailyPageStat.create!(
+          site_id: site.id,
+          hostname: "example.com",
+          pathname: "/page1",
+          date: date,
+          dimension_type: "global",
+          pageviews: 100,
+          sessions: 50,
+          total_duration: 500.0,
+          duration_count: 10
+        )
+      end
+    end
+
+    get sites_url
+
+    assert_response :success
+    assert_equal 2, assigns(:sites_stats).count
+  end
 end

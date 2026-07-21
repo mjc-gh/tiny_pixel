@@ -5,9 +5,9 @@
 
 <% if @sites.any? %>
   <%= render GridListComponent.new do |grid| %>
-    <% @sites.each do |site| %>
+    <% @sites.each_with_index do |site, index| %>
       <% grid.with_card do %>
-        <%= render SiteCardComponent.new(site: site) %>
+        <%= render SiteCardComponent.new(site: site, stats: @sites_stats[index]) %>
       <% end %>
     <% end %>
   <% end %>

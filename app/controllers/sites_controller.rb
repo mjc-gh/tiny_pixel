@@ -9,6 +9,7 @@ class SitesController < ApplicationController
 
   def index
     @sites = current_user.sites.order(created_at: :desc)
+    @sites_stats = @sites.map { |site| SiteStatsService.new(site).compute }
     redirect_to new_onboarding_site_path if @sites.empty?
   end
 

@@ -89,6 +89,10 @@ class Site < ApplicationRecord
     stats_retention_period.ago
   end
 
+  def age_in_days
+    ((Time.current - created_at) / 1.day).floor
+  end
+
   private
 
   def set_property_id
