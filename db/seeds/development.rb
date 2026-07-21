@@ -8,6 +8,13 @@ BROWSERS = %i[chrome firefox safari edge opera].freeze
 DEVICE_TYPES = %i[desktop mobile].freeze
 COUNTRIES = %w[US GB DE FR CA AU JP].freeze
 
+# UTM Constants
+UTM_SOURCES = %w[google facebook twitter linkedin newsletter].freeze
+UTM_MEDIUMS = %w[cpc organic social email referral].freeze
+UTM_CAMPAIGNS = %w[summer_sale product_launch brand_awareness retargeting newsletter_july].freeze
+UTM_CONTENTS = %w[banner_ad sidebar_link hero_cta text_link].freeze
+UTM_TERMS = %w[analytics tracking web_metrics dashboard].freeze
+
 AGGREGATED_DATA_DAYS = 14
 VISITOR_COUNT = 75
 
@@ -51,6 +58,11 @@ def create_page_view(visitor, timestamp, options = {})
     new_visit: options.fetch(:new_visit, false),
     bounced: options.fetch(:bounced, true),
     duration: options[:duration],
+    utm_source: options[:utm_source],
+    utm_medium: options[:utm_medium],
+    utm_campaign: options[:utm_campaign],
+    utm_content: options[:utm_content],
+    utm_term: options[:utm_term],
     created_at: timestamp
   )
 end
@@ -113,17 +125,30 @@ visitors.each do |visitor|
       is_last_page = idx == session_pages.length - 1
       bounced = page_count == 1
 
+      utm_options = {}
+      if first_page && rand < 0.3
+        utm_options = {
+          utm_source: UTM_SOURCES.sample,
+          utm_medium: UTM_MEDIUMS.sample,
+          utm_campaign: UTM_CAMPAIGNS.sample,
+          utm_content: UTM_CONTENTS.sample,
+          utm_term: UTM_TERMS.sample
+        }
+      end
+
       create_page_view(
         visitor,
         timestamp,
-        hostname: HOSTNAME,
-        pathname: pathname,
-        referrer: first_page && rand < 0.4 ? REFERRERS.compact.sample : nil,
-        is_unique: first_session && first_page,
-        new_session: first_page,
-        new_visit: first_session && first_page,
-        bounced: bounced,
-        duration: is_last_page ? nil : rand(10..300)
+        {
+          hostname: HOSTNAME,
+          pathname: pathname,
+          referrer: first_page && rand < 0.4 ? REFERRERS.compact.sample : nil,
+          is_unique: first_session && first_page,
+          new_session: first_page,
+          new_visit: first_session && first_page,
+          bounced: bounced,
+          duration: is_last_page ? nil : rand(10..300)
+        }.merge(utm_options)
       )
       page_view_count += 1
       first_page = false
@@ -217,17 +242,30 @@ multi_visitors.each do |visitor|
       is_last_page = idx == session_pages.length - 1
       bounced = page_count == 1
 
+      utm_options = {}
+      if first_page && rand < 0.3
+        utm_options = {
+          utm_source: UTM_SOURCES.sample,
+          utm_medium: UTM_MEDIUMS.sample,
+          utm_campaign: UTM_CAMPAIGNS.sample,
+          utm_content: UTM_CONTENTS.sample,
+          utm_term: UTM_TERMS.sample
+        }
+      end
+
       create_page_view(
         visitor,
         timestamp,
-        hostname: hostname,
-        pathname: pathname,
-        referrer: first_page && rand < 0.4 ? REFERRERS.compact.sample : nil,
-        is_unique: first_session && first_page,
-        new_session: first_page,
-        new_visit: first_session && first_page,
-        bounced: bounced,
-        duration: is_last_page ? nil : rand(10..300)
+        {
+          hostname: hostname,
+          pathname: pathname,
+          referrer: first_page && rand < 0.4 ? REFERRERS.compact.sample : nil,
+          is_unique: first_session && first_page,
+          new_session: first_page,
+          new_visit: first_session && first_page,
+          bounced: bounced,
+          duration: is_last_page ? nil : rand(10..300)
+        }.merge(utm_options)
       )
       multi_page_view_count += 1
       first_page = false
