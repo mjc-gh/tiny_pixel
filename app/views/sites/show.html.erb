@@ -129,4 +129,32 @@
       </div>
     </section>
   </div>
+
+  <% if site_has_utm_data?(@site) %>
+    <div class="gap-y-8 gap-x-4 grid grid-cols-1 md:grid-cols-3 mt-8">
+      <section>
+        <div class="border border-border rounded-lg p-4 bg-surface">
+          <turbo-frame id="utm_source_stats" src="<%= site_dimensions_path(@site, type: 'utm_source', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+            <p class="text-content-muted">Loading sources...</p>
+          </turbo-frame>
+        </div>
+      </section>
+
+      <section>
+        <div class="border border-border rounded-lg p-4 bg-surface">
+          <turbo-frame id="utm_medium_stats" src="<%= site_dimensions_path(@site, type: 'utm_medium', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+            <p class="text-content-muted">Loading mediums...</p>
+          </turbo-frame>
+        </div>
+      </section>
+
+      <section>
+        <div class="border border-border rounded-lg p-4 bg-surface">
+          <turbo-frame id="utm_campaign_stats" src="<%= site_dimensions_path(@site, type: 'utm_campaign', interval: current_interval, pathname: current_pathname, hostname: current_hostname, start_date: current_start_date&.iso8601, end_date: current_end_date&.iso8601, dimension_type: current_dimension_type, dimension_value: current_dimension_value) %>" loading="lazy">
+            <p class="text-content-muted">Loading campaigns...</p>
+          </turbo-frame>
+        </div>
+      </section>
+    </div>
+  <% end %>
 </div>

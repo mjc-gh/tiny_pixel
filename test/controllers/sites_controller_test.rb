@@ -111,6 +111,34 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "show does not display UTM widgets when no UTM data exists" do
+    login(users(:alice))
+
+    get site_url(sites(:tech_blog))
+
+    assert_select "turbo-frame#utm_source_stats", count: 0
+    assert_select "turbo-frame#utm_medium_stats", count: 0
+    assert_select "turbo-frame#utm_campaign_stats", count: 0
+  end
+
+  test "show displays UTM widgets when UTM data exists" do
+    login(users(:alice))
+    site = sites(:tech_blog)
+    create_daily_stat_with_dimension(
+      site,
+      dimension_type: "utm_source",
+      dimension_value: "google",
+      pageviews: 100,
+      sessions: 50
+    )
+
+    get site_url(site)
+
+    assert_select "turbo-frame#utm_source_stats"
+    assert_select "turbo-frame#utm_medium_stats"
+    assert_select "turbo-frame#utm_campaign_stats"
+  end
+
   test "new redirects unauthenticated users to login" do
     get new_site_url
 

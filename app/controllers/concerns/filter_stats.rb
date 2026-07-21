@@ -4,7 +4,7 @@ module FilterStats
   extend ActiveSupport::Concern
 
   VALID_INTERVALS = %w[hourly daily weekly].freeze
-  VALID_DIMENSION_TYPES = %w[country browser device_type referrer_hostname].freeze
+  VALID_DIMENSION_TYPES = %w[country browser device_type referrer_hostname utm_source utm_medium utm_campaign].freeze
 
   DEFAULT_INTERVAL = "daily"
   PER_PAGE = 20

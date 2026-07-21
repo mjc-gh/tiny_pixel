@@ -21,6 +21,12 @@ class DimensionTableComponent < ViewComponent::Base
       "Device Types"
     when "referrer_hostname"
       "Referrers"
+    when "utm_source"
+      "Sources"
+    when "utm_medium"
+      "Mediums"
+    when "utm_campaign"
+      "Campaigns"
     else
       @type.humanize
     end

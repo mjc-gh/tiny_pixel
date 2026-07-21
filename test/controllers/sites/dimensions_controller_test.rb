@@ -44,6 +44,30 @@ module Sites
       assert_select "turbo-frame#referrer_hostname_stats"
     end
 
+    test "returns turbo frame with utm_source dimension stats" do
+      login(users(:alice))
+
+      get site_dimensions_url(sites(:tech_blog), type: "utm_source")
+
+      assert_select "turbo-frame#utm_source_stats"
+    end
+
+    test "returns turbo frame with utm_medium dimension stats" do
+      login(users(:alice))
+
+      get site_dimensions_url(sites(:tech_blog), type: "utm_medium")
+
+      assert_select "turbo-frame#utm_medium_stats"
+    end
+
+    test "returns turbo frame with utm_campaign dimension stats" do
+      login(users(:alice))
+
+      get site_dimensions_url(sites(:tech_blog), type: "utm_campaign")
+
+      assert_select "turbo-frame#utm_campaign_stats"
+    end
+
     test "returns 404 for unauthorized site" do
       login(users(:bob))
 

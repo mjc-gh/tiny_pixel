@@ -16,7 +16,10 @@ class DimensionTableComponentTest < ViewComponent::TestCase
     ["country", "Countries", "country_stats"],
     ["browser", "Browsers", "browser_stats"],
     ["device_type", "Device Types", "device_type_stats"],
-    ["referrer_hostname", "Referrers", "referrer_hostname_stats"]
+    ["referrer_hostname", "Referrers", "referrer_hostname_stats"],
+    ["utm_source", "Sources", "utm_source_stats"],
+    ["utm_medium", "Mediums", "utm_medium_stats"],
+    ["utm_campaign", "Campaigns", "utm_campaign_stats"]
   ].each do |type, label, frame_id|
     test "renders #{type} label" do
       stats = create_paginated_stats([])
