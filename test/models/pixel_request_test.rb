@@ -751,4 +751,123 @@ class PixelRequestTest < ActiveSupport::TestCase
     assert_not_nil visitor
     assert_equal site.salt_version, visitor.salt_version
   end
+
+  # UTM parsing tests
+
+  test "parsed_attribution parses query string correctly" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("27.28.29.30", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      qs: "utm_source=google&utm_medium=cpc&utm_campaign=summer_sale"
+    })
+
+    assert_equal "google", pr.utm_source
+    assert_equal "cpc", pr.utm_medium
+    assert_equal "summer_sale", pr.utm_campaign
+  end
+
+  test "utm fields are nil when attribution is blank" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("28.29.30.31", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com"
+    })
+
+    assert_nil pr.utm_source
+    assert_nil pr.utm_medium
+    assert_nil pr.utm_campaign
+  end
+
+  test "utm fields are nil when not present in attribution" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("29.30.31.32", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      qs: "other_param=value"
+    })
+
+    assert_nil pr.utm_source
+    assert_nil pr.utm_medium
+    assert_nil pr.utm_campaign
+  end
+
+  test "pageview created with utm parameters stores them correctly" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("30.31.32.33", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/products",
+      h: "example.com",
+      qs: "utm_source=facebook&utm_medium=social&utm_campaign=spring_promo"
+    })
+    pr.process!
+
+    visitor_digest = pr.send(:visitor_digest)
+    page_view = PageView.find_by(visitor_digest:)
+
+    assert_not_nil page_view
+    assert_equal "facebook", page_view.utm_source
+    assert_equal "social", page_view.utm_medium
+    assert_equal "spring_promo", page_view.utm_campaign
+  end
+
+  test "parsed_attribution caches result" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("31.32.33.34", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      qs: "utm_source=google&utm_medium=organic"
+    })
+
+    result_1 = pr.send(:parsed_attribution)
+    result_2 = pr.send(:parsed_attribution)
+
+    assert_same result_1, result_2
+  end
+
+  test "utm fields work with special characters in values" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("32.33.34.35", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      qs: "utm_source=google&utm_medium=cpc&utm_campaign=summer%20sale%202026"
+    })
+
+    assert_equal "google", pr.utm_source
+    assert_equal "cpc", pr.utm_medium
+    assert_equal "summer sale 2026", pr.utm_campaign
+  end
+
+  test "utm fields work with partial utm parameters" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("33.34.35.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      qs: "utm_source=newsletter"
+    })
+
+    assert_equal "newsletter", pr.utm_source
+    assert_nil pr.utm_medium
+    assert_nil pr.utm_campaign
+  end
 end

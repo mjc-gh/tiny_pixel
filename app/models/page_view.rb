@@ -14,9 +14,15 @@
 #  new_session       :boolean          default(FALSE), not null
 #  new_visit         :boolean          default(FALSE), not null
 #  pathname          :text             not null
+#  ref               :text
 #  referrer          :text
 #  referrer_hostname :text
 #  referrer_pathname :text
+#  utm_campaign      :text
+#  utm_content       :text
+#  utm_medium        :text
+#  utm_source        :text
+#  utm_term          :text
 #  visitor_digest    :text             not null
 #  created_at        :datetime         not null
 #

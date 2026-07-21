@@ -82,6 +82,47 @@ class PixelRequest
     nil
   end
 
+  def page_view_attributes
+    { visitor_digest:,
+      digest: page_view_digest,
+      created_at: @created_at,
+      hostname:,
+      pathname:,
+      new_visit: @new_visit,
+      new_session: @new_session,
+      is_unique: @is_unique,
+      attribution:,
+      referrer:,
+      referrer_hostname: parsed_referrer[:hostname],
+      referrer_pathname: parsed_referrer[:pathname],
+      utm_source:,
+      utm_medium:,
+      utm_campaign: }
+  end
+
+  def parsed_attribution
+    @parsed_attribution ||= begin
+      return {} if attribution.blank?
+      Rack::Utils.parse_nested_query(attribution)
+    end
+  end
+
+  def utm_source
+    parsed_attribution["utm_source"]
+  end
+
+  def utm_medium
+    parsed_attribution["utm_medium"]
+  end
+
+  def utm_campaign
+    parsed_attribution["utm_campaign"]
+  end
+
+  def parsed_referrer
+    @parsed_referrer ||= ReferrerParser.parse(referrer)
+  end
+
   private
 
   def unique_window_start
@@ -99,21 +140,6 @@ class PixelRequest
       browser: visitor_browser,
       device_type: visitor_device_type,
       country: visitor_country }
-  end
-
-  def page_view_attributes
-    { visitor_digest:,
-      digest: page_view_digest,
-      created_at: @created_at,
-      hostname:,
-      pathname:,
-      new_visit: @new_visit,
-      new_session: @new_session,
-      is_unique: @is_unique,
-      attribution:,
-      referrer:,
-      referrer_hostname: parsed_referrer[:hostname],
-      referrer_pathname: parsed_referrer[:pathname] }
   end
 
   def property
@@ -196,10 +222,6 @@ class PixelRequest
       visitor_digest:,
       created_at: session_start..reference_pageview.created_at
     ).update_all(bounced: false)
-  end
-
-  def parsed_referrer
-    @parsed_referrer ||= ReferrerParser.parse(referrer)
   end
 
   def parsed_user_agent

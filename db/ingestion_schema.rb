@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_26_130226) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_21_143613) do
   create_table "page_views", id: false, force: :cascade do |t|
     t.text "attribution"
     t.boolean "bounced", default: true
@@ -22,9 +22,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_130226) do
     t.boolean "new_session", default: false, null: false
     t.boolean "new_visit", default: false, null: false
     t.text "pathname", null: false
+    t.text "ref"
     t.text "referrer"
     t.text "referrer_hostname"
     t.text "referrer_pathname"
+    t.text "utm_campaign"
+    t.text "utm_content"
+    t.text "utm_medium"
+    t.text "utm_source"
+    t.text "utm_term"
     t.text "visitor_digest", null: false
     t.index ["visitor_digest", "created_at", "bounced"], name: "page_views_bounce_analytics_idx"
     t.index ["visitor_digest", "created_at"], name: "page_view_created_at_idx", order: { created_at: :desc }
