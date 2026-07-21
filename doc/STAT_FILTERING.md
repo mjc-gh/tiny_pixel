@@ -75,6 +75,9 @@ Dimension filtering allows users to filter the entire dashboard by clicking on d
 - **browser** - Filter by browser (enum: 1=Chrome, 2=Edge, 3=Safari, 4=Firefox, 5=Opera, 999=Other)
 - **device_type** - Filter by device (enum: 1=Desktop, 2=Mobile, 9=Crawler, 10=Other)
 - **referrer_hostname** - Filter by referrer domain (e.g., "google.com")
+- **utm_source** - Filter by UTM source parameter (e.g., "google", "newsletter")
+- **utm_medium** - Filter by UTM medium parameter (e.g., "organic", "cpc", "email")
+- **utm_campaign** - Filter by UTM campaign parameter (e.g., "summer_sale", "product_launch")
 
 ### Enum Value Formatting
 
@@ -101,6 +104,17 @@ Users can combine filters:
 Each filter type has independent clear buttons in the filter indicator UI:
 - "Clear Pathname Filter" - keeps dimension filters
 - "Clear Dimension Filter" - keeps pathname filters
+
+## Conditional Widget Display Pattern
+
+Some dashboard widgets only display when specific data exists. Use this pattern:
+
+1. Create a helper method that checks for data presence (memoized within request)
+2. Wrap widget section in ERB conditional: `<% if helper_method?(resource) %>`
+3. Widget should include multiple turbo-frames in a grid container
+4. Add comprehensive tests for both rendering and non-rendering cases
+
+**Example:** UTM widgets in `app/views/sites/show.html.erb` only display when `site_has_utm_data?(@site)` is true. The helper memoizes the database query to avoid redundant lookups within a single request.
 
 ## When Hostname Filtering is Available
 

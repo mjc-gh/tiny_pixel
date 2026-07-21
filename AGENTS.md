@@ -37,6 +37,11 @@
 - RESTful conventions with strong parameters
 - Prefer resource routing
 
+**Helpers**:
+- Memoize database queries within a single request using instance variables: `@cache ||= {}; @cache[key] ||= expensive_query`
+- Apply this pattern especially to view helper methods called multiple times per render
+- Example: `site_has_utm_data?` in `SitesHelper` checks for UTM records once per site per request
+
 **Views**:
 - Render JSON or HTML per endpoint purpose
 - Never explicitly render form errors when using `default_form_with`
