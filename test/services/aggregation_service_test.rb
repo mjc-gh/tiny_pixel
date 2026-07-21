@@ -379,6 +379,129 @@ class AggregationServiceTest < ActiveSupport::TestCase
     assert_equal "twitter.com", stat.dimension_value
   end
 
+  test "aggregate_hourly with utm_source dimension creates utm_source dimension stats" do
+    create_test_page_views_with_utm(@time_bucket, utm_source: "google")
+
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "utm_source")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "utm_source", dimension_value: "google")
+    assert_not_nil stat
+    assert_equal "utm_source", stat.dimension_type
+    assert_equal "google", stat.dimension_value
+  end
+
+  test "aggregate_hourly with utm_source correctly aggregates all page views in a visit" do
+    create_test_page_views_with_utm(@time_bucket, utm_source: "google")
+
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "utm_source")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "utm_source", dimension_value: "google")
+    # Should have 3 page views even though only first one has utm_source set
+    assert_equal 3, stat.pageviews
+    assert_equal 1, stat.visits
+  end
+
+  test "aggregate_hourly with utm_source handles missing UTM (maps to (not set))" do
+    create_test_page_views_with_utm(@time_bucket, utm_source: nil)
+
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "utm_source")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "utm_source", dimension_value: "(not set)")
+    assert_not_nil stat
+    assert_equal "utm_source", stat.dimension_type
+    assert_equal "(not set)", stat.dimension_value
+    assert_equal 3, stat.pageviews
+  end
+
+  test "aggregate_hourly with utm_medium dimension creates utm_medium dimension stats" do
+    create_test_page_views_with_utm(@time_bucket, utm_medium: "cpc")
+
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "utm_medium")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "utm_medium", dimension_value: "cpc")
+    assert_not_nil stat
+    assert_equal "utm_medium", stat.dimension_type
+    assert_equal "cpc", stat.dimension_value
+  end
+
+  test "aggregate_hourly with utm_campaign dimension creates utm_campaign dimension stats" do
+    create_test_page_views_with_utm(@time_bucket, utm_campaign: "summer_sale")
+
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "utm_campaign")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "utm_campaign", dimension_value: "summer_sale")
+    assert_not_nil stat
+    assert_equal "utm_campaign", stat.dimension_type
+    assert_equal "summer_sale", stat.dimension_value
+  end
+
+  test "aggregate_hourly with ref dimension creates ref dimension stats" do
+    create_test_page_views_with_utm(@time_bucket, ref: "homepage")
+
+    result = @service.aggregate_hourly(@time_bucket, dimension_type: "ref")
+
+    assert_equal 1, result[:created]
+    stat = HourlyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "ref", dimension_value: "homepage")
+    assert_not_nil stat
+    assert_equal "ref", stat.dimension_type
+    assert_equal "homepage", stat.dimension_value
+  end
+
+  test "aggregate_daily with utm_source dimension creates utm_source dimension stats" do
+    create_test_page_views_with_utm_for_day(@time_bucket.to_date, utm_source: "facebook")
+
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension_type: "utm_source")
+
+    assert_equal 1, result[:created]
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "utm_source", dimension_value: "facebook")
+    assert_not_nil stat
+    assert_equal "utm_source", stat.dimension_type
+    assert_equal "facebook", stat.dimension_value
+  end
+
+  test "aggregate_daily with utm_source correctly aggregates all page views in a visit" do
+    create_test_page_views_with_utm_for_day(@time_bucket.to_date, utm_source: "facebook")
+
+    result = @service.aggregate_daily(@time_bucket.to_date, dimension_type: "utm_source")
+
+    assert_equal 1, result[:created]
+    stat = DailyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "utm_source", dimension_value: "facebook")
+    # Should have 6 page views even though only first one has utm_source set
+    assert_equal 6, stat.pageviews
+    assert_equal 1, stat.visits
+  end
+
+  test "aggregate_weekly with utm_source dimension creates utm_source dimension stats" do
+    week_start = @time_bucket.to_date.beginning_of_week(:monday)
+    create_test_page_views_with_utm_for_week(week_start, utm_source: "linkedin")
+
+    result = @service.aggregate_weekly(week_start, dimension_type: "utm_source")
+
+    assert_equal 1, result[:created]
+    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "utm_source", dimension_value: "linkedin")
+    assert_not_nil stat
+    assert_equal "utm_source", stat.dimension_type
+    assert_equal "linkedin", stat.dimension_value
+  end
+
+  test "aggregate_weekly with utm_medium dimension creates utm_medium dimension stats" do
+    week_start = @time_bucket.to_date.beginning_of_week(:monday)
+    create_test_page_views_with_utm_for_week(week_start, utm_medium: "organic")
+
+    result = @service.aggregate_weekly(week_start, dimension_type: "utm_medium")
+
+    assert_equal 1, result[:created]
+    stat = WeeklyPageStat.find_by(site: @site, hostname: "example.com", pathname: "/page1", dimension_type: "utm_medium", dimension_value: "organic")
+    assert_not_nil stat
+    assert_equal "utm_medium", stat.dimension_type
+    assert_equal "organic", stat.dimension_value
+  end
+
   private
 
   def create_test_page_views(time_bucket)
@@ -957,12 +1080,341 @@ class AggregationServiceTest < ActiveSupport::TestCase
     )
 
     7.times do |i|
+       PageView.create!(
+         digest: "pv_referrer_weekly_extra_#{i}",
+         visitor_digest: visitor.digest,
+         hostname: "example.com",
+         pathname: "/page1",
+         referrer_hostname: nil,
+         created_at: base_time + 5.days + i.hours,
+         new_visit: false,
+         new_session: false,
+         is_unique: false,
+         bounced: i.even?,
+         duration: 20
+       )
+     end
+   end
+
+  def create_test_page_views_with_utm(time_bucket, utm_source: nil, utm_medium: nil, utm_campaign: nil, ref: nil)
+    visitor = Visitor.create!(
+      digest: "visitor_digest_utm_1",
+      property_id: @site.id,
+      browser: :chrome,
+      device_type: :desktop,
+      country: "US",
+      salt_version: @site.salt_version
+    )
+
+    # First page view with UTM parameters set (new_visit=true)
+    PageView.create!(
+      digest: "pv_utm_1",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source:,
+      utm_medium:,
+      utm_campaign:,
+      ref:,
+      created_at: time_bucket + 5.minutes,
+      new_visit: true,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    # Second page view without UTM parameters (new_visit=false)
+    PageView.create!(
+      digest: "pv_utm_2",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: time_bucket + 15.minutes,
+      new_visit: false,
+      new_session: false,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    # Third page view without UTM parameters (new_visit=false)
+    PageView.create!(
+      digest: "pv_utm_3",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: time_bucket + 25.minutes,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+  end
+
+  def create_test_page_views_with_utm_for_day(date, utm_source: nil, utm_medium: nil, utm_campaign: nil, ref: nil)
+    visitor = Visitor.find_or_create_by!(digest: "visitor_digest_utm_daily") do |v|
+      v.property_id = @site.id
+      v.browser = :chrome
+      v.device_type = :desktop
+      v.country = "US"
+      v.salt_version = @site.salt_version
+    end
+
+    base_time = date.to_datetime
+
+    PageView.create!(
+      digest: "pv_utm_daily_1",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source:,
+      utm_medium:,
+      utm_campaign:,
+      ref:,
+      created_at: base_time + 2.hours,
+      new_visit: true,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_utm_daily_2",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 3.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_utm_daily_3",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 4.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+
+    PageView.create!(
+      digest: "pv_utm_daily_4",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 10.hours,
+      new_visit: false,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_utm_daily_5",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 11.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_utm_daily_6",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 12.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+  end
+
+  def create_test_page_views_with_utm_for_week(week_start, utm_source: nil, utm_medium: nil, utm_campaign: nil, ref: nil)
+    visitor = Visitor.find_or_create_by!(digest: "visitor_digest_utm_weekly") do |v|
+      v.property_id = @site.id
+      v.browser = :chrome
+      v.device_type = :desktop
+      v.country = "US"
+      v.salt_version = @site.salt_version
+    end
+
+    base_time = week_start.to_datetime
+
+    PageView.create!(
+      digest: "pv_utm_weekly_1",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source:,
+      utm_medium:,
+      utm_campaign:,
+      ref:,
+      created_at: base_time + 1.day + 2.hours,
+      new_visit: true,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_utm_weekly_2",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 1.day + 3.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_utm_weekly_3",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 2.days + 4.hours,
+      new_visit: false,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_utm_weekly_4",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 2.days + 5.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+
+    PageView.create!(
+      digest: "pv_utm_weekly_5",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 3.days + 6.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    PageView.create!(
+      digest: "pv_utm_weekly_6",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 3.days + 7.hours,
+      new_visit: false,
+      new_session: false,
+      is_unique: false,
+      bounced: true,
+      duration: nil
+    )
+
+    PageView.create!(
+      digest: "pv_utm_weekly_7",
+      visitor_digest: visitor.digest,
+      hostname: "example.com",
+      pathname: "/page1",
+      utm_source: nil,
+      utm_medium: nil,
+      utm_campaign: nil,
+      ref: nil,
+      created_at: base_time + 4.days + 8.hours,
+      new_visit: false,
+      new_session: true,
+      is_unique: true,
+      bounced: false,
+      duration: 30
+    )
+
+    7.times do |i|
       PageView.create!(
-        digest: "pv_referrer_weekly_extra_#{i}",
+        digest: "pv_utm_weekly_extra_#{i}",
         visitor_digest: visitor.digest,
         hostname: "example.com",
         pathname: "/page1",
-        referrer_hostname: nil,
+        utm_source: nil,
+        utm_medium: nil,
+        utm_campaign: nil,
+        ref: nil,
         created_at: base_time + 5.days + i.hours,
         new_visit: false,
         new_session: false,

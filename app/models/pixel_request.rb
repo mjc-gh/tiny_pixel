@@ -97,7 +97,8 @@ class PixelRequest
       referrer_pathname: parsed_referrer[:pathname],
       utm_source:,
       utm_medium:,
-      utm_campaign: }
+      utm_campaign:,
+      ref: }
   end
 
   def parsed_attribution
@@ -117,6 +118,10 @@ class PixelRequest
 
   def utm_campaign
     parsed_attribution["utm_campaign"]
+  end
+
+  def ref
+    parsed_attribution["ref"]
   end
 
   def parsed_referrer

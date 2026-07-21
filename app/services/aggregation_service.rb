@@ -2,13 +2,18 @@
 
 class AggregationService
   LOOKBACK_HOURS = 48
-  SUPPORTED_DIMENSION_TYPES = %w[global country browser device_type referrer_hostname].freeze
+  SUPPORTED_DIMENSION_TYPES = %w[global country browser device_type referrer_hostname utm_source utm_medium utm_campaign ref].freeze
+  PAGEVIEW_BASED_DIMENSIONS = %w[referrer_hostname utm_source utm_medium utm_campaign ref].freeze
 
   DIMENSION_EXPRESSIONS = {
     "country" => Arel.sql("visitors.country"),
     "browser" => Arel.sql("visitors.browser"),
     "device_type" => Arel.sql("visitors.device_type"),
-    "referrer_hostname" => Arel.sql("referrer_hostname")
+    "referrer_hostname" => Arel.sql("referrer_hostname"),
+    "utm_source" => Arel.sql("utm_source"),
+    "utm_medium" => Arel.sql("utm_medium"),
+    "utm_campaign" => Arel.sql("utm_campaign"),
+    "ref" => Arel.sql("ref")
   }.freeze
 
   DIMENSION_SELECT_EXPRESSIONS = {
@@ -16,8 +21,179 @@ class AggregationService
     "country" => Arel.sql("visitors.country AS dimension_value"),
     "browser" => Arel.sql("visitors.browser AS dimension_value"),
     "device_type" => Arel.sql("visitors.device_type AS dimension_value"),
-    "referrer_hostname" => Arel.sql("referrer_hostname AS dimension_value")
+    "referrer_hostname" => Arel.sql("referrer_hostname AS dimension_value"),
+    "utm_source" => Arel.sql("utm_source AS dimension_value"),
+    "utm_medium" => Arel.sql("utm_medium AS dimension_value"),
+    "utm_campaign" => Arel.sql("utm_campaign AS dimension_value"),
+    "ref" => Arel.sql("ref AS dimension_value")
   }.freeze
+
+  # Pre-built SQL templates for window functions to prevent SQL injection
+  WINDOW_FUNCTION_SQL_REFERRER_HOSTNAME = <<~SQL.freeze
+    WITH visit_dimensions AS (
+      SELECT
+        page_views.*,
+        COALESCE(
+          FIRST_VALUE(NULLIF(page_views.referrer_hostname, '')) OVER (
+            PARTITION BY page_views.visitor_digest
+            ORDER BY page_views.created_at
+          ),
+          'direct'
+        ) AS visit_referrer_hostname
+      FROM page_views
+      WHERE page_views.created_at >= ? AND page_views.created_at < ?
+    )
+    SELECT
+      visit_dimensions.hostname AS hostname,
+      visit_dimensions.pathname AS pathname,
+      visit_dimensions.visit_referrer_hostname AS dimension_value,
+      COUNT(*) AS pageviews,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_visit = 1 THEN visit_dimensions.visitor_digest END) AS visits,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_session = 1 THEN visit_dimensions.visitor_digest END) AS sessions,
+      SUM(CASE WHEN visit_dimensions.is_unique = 1 THEN 1 ELSE 0 END) AS unique_pageviews,
+      SUM(CASE WHEN visit_dimensions.bounced = 1 THEN 1 ELSE 0 END) AS bounced_count,
+      COALESCE(SUM(visit_dimensions.duration), 0) AS total_duration,
+      COUNT(visit_dimensions.duration) AS duration_count
+    FROM visit_dimensions
+    INNER JOIN visitors ON visitors.digest = visit_dimensions.visitor_digest
+    WHERE visitors.property_id = ?
+    GROUP BY visit_dimensions.hostname, visit_dimensions.pathname, visit_dimensions.visit_referrer_hostname
+  SQL
+
+  WINDOW_FUNCTION_SQL_UTM_SOURCE = <<~SQL.freeze
+    WITH visit_dimensions AS (
+      SELECT
+        page_views.*,
+        COALESCE(
+          FIRST_VALUE(NULLIF(page_views.utm_source, '')) OVER (
+            PARTITION BY page_views.visitor_digest
+            ORDER BY page_views.created_at
+          ),
+          '(not set)'
+        ) AS visit_utm_source
+      FROM page_views
+      WHERE page_views.created_at >= ? AND page_views.created_at < ?
+    )
+    SELECT
+      visit_dimensions.hostname AS hostname,
+      visit_dimensions.pathname AS pathname,
+      visit_dimensions.visit_utm_source AS dimension_value,
+      COUNT(*) AS pageviews,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_visit = 1 THEN visit_dimensions.visitor_digest END) AS visits,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_session = 1 THEN visit_dimensions.visitor_digest END) AS sessions,
+      SUM(CASE WHEN visit_dimensions.is_unique = 1 THEN 1 ELSE 0 END) AS unique_pageviews,
+      SUM(CASE WHEN visit_dimensions.bounced = 1 THEN 1 ELSE 0 END) AS bounced_count,
+      COALESCE(SUM(visit_dimensions.duration), 0) AS total_duration,
+      COUNT(visit_dimensions.duration) AS duration_count
+    FROM visit_dimensions
+    INNER JOIN visitors ON visitors.digest = visit_dimensions.visitor_digest
+    WHERE visitors.property_id = ?
+    GROUP BY visit_dimensions.hostname, visit_dimensions.pathname, visit_dimensions.visit_utm_source
+  SQL
+
+  WINDOW_FUNCTION_SQL_UTM_MEDIUM = <<~SQL.freeze
+    WITH visit_dimensions AS (
+      SELECT
+        page_views.*,
+        COALESCE(
+          FIRST_VALUE(NULLIF(page_views.utm_medium, '')) OVER (
+            PARTITION BY page_views.visitor_digest
+            ORDER BY page_views.created_at
+          ),
+          '(not set)'
+        ) AS visit_utm_medium
+      FROM page_views
+      WHERE page_views.created_at >= ? AND page_views.created_at < ?
+    )
+    SELECT
+      visit_dimensions.hostname AS hostname,
+      visit_dimensions.pathname AS pathname,
+      visit_dimensions.visit_utm_medium AS dimension_value,
+      COUNT(*) AS pageviews,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_visit = 1 THEN visit_dimensions.visitor_digest END) AS visits,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_session = 1 THEN visit_dimensions.visitor_digest END) AS sessions,
+      SUM(CASE WHEN visit_dimensions.is_unique = 1 THEN 1 ELSE 0 END) AS unique_pageviews,
+      SUM(CASE WHEN visit_dimensions.bounced = 1 THEN 1 ELSE 0 END) AS bounced_count,
+      COALESCE(SUM(visit_dimensions.duration), 0) AS total_duration,
+      COUNT(visit_dimensions.duration) AS duration_count
+    FROM visit_dimensions
+    INNER JOIN visitors ON visitors.digest = visit_dimensions.visitor_digest
+    WHERE visitors.property_id = ?
+    GROUP BY visit_dimensions.hostname, visit_dimensions.pathname, visit_dimensions.visit_utm_medium
+  SQL
+
+  WINDOW_FUNCTION_SQL_UTM_CAMPAIGN = <<~SQL.freeze
+    WITH visit_dimensions AS (
+      SELECT
+        page_views.*,
+        COALESCE(
+          FIRST_VALUE(NULLIF(page_views.utm_campaign, '')) OVER (
+            PARTITION BY page_views.visitor_digest
+            ORDER BY page_views.created_at
+          ),
+          '(not set)'
+        ) AS visit_utm_campaign
+      FROM page_views
+      WHERE page_views.created_at >= ? AND page_views.created_at < ?
+    )
+    SELECT
+      visit_dimensions.hostname AS hostname,
+      visit_dimensions.pathname AS pathname,
+      visit_dimensions.visit_utm_campaign AS dimension_value,
+      COUNT(*) AS pageviews,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_visit = 1 THEN visit_dimensions.visitor_digest END) AS visits,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_session = 1 THEN visit_dimensions.visitor_digest END) AS sessions,
+      SUM(CASE WHEN visit_dimensions.is_unique = 1 THEN 1 ELSE 0 END) AS unique_pageviews,
+      SUM(CASE WHEN visit_dimensions.bounced = 1 THEN 1 ELSE 0 END) AS bounced_count,
+      COALESCE(SUM(visit_dimensions.duration), 0) AS total_duration,
+      COUNT(visit_dimensions.duration) AS duration_count
+    FROM visit_dimensions
+    INNER JOIN visitors ON visitors.digest = visit_dimensions.visitor_digest
+    WHERE visitors.property_id = ?
+    GROUP BY visit_dimensions.hostname, visit_dimensions.pathname, visit_dimensions.visit_utm_campaign
+  SQL
+
+  WINDOW_FUNCTION_SQL_REF = <<~SQL.freeze
+    WITH visit_dimensions AS (
+      SELECT
+        page_views.*,
+        COALESCE(
+          FIRST_VALUE(NULLIF(page_views.ref, '')) OVER (
+            PARTITION BY page_views.visitor_digest
+            ORDER BY page_views.created_at
+          ),
+          '(not set)'
+        ) AS visit_ref
+      FROM page_views
+      WHERE page_views.created_at >= ? AND page_views.created_at < ?
+    )
+    SELECT
+      visit_dimensions.hostname AS hostname,
+      visit_dimensions.pathname AS pathname,
+      visit_dimensions.visit_ref AS dimension_value,
+      COUNT(*) AS pageviews,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_visit = 1 THEN visit_dimensions.visitor_digest END) AS visits,
+      COUNT(DISTINCT CASE WHEN visit_dimensions.new_session = 1 THEN visit_dimensions.visitor_digest END) AS sessions,
+      SUM(CASE WHEN visit_dimensions.is_unique = 1 THEN 1 ELSE 0 END) AS unique_pageviews,
+      SUM(CASE WHEN visit_dimensions.bounced = 1 THEN 1 ELSE 0 END) AS bounced_count,
+      COALESCE(SUM(visit_dimensions.duration), 0) AS total_duration,
+      COUNT(visit_dimensions.duration) AS duration_count
+    FROM visit_dimensions
+    INNER JOIN visitors ON visitors.digest = visit_dimensions.visitor_digest
+    WHERE visitors.property_id = ?
+    GROUP BY visit_dimensions.hostname, visit_dimensions.pathname, visit_dimensions.visit_ref
+  SQL
+
+  # Map dimension types to their pre-built SQL templates
+  WINDOW_FUNCTION_SQL = {
+    "referrer_hostname" => WINDOW_FUNCTION_SQL_REFERRER_HOSTNAME,
+    "utm_source" => WINDOW_FUNCTION_SQL_UTM_SOURCE,
+    "utm_medium" => WINDOW_FUNCTION_SQL_UTM_MEDIUM,
+    "utm_campaign" => WINDOW_FUNCTION_SQL_UTM_CAMPAIGN,
+    "ref" => WINDOW_FUNCTION_SQL_REF
+  }.freeze
+
+  private_constant :WINDOW_FUNCTION_SQL
 
   class << self
     def aggregate_all_sites(lookback_hours: LOOKBACK_HOURS)
@@ -79,7 +255,7 @@ class AggregationService
   def aggregate_all_dimensions_hourly(time_bucket)
     aggregate_hourly(time_bucket, dimension_type: "global")
 
-    %w[country browser device_type referrer_hostname].each do |dim_type|
+    %w[country browser device_type referrer_hostname utm_source utm_medium utm_campaign ref].each do |dim_type|
       aggregate_hourly(time_bucket, dimension_type: dim_type)
     end
   end
@@ -87,7 +263,7 @@ class AggregationService
   def aggregate_all_dimensions_daily(date)
     aggregate_daily(date, dimension_type: "global")
 
-    %w[country browser device_type referrer_hostname].each do |dim_type|
+    %w[country browser device_type referrer_hostname utm_source utm_medium utm_campaign ref].each do |dim_type|
       aggregate_daily(date, dimension_type: dim_type)
     end
   end
@@ -95,7 +271,7 @@ class AggregationService
   def aggregate_all_dimensions_weekly(week_start)
     aggregate_weekly(week_start, dimension_type: "global")
 
-    %w[country browser device_type referrer_hostname].each do |dim_type|
+    %w[country browser device_type referrer_hostname utm_source utm_medium utm_campaign ref].each do |dim_type|
       aggregate_weekly(week_start, dimension_type: dim_type)
     end
   end
@@ -128,9 +304,9 @@ class AggregationService
   def fetch_raw_stats(start_time, end_time, dimension_type: "global")
     dimension_expression = self.class.dimension_expression_for_type(dimension_type) if dimension_type != "global"
 
-    # For referrer_hostname, we need special handling with a window function
-    if dimension_type == "referrer_hostname"
-      fetch_raw_stats_with_window_function(start_time, end_time, dimension_expression)
+    # For pageview-based dimensions, we need special handling with a window function
+    if dimension_type.in?(PAGEVIEW_BASED_DIMENSIONS)
+      fetch_raw_stats_with_window_function(start_time, end_time, dimension_type)
     else
       fetch_raw_stats_standard(start_time, end_time, dimension_expression, dimension_type)
     end
@@ -167,44 +343,20 @@ class AggregationService
       )
   end
 
-  def fetch_raw_stats_with_window_function(start_time, end_time, dimension_expression)
-    # Use a CTE with FIRST_VALUE window function to propagate referrer_hostname from
+  def fetch_raw_stats_with_window_function(start_time, end_time, dimension_type)
+    # Use a CTE with FIRST_VALUE window function to propagate pageview-based dimensions from
     # the first page view of each visit to all page views in that visit
-    cte_sql = <<~SQL
-      WITH visit_referrers AS (
-        SELECT
-          page_views.*,
-          COALESCE(
-            FIRST_VALUE(NULLIF(page_views.referrer_hostname, '')) OVER (
-              PARTITION BY page_views.visitor_digest
-              ORDER BY page_views.created_at
-            ),
-            'direct'
-          ) AS visit_referrer_hostname
-        FROM page_views
-        WHERE page_views.created_at >= ? AND page_views.created_at < ?
-      )
-      SELECT
-        visit_referrers.hostname AS hostname,
-        visit_referrers.pathname AS pathname,
-        visit_referrers.visit_referrer_hostname AS dimension_value,
-        COUNT(*) AS pageviews,
-        COUNT(DISTINCT CASE WHEN visit_referrers.new_visit = 1 THEN visit_referrers.visitor_digest END) AS visits,
-        COUNT(DISTINCT CASE WHEN visit_referrers.new_session = 1 THEN visit_referrers.visitor_digest END) AS sessions,
-        SUM(CASE WHEN visit_referrers.is_unique = 1 THEN 1 ELSE 0 END) AS unique_pageviews,
-        SUM(CASE WHEN visit_referrers.bounced = 1 THEN 1 ELSE 0 END) AS bounced_count,
-        COALESCE(SUM(visit_referrers.duration), 0) AS total_duration,
-        COUNT(visit_referrers.duration) AS duration_count
-      FROM visit_referrers
-      INNER JOIN visitors ON visitors.digest = visit_referrers.visitor_digest
-      WHERE visitors.property_id = ?
-      GROUP BY visit_referrers.hostname, visit_referrers.pathname, visit_referrers.visit_referrer_hostname
-    SQL
+
+    # Use pre-built static SQL templates for SQL injection safety
+    cte_sql = WINDOW_FUNCTION_SQL[dimension_type]
+    raise ArgumentError, "Invalid dimension_type: #{dimension_type}" if cte_sql.nil?
 
     result = PageView.connection.select_all(cte_sql, "AggregationService", [start_time, end_time, @site.id])
     # Convert Hash objects to OpenStruct to provide dot notation access for method calls
     result.map { |row| OpenStruct.new(row.to_h) }
   end
+
+  private
 
   def upsert_hourly_stats(time_bucket, raw_stats, dimension_type: "global")
     created = 0

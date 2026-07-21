@@ -870,4 +870,64 @@ class PixelRequestTest < ActiveSupport::TestCase
     assert_nil pr.utm_medium
     assert_nil pr.utm_campaign
   end
+
+  test "ref field extraction from parsed_attribution" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("34.35.36.37", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      qs: "ref=homepage"
+    })
+
+    assert_equal "homepage", pr.ref
+  end
+
+  test "ref field works with multiple query parameters" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("35.36.37.38", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      qs: "utm_source=google&utm_medium=cpc&ref=sidebar"
+    })
+
+    assert_equal "google", pr.utm_source
+    assert_equal "cpc", pr.utm_medium
+    assert_equal "sidebar", pr.ref
+  end
+
+  test "ref field returns nil when not present" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("36.37.38.39", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      qs: "utm_source=newsletter"
+    })
+
+    assert_nil pr.ref
+  end
+
+  test "page_view_attributes includes ref field" do
+    site = sites(:my_blog)
+    req = FakeRequest.new("37.38.39.40", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    pr = PixelRequest.from_incoming(req, {
+      pid: site.property_id,
+      p: "/",
+      h: "example.com",
+      qs: "ref=footer"
+    })
+
+    attributes = pr.page_view_attributes
+
+    assert_equal "footer", attributes[:ref]
+  end
 end
