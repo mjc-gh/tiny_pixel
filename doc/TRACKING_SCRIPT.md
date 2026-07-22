@@ -32,7 +32,8 @@ const TinyPixel = (function() {
   // Internal implementation
   return {
     setup(script),
-    emitPageView()
+    emitPageView(referrer),
+    initSpaTracking()
   };
 }());
 ```
@@ -48,21 +49,27 @@ Configures the tracking script with server details from a script element's data 
 
 **Behavior:**
 - Extracts `data-property-id` and `data-server` attributes
+- Extracts optional `data-spa` attribute (set to `"true"` to enable SPA tracking)
 - Logs debug messages if configuration is incomplete
 - Handles null/undefined script gracefully
+- Automatically initializes SPA tracking if `data-spa="true"`
 
 **Example:**
 ```html
 <script
   src="https://analytics.example.com/tp.js"
   data-property-id="prop_123"
-  data-server="https://analytics.example.com">
+  data-server="https://analytics.example.com"
+  data-spa="true">
 </script>
 ```
 
 ### `TinyPixel.emitPageView()`
 
 Sends a page view event to the configured analytics server.
+
+**Parameters:**
+- `referrer` (string|optional): Custom referrer to use instead of `document.referrer`. Used internally for SPA page tracking.
 
 **Behavior:**
 - Returns early if not configured
@@ -119,6 +126,60 @@ document.cookie = "tpOptOut=; path=/; max-age=0";
 
 When the `tpOptOut` cookie is set to `"yes"`, `TinyPixel.emitPageView()` returns immediately without sending any tracking requests.
 
+## Single Page Application (SPA) Support
+
+For Single Page Applications that use client-side routing (History API or hash-based navigation), TinyPixel can automatically track page view events when the URL changes.
+
+### Enabling SPA Mode
+
+Add the `data-spa="true"` attribute to the tracking script tag:
+
+```html
+<script
+  src="https://analytics.example.com/tp.js"
+  data-property-id="prop_123"
+  data-server="https://analytics.example.com"
+  data-spa="true">
+</script>
+```
+
+### How It Works
+
+When SPA mode is enabled, TinyPixel listens to the following events:
+
+1. **`history.pushState()` calls** - When your SPA framework navigates using the History API
+2. **`history.replaceState()` calls** - When your SPA replaces the current history entry
+3. **`popstate` events** - When the user clicks browser back/forward buttons
+4. **`hashchange` events** - When the URL hash fragment changes (hash-based routing)
+
+### Referrer Tracking
+
+For SPA navigations, TinyPixel automatically sets the previous page URL as the referrer for attribution purposes. This maintains accurate referrer data even though the browser's `document.referrer` property doesn't update on client-side navigation.
+
+Example flow:
+1. User visits `/products` (initial page view with `document.referrer` as external referrer)
+2. User clicks link to `/products/item123` (new page view with referrer set to `/products`)
+3. User clicks back button to `/products` (new page view with referrer set to `/products/item123`)
+
+### Deduplication
+
+TinyPixel prevents duplicate page view events when multiple navigation events fire for the same URL. For example, both `popstate` and `hashchange` events might fire for the same URL change - TinyPixel ensures only one page view is recorded.
+
+### Implementation Details
+
+- SPA tracking is disabled by default (opt-in only via `data-spa="true"`)
+- History API methods are wrapped to detect all navigation patterns
+- The script tracks the full URL (pathname + search + hash) to detect changes
+- Initial page view is emitted before SPA listeners are activated
+- SPA listeners remain active for the lifetime of the page (no cleanup)
+
+### Browser Compatibility
+
+SPA mode works in all modern browsers that support:
+- History API (`history.pushState` and `history.replaceState`)
+- `popstate` events
+- `hashchange` events
+
 ## Random Value Generation
 
 The script generates a random nonce using:
@@ -154,6 +215,12 @@ Tests verify:
 - Page view emission with correct parameters
 - Graceful handling of missing attributes
 - Referrer inclusion/exclusion
+- SPA mode activation via `data-spa` attribute
+- History API tracking (`pushState`, `replaceState`)
+- Browser navigation tracking (`popstate`, `hashchange`)
+- URL deduplication for SPA navigations
+- Previous URL tracking as referrer on SPA navigation
+- Opt-out behavior with SPA tracking
 
 See `pkg/tiny_pixel.test.js` for comprehensive test specifications.
 

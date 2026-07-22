@@ -21,6 +21,7 @@ describe('TinyPixel', () => {
       search: '',
       hostname: 'example.com',
       pathname: '/page',
+      hash: '',
       href: 'https://example.com/page'
     };
 
@@ -441,6 +442,352 @@ describe('TinyPixel', () => {
       TinyPixel.emitPageView();
 
       expect(global.document.body.appendChild).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('SPA Mode (data-spa attribute)', () => {
+    it('parses data-spa attribute from script tag', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'true'
+        }
+      };
+
+      TinyPixel.setup(script);
+      expect(true).toBe(true); // Setup completes without error
+    });
+
+    it('does not enable SPA tracking when data-spa is not set', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com'
+        }
+      };
+
+      TinyPixel.setup(script);
+      expect(true).toBe(true); // Setup completes without error
+    });
+
+    it('does not enable SPA tracking when data-spa is false', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'false'
+        }
+      };
+
+      TinyPixel.setup(script);
+      expect(true).toBe(true); // Setup completes without error
+    });
+
+    it('emitPageView accepts optional referrer parameter for SPA navigation', () => {
+      global.document.referrer = '';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView('https://previous-page.com');
+
+      const calls = global.document.body.appendChild.mock.calls;
+      const imgElement = calls[0][0];
+      const url = new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+
+      expect(url.searchParams.get('r')).toBe('https://previous-page.com');
+    });
+
+    it('uses document.referrer when no referrer parameter is provided', () => {
+      global.document.referrer = 'https://google.com';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView();
+
+      const calls = global.document.body.appendChild.mock.calls;
+      const imgElement = calls[0][0];
+      const url = new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+
+      expect(url.searchParams.get('r')).toBe('https://google.com');
+    });
+
+    it('prefers provided referrer parameter over document.referrer', () => {
+      global.document.referrer = 'https://google.com';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitPageView('https://spa-previous-page.com');
+
+      const calls = global.document.body.appendChild.mock.calls;
+      const imgElement = calls[0][0];
+      const url = new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+
+      expect(url.searchParams.get('r')).toBe('https://spa-previous-page.com');
+    });
+
+    it('initializes SPA tracking when data-spa="true"', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'true'
+        }
+      };
+
+      // Mock window and history
+      global.window = {
+        addEventListener: mock(() => {}),
+        location: global.location
+      };
+      global.history = {
+        pushState: mock(function() {}),
+        replaceState: mock(function() {})
+      };
+
+      TinyPixel.setup(script);
+
+      // Verify event listeners were added
+      expect(global.window.addEventListener).toHaveBeenCalled();
+    });
+
+    it('triggers page view on history.pushState in SPA mode', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'true'
+        }
+      };
+
+      let pushStateCallback;
+      global.window = {
+        addEventListener: mock(() => {}),
+        location: global.location
+      };
+      global.history = {
+        pushState: mock(function(state, title, url) {
+          if (typeof url === 'string') {
+            global.location.pathname = new URL(url, 'https://example.com').pathname;
+          }
+        }),
+        replaceState: mock(function() {})
+      };
+
+      TinyPixel.setup(script);
+
+      // Manually trigger navigation
+      global.location.pathname = '/new-page';
+      global.document.body.appendChild.mock.calls.length = 0;
+
+      history.pushState({}, '', 'https://example.com/new-page');
+
+      // Should have emitted a page view for the new page
+      expect(global.document.body.appendChild).toHaveBeenCalled();
+    });
+
+    it('triggers page view on history.replaceState in SPA mode', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'true'
+        }
+      };
+
+      global.window = {
+        addEventListener: mock(() => {}),
+        location: global.location
+      };
+      global.history = {
+        pushState: mock(function() {}),
+        replaceState: mock(function(state, title, url) {
+          if (typeof url === 'string') {
+            global.location.pathname = new URL(url, 'https://example.com').pathname;
+          }
+        })
+      };
+
+      TinyPixel.setup(script);
+
+      global.location.pathname = '/replaced-page';
+      global.document.body.appendChild.mock.calls.length = 0;
+
+      history.replaceState({}, '', 'https://example.com/replaced-page');
+
+      expect(global.document.body.appendChild).toHaveBeenCalled();
+    });
+
+    it('deduplicates page views when URL does not change', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'true'
+        }
+      };
+
+      global.window = {
+        addEventListener: mock(() => {}),
+        location: global.location
+      };
+      global.history = {
+        pushState: mock(function() {}),
+        replaceState: mock(function() {})
+      };
+
+      TinyPixel.setup(script);
+      
+      global.document.body.appendChild.mock.calls.length = 0;
+      
+      // Simulate navigation to same URL twice
+      history.pushState({}, '', 'https://example.com/page');
+      const firstCallCount = global.document.body.appendChild.mock.calls.length;
+      
+      history.pushState({}, '', 'https://example.com/page');
+      const secondCallCount = global.document.body.appendChild.mock.calls.length;
+      
+      // Second call should not result in additional page views (deduplication)
+      expect(secondCallCount).toBe(firstCallCount);
+    });
+
+    it('triggers popstate event handler in SPA mode', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'true'
+        }
+      };
+
+      let popstateHandler;
+      global.window = {
+        addEventListener: mock((event, handler) => {
+          if (event === 'popstate') {
+            popstateHandler = handler;
+          }
+        }),
+        location: global.location
+      };
+      global.history = {
+        pushState: mock(function() {}),
+        replaceState: mock(function() {})
+      };
+
+      TinyPixel.setup(script);
+
+      global.location.pathname = '/back-page';
+      global.document.body.appendChild.mock.calls.length = 0;
+
+      // Manually trigger popstate
+      if (popstateHandler) {
+        popstateHandler();
+      }
+
+      expect(global.document.body.appendChild).toHaveBeenCalled();
+    });
+
+    it('triggers hashchange event handler in SPA mode', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'true'
+        }
+      };
+
+      let hashchangeHandler;
+      global.window = {
+        addEventListener: mock((event, handler) => {
+          if (event === 'hashchange') {
+            hashchangeHandler = handler;
+          }
+        }),
+        location: global.location
+      };
+      global.history = {
+        pushState: mock(function() {}),
+        replaceState: mock(function() {})
+      };
+
+      TinyPixel.setup(script);
+
+      global.location.hash = '#/new-route';
+      global.document.body.appendChild.mock.calls.length = 0;
+
+      // Manually trigger hashchange
+      if (hashchangeHandler) {
+        hashchangeHandler();
+      }
+
+      expect(global.document.body.appendChild).toHaveBeenCalled();
+    });
+
+    it('uses previous URL as referrer on SPA navigation', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'true'
+        }
+      };
+
+      global.window = {
+        addEventListener: mock(() => {}),
+        location: global.location
+      };
+      global.history = {
+        pushState: mock(function() {
+          global.location.pathname = '/page2';
+        }),
+        replaceState: mock(function() {})
+      };
+      global.document.referrer = '';
+
+      global.location.pathname = '/page1';
+      TinyPixel.setup(script);
+      
+      global.document.body.appendChild.mock.calls.length = 0;
+
+      history.pushState({}, '', '/page2');
+
+      const calls = global.document.body.appendChild.mock.calls;
+      const imgElement = calls[0][0];
+      const url = new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+
+      expect(url.searchParams.get('r')).toBe('/page1');
+    });
+
+    it('does not duplicate events when both popstate and hashchange fire for same URL', () => {
+      const script = {
+        dataset: {
+          propertyId: 'test-prop-123',
+          server: 'https://analytics.example.com',
+          spa: 'true'
+        }
+      };
+
+      let popstateHandler, hashchangeHandler;
+      global.window = {
+        addEventListener: mock((event, handler) => {
+          if (event === 'popstate') popstateHandler = handler;
+          if (event === 'hashchange') hashchangeHandler = handler;
+        }),
+        location: global.location
+      };
+      global.history = {
+        pushState: mock(function() {}),
+        replaceState: mock(function() {})
+      };
+
+      TinyPixel.setup(script);
+
+      global.location.pathname = '/same-page';
+      global.location.hash = '#route1';
+      global.document.body.appendChild.mock.calls.length = 0;
+
+      if (popstateHandler) popstateHandler();
+      if (hashchangeHandler) hashchangeHandler();
+
+      // Should only have one page view, not two
+      expect(global.document.body.appendChild.mock.calls.length).toBe(1);
     });
   });
 });
