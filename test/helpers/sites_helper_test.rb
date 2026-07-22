@@ -80,22 +80,22 @@ class SitesHelperTest < ActionView::TestCase
   end
 
   test "site_has_utm_data? handles multiple sites" do
-    site1 = sites(:tech_blog)
-    site2 = sites(:my_blog)
+    site_one = sites(:tech_blog)
+    site_two = sites(:my_blog)
 
     create_daily_stat_with_dimension(
-      site1,
+      site_one,
       dimension_type: "utm_source",
       dimension_value: "google",
       pageviews: 100,
       sessions: 50
     )
 
-    assert site_has_utm_data?(site1)
-    refute site_has_utm_data?(site2)
+    assert site_has_utm_data?(site_one)
+    refute site_has_utm_data?(site_two)
 
     # Verify both are memoized
-    assert @site_has_utm_data[site1.id] == true
-    assert @site_has_utm_data[site2.id] == false
+    assert @site_has_utm_data[site_one.id] == true
+    assert @site_has_utm_data[site_two.id] == false
   end
 end
