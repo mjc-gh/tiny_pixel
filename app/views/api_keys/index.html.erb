@@ -1,0 +1,40 @@
+<div class="w-full max-w-4xl mx-auto space-y-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-content-primary"><%= t("api_keys.index.title") %></h1>
+      <p class="text-sm text-content-secondary mt-1"><%= t("api_keys.index.description") %></p>
+    </div>
+    <%= link_to t("api_keys.index.create"), new_api_key_path, class: "bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium text-center" %>
+  </div>
+
+  <% if flash[:api_key_token].present? %>
+    <div data-turbo-temporary class="bg-warning-bg border border-warning-border rounded-lg p-6" data-controller="clipboard">
+      <h2 class="text-lg font-semibold text-warning-text"><%= t("api_keys.index.token_title") %></h2>
+      <p class="text-sm text-warning-text mt-1"><%= t("api_keys.index.token_warning") %></p>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center mt-4">
+        <code data-clipboard-target="source" class="flex-1 break-all rounded-md bg-surface px-3 py-2 text-sm text-content-primary"><%= flash[:api_key_token] %></code>
+        <button type="button" data-action="clipboard#copy" data-clipboard-target="button" data-copied-text="<%= t("common.copied") %>" class="border border-warning-border rounded-md px-3 py-2 text-sm font-medium text-warning-text hover:bg-warning-border/20"><%= t("common.copy") %></button>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @api_keys.empty? %>
+    <div class="bg-surface border border-border rounded-lg p-6 sm:p-8 text-center">
+      <p class="text-content-secondary"><%= t("api_keys.index.empty") %></p>
+    </div>
+  <% else %>
+    <div class="bg-surface border border-border rounded-lg divide-y divide-border">
+      <% @api_keys.each do |api_key| %>
+        <div class="p-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div class="space-y-1">
+            <h2 class="font-semibold text-content-primary"><%= api_key.name %></h2>
+            <p class="text-sm text-content-secondary"><%= t("api_keys.index.created", time: l(api_key.created_at, format: :long)) %></p>
+            <p class="text-sm text-content-secondary"><%= t("api_keys.index.expires", time: api_key.expires_at ? l(api_key.expires_at, format: :long) : t("api_keys.index.never")) %></p>
+            <p class="text-sm font-medium <%= api_key.expired? ? "text-danger-text" : "text-success-text" %>"><%= api_key.expired? ? t("api_keys.index.expired") : t("api_keys.index.active") %></p>
+          </div>
+          <%= button_to t("api_keys.index.revoke"), api_key_path(api_key), method: :delete, data: { turbo_confirm: t("api_keys.index.revoke_confirm") }, class: "border border-danger-border rounded-md px-3 py-2 text-sm font-medium text-danger-text hover:bg-danger-bg" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

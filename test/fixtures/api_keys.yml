@@ -1,0 +1,43 @@
+# == Schema Information
+#
+# Table name: api_keys
+# Database name: primary
+#
+#  id           :integer          not null, primary key
+#  expires_at   :datetime
+#  name         :string           not null
+#  token_digest :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  user_id      :integer          not null
+#
+# Indexes
+#
+#  index_api_keys_on_token_digest  (token_digest) UNIQUE
+#  index_api_keys_on_user_id       (user_id)
+#
+# Foreign Keys
+#
+#  user_id  (user_id => users.id)
+#
+alice_never:
+  user: alice
+  name: Never expires
+  token_digest: <%= Digest::SHA256.hexdigest("fixture-alice-never") %>
+
+alice_future:
+  user: alice
+  name: Future key
+  token_digest: <%= Digest::SHA256.hexdigest("fixture-alice-future") %>
+  expires_at: <%= 30.days.from_now %>
+
+alice_expired:
+  user: alice
+  name: Expired key
+  token_digest: <%= Digest::SHA256.hexdigest("fixture-alice-expired") %>
+  expires_at: <%= 1.day.ago %>
+
+bob_key:
+  user: bob
+  name: Bob key
+  token_digest: <%= Digest::SHA256.hexdigest("fixture-bob") %>

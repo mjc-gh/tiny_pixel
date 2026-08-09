@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_01_113227) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_120000) do
   create_table "aggregation_logs", force: :cascade do |t|
     t.string "aggregation_type", null: false
     t.datetime "completed_at"
@@ -22,6 +22,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_01_113227) do
     t.datetime "updated_at", null: false
     t.index ["site_id", "aggregation_type", "time_bucket"], name: "idx_aggregation_logs_site_type_time"
     t.index ["site_id"], name: "index_aggregation_logs_on_site_id"
+  end
+
+  create_table "api_keys", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.string "name", null: false
+    t.string "token_digest", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["token_digest"], name: "index_api_keys_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_api_keys_on_user_id"
   end
 
   create_table "daily_page_stats", force: :cascade do |t|
@@ -142,6 +153,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_01_113227) do
   end
 
   add_foreign_key "aggregation_logs", "sites"
+  add_foreign_key "api_keys", "users"
   add_foreign_key "daily_page_stats", "sites"
   add_foreign_key "hourly_page_stats", "sites"
   add_foreign_key "memberships", "sites"

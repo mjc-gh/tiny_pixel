@@ -20,6 +20,14 @@ class Sites::MembershipsController < ApplicationController
 end
 ```
 
+## API Keys
+
+API keys are account-level credentials owned by `User` and managed through the authenticated Profile area. The `ApiKey` model stores only a SHA-256 digest of each generated `tiny_pixel_`-prefixed secret; the plaintext is retained in memory and displayed once after creation. Blank and unknown tokens, as well as keys whose `expires_at` is in the past or at the current time, fail `ApiKey.authenticate`.
+
+Keys may have no expiration, are listed newest first, and are revoked by deleting their row. Management actions are always scoped through `current_user.api_keys`, so a user cannot view or revoke another user's key. User deletion cascades to its API keys through both the model association and database foreign key.
+
+The future API should use `ApiKey.authenticate(token)` as its authentication integration point. Authorization must derive from the owning user and that user's current site memberships rather than being copied into the key. Membership changes therefore take effect immediately without reissuing credentials. Credential parameters remain covered by the existing parameter filters and plaintext secrets must never be logged, persisted, or placed in URLs.
+
 ### Conditional Email Delivery
 
 The `UserReviseExtension` module conditionally sends emails based on `TinyPixel.email_delivery_supported?`:

@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   revise_auth
 
+  resources :api_keys, only: [:index, :new, :create, :destroy]
+
   namespace :onboarding do
     resources :sites, only: [:new, :create]
   end

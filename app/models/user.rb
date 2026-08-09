@@ -30,6 +30,7 @@ class User < ApplicationRecord
 
   has_many :memberships, dependent: :destroy
   has_many :sites, through: :memberships
+  has_many :api_keys, dependent: :destroy
 
   validate :email_domain_allowed, on: :create
 

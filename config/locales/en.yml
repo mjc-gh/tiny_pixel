@@ -5,6 +5,30 @@ en:
     settings: "Settings"
     copy: "Copy"
     copied: "Copied!"
+  api_keys:
+    index:
+      title: "API Keys"
+      description: "Create credentials for future API access. Keep your secrets private."
+      create: "Create API Key"
+      empty: "You have not created any API keys yet."
+      token_title: "API key created"
+      token_warning: "Copy this token now. It cannot be retrieved again after you leave this page."
+      created: "Created %{time}"
+      expires: "Expires %{time}"
+      never: "Never"
+      active: "Active"
+      expired: "Expired"
+      revoke: "Revoke"
+      revoke_confirm: "Are you sure you want to revoke this API key? This cannot be undone."
+    new:
+      title: "Create API Key"
+      details: "Key details"
+      name: "Name"
+      expires_at: "Expiration (optional)"
+      expires_help: "Leave blank for a key that does not expire."
+      submit: "Create API Key"
+    destroy:
+      success: "API key revoked successfully"
   home:
     setup:
       title: "Welcome to TinyPixel"
@@ -245,7 +269,17 @@ en:
   activerecord:
      errors:
       models:
-        user:
+         api_key:
+           attributes:
+             expires_at:
+               in_the_future: "must be in the future"
+         user:
           attributes:
             email:
-              domain_not_allowed: "is not from an allowed domain"
+               domain_not_allowed: "is not from an allowed domain"
+  revise_auth:
+    registrations:
+      edit:
+        api_keys: "API Keys"
+        api_keys_description: "Manage credentials for API access."
+        manage_api_keys: "Manage API Keys"
