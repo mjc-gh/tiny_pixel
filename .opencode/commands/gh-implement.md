@@ -1,6 +1,6 @@
 ---
 description: Fetch a GitHub issue and implement it
-model: openrouter/anthropic/claude-haiku-4.5
+model: openrouter/openai/gpt-5.6-luna
 ---
 
 Fetch the issue to content using:
