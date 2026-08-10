@@ -115,10 +115,10 @@ class SiteStatsServiceTest < ActiveSupport::TestCase
   test "computes weekly stats correctly for old sites" do
     site = Site.create!(name: "Old Site", created_at: 30.days.ago)
 
-    # Create weekly stats for last 4 weeks
+    # Create weekly stats for the last 4 completed weeks
     now = Time.current.to_date
     (0..3).each do |week_offset|
-      week_start = (now - (3 - week_offset).weeks).beginning_of_week
+      week_start = (now - (4 - week_offset).weeks).beginning_of_week
       WeeklyPageStat.create!(
         site_id: site.id,
         hostname: "example.com",
