@@ -43,7 +43,7 @@ const TinyPixel = (function() {
     );
   }
 
-  const send = (eventType, referrer) => {
+  const send = (eventType, referrer, value) => {
     const params = new URLSearchParams({
       pid: propertyId,
       h: location.hostname,
@@ -54,6 +54,8 @@ const TinyPixel = (function() {
 
     if (eventType)
       params.append("ev", eventType);
+    if (value !== undefined)
+      params.append("v", value);
 
     const referrerToUse = referrer || document.referrer;
     if (referrerToUse)
@@ -137,6 +139,15 @@ const TinyPixel = (function() {
       send("view", referrer);
     },
 
+    emitEvent: (name, value) => {
+      if (!configured) return;
+      if (isOptedOut()) return;
+      if (typeof name !== 'string' || name.trim() === '' || name === 'view') return;
+      if (value !== undefined && (typeof value !== 'number' || !Number.isFinite(value))) return;
+
+      send(name, undefined, value);
+    },
+
     initSpaTracking
   };
 }());
@@ -145,6 +156,10 @@ const TinyPixel = (function() {
 if (typeof document !== 'undefined' && document.currentScript) {
   TinyPixel.setup(document.currentScript);
   TinyPixel.emitPageView();
+}
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.TinyPixel = TinyPixel;
 }
 
 // Export for testing

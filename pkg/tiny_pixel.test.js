@@ -361,6 +361,7 @@ describe('TinyPixel', () => {
       expect(url.searchParams.has('qs')).toBe(true);
       expect(url.searchParams.has('n')).toBe(true);
       expect(url.searchParams.get('ev')).toBe('view');
+      expect(url.searchParams.has('v')).toBe(false);
       expect(url.searchParams.get('r')).toBe('https://google.com');
     });
 
@@ -386,6 +387,84 @@ describe('TinyPixel', () => {
 
       expect(imgElement.getAttribute('aria-hidden')).toBe('true');
       expect(imgElement.style.position).toBe('absolute');
+    });
+  });
+
+  describe('emitEvent()', () => {
+    const eventUrl = () => {
+      const imgElement = global.document.body.appendChild.mock.calls[0][0];
+      return new URL(imgElement.src.replace('https://analytics.example.com', 'https://example.com'));
+    };
+
+    it('emits custom events without a value', () => {
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitEvent('signup');
+
+      expect(global.document.body.appendChild.mock.calls).toHaveLength(1);
+      expect(eventUrl().searchParams.get('ev')).toBe('signup');
+      expect(eventUrl().searchParams.has('v')).toBe(false);
+    });
+
+    it.each([0, -12, 42, 1.5])('serializes numeric value %s', (value) => {
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitEvent('purchase', value);
+
+      expect(eventUrl().searchParams.get('v')).toBe(String(value));
+    });
+
+    it('URL-encodes arbitrary event names', () => {
+      const name = 'invite & bienvenue/你好';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitEvent(name);
+
+      expect(eventUrl().searchParams.get('ev')).toBe(name);
+    });
+
+    it.each([undefined, '', '   ', null, 123, 'view'])('does not emit invalid name %p', (name) => {
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitEvent(name);
+
+      expect(global.document.body.appendChild).not.toHaveBeenCalled();
+    });
+
+    it.each(['1', NaN, Infinity, -Infinity])('does not emit invalid value %p', (value) => {
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitEvent('purchase', value);
+
+      expect(global.document.body.appendChild).not.toHaveBeenCalled();
+    });
+
+    it('retains standard metadata for custom events', () => {
+      global.location.hostname = 'events.example.com';
+      global.location.pathname = '/checkout';
+      global.location.search = '?utm_source=mail&secret=hidden';
+      global.document.referrer = 'https://example.com';
+
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitEvent('checkout', 0);
+
+      const params = eventUrl().searchParams;
+      expect(params.get('pid')).toBe('test-prop-123');
+      expect(params.get('h')).toBe('events.example.com');
+      expect(params.get('p')).toBe('/checkout');
+      expect(params.get('qs')).toBe('utm_source=mail');
+      expect(params.has('n')).toBe(true);
+      expect(params.get('r')).toBe('https://example.com');
+    });
+
+    it('does not emit when unconfigured or opted out', () => {
+      TinyPixel.emitEvent('signup');
+      expect(global.document.body.appendChild).not.toHaveBeenCalled();
+
+      global.document.cookie = 'tpOptOut=yes';
+      TinyPixel.setup(mockScript);
+      TinyPixel.emitEvent('signup');
+      expect(global.document.body.appendChild).not.toHaveBeenCalled();
+    });
+
+    it('is available on the browser global', () => {
+      expect(globalThis.TinyPixel.emitEvent).toBe(TinyPixel.emitEvent);
     });
   });
 

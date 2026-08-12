@@ -1,11 +1,11 @@
 # TinyPixel Tracking Script
 
-The TinyPixel tracking script (`pkg/tiny_pixel.js`) is a lightweight, privacy-focused analytics tracking script that collects page view events and sends them to a TinyPixel analytics server.
+The TinyPixel tracking script (`pkg/tiny_pixel.js`) is a lightweight, privacy-focused analytics tracking script that collects page views and custom events and sends them to a TinyPixel analytics server.
 
 ## Overview
 
 The tracking script is designed to be minimal and performant. It:
-- Collects page view events with minimal data
+- Collects page view and custom events with minimal data
 - Supports UTM parameter filtering
 - Uses image pixel requests for maximum compatibility
 - Requires no external dependencies
@@ -22,7 +22,7 @@ The script is organized into functional sections:
 1. **Configuration**: UTM parameter names and internal state
 2. **Utilities**: Helper functions for URL parsing and random value generation
 3. **Core Logic**: Image pixel transmission
-4. **Public API**: `setup()` and `emitPageView()` methods
+4. **Public API**: `setup()`, `emitPageView()`, and `emitEvent()` methods
 5. **Auto-initialization**: Browser-context setup and module export for testing
 
 ### Module Structure
@@ -33,6 +33,7 @@ const TinyPixel = (function() {
   return {
     setup(script),
     emitPageView(referrer),
+    emitEvent(name, value),
     initSpaTracking()
   };
 }());
@@ -79,9 +80,25 @@ Sends a page view event to the configured analytics server.
 
 **Return Value:** undefined
 
+### `TinyPixel.emitEvent(name, value)`
+
+Sends a custom event to the configured analytics server.
+
+**Parameters:**
+- `name` (string): Non-empty event name. The reserved name `view` is not accepted.
+- `value` (number|optional): A finite numeric value. `0`, negative, integer, and fractional values are valid.
+
+**Examples:**
+```javascript
+TinyPixel.emitEvent('signup');
+TinyPixel.emitEvent('purchase', 19.99);
+```
+
+Invalid names and values are ignored without throwing. Event names and values are sent in a GET URL; do not include secrets, personal information, or large payloads.
+
 ## Query Parameters
 
-When emitting a page view, the tracking script includes these query parameters:
+When emitting an event, the tracking script includes these query parameters:
 
 | Parameter | Description | Example |
 |-----------|-------------|---------|
@@ -90,7 +107,8 @@ When emitting a page view, the tracking script includes these query parameters:
 | `p` | Pathname | `/products` |
 | `qs` | Query string (UTM params only) | `utm_source=google&utm_medium=cpc` |
 | `n` | Nonce (random value) | `K3mJ9qL2` |
-| `ev` | Event type | `view` |
+| `ev` | `view` for page views or the custom event name | `view` or `signup` |
+| `v` | Optional finite numeric custom event value | `19.99` |
 | `r` | Referrer | `https://google.com` |
 
 ## UTM Parameter Filtering
@@ -106,7 +124,7 @@ Other query parameters are not included, preserving privacy.
 
 ## Opt-Out Mechanism
 
-Users can opt out of TinyPixel tracking by setting a browser cookie:
+Users can opt out of TinyPixel tracking by setting a browser cookie. This suppresses both page views and custom events:
 
 | Cookie Name | Value | Effect |
 |-------------|-------|--------|
@@ -124,7 +142,11 @@ document.cookie = "tpOptOut=yes; path=/; max-age=31536000"; // 1 year
 document.cookie = "tpOptOut=; path=/; max-age=0";
 ```
 
-When the `tpOptOut` cookie is set to `"yes"`, `TinyPixel.emitPageView()` returns immediately without sending any tracking requests.
+When the `tpOptOut` cookie is set to `"yes"`, `TinyPixel.emitPageView()` and `TinyPixel.emitEvent()` return immediately without sending tracking requests.
+
+### Event Validation
+
+Custom event names must be strings containing at least one non-whitespace character, and `view` is reserved for page views. Values must be numbers for which `Number.isFinite()` is true. An omitted value is valid, and `0` is a valid supplied value. The API silently ignores invalid input.
 
 ## Single Page Application (SPA) Support
 
@@ -213,6 +235,7 @@ Tests verify:
 - UTM parameter filtering
 - Random value generation
 - Page view emission with correct parameters
+- Custom event emission, values, URL encoding, and browser-global access
 - Graceful handling of missing attributes
 - Referrer inclusion/exclusion
 - SPA mode activation via `data-spa` attribute
@@ -231,7 +254,7 @@ See `pkg/tiny_pixel.test.js` for comprehensive test specifications.
 The production version is located at `public/tp.js`. When making changes to the source:
 
 1. Update `pkg/tiny_pixel.js`
-2. Minify the changes and update `public/tp.js`
+2. Regenerate `public/tp.js`: `cd pkg && bun run build`
 3. Run tests to ensure functionality: `cd pkg && bun test`
 
 ### File Structure
