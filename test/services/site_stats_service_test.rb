@@ -132,6 +132,18 @@ class SiteStatsServiceTest < ActiveSupport::TestCase
       )
     end
 
+    WeeklyPageStat.create!(
+      site_id: site.id,
+      hostname: "example.com",
+      pathname: "/current-week",
+      week_start: now.beginning_of_week,
+      dimension_type: "global",
+      pageviews: 999,
+      sessions: 999,
+      total_duration: 999.0,
+      duration_count: 1
+    )
+
     service = SiteStatsService.new(site)
     result = service.compute
 

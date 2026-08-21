@@ -57,8 +57,8 @@ class SiteStatsService
   end
 
   def fetch_weekly_stats
-    end_date = 1.day.ago.to_date
-    start_date = 28.days.ago.to_date
+    end_date = 1.week.ago.to_date.beginning_of_week
+    start_date = 4.weeks.ago.to_date.beginning_of_week
 
     WeeklyPageStat.for_site(site.id).global.for_date_range(start_date, end_date)
   end
