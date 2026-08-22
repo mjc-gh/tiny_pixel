@@ -43,4 +43,35 @@ class V1::PixelsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "image/gif", response.header["Content-Type"]
   end
+
+  test "post valid event creates an event without a page view" do
+    payload = valid_payload.merge(ev: "signup", v: "-1.25e2")
+
+    assert_difference "Visitor.count" do
+      assert_difference "Event.count" do
+        assert_no_difference "PageView.count" do
+          get(v1_pixels_path, params: payload, headers:)
+        end
+      end
+    end
+
+    assert_response :success
+    event = Event.order(created_at: :desc).first
+    assert_equal "signup", event.name
+    assert_equal(-125.0, event.value)
+  end
+
+  test "invalid event payload returns bad request without persistence" do
+    payload = valid_payload.merge(ev: "signup", v: "NaN")
+
+    assert_no_difference "Visitor.count" do
+      assert_no_difference "Event.count" do
+        assert_no_difference "PageView.count" do
+          get(v1_pixels_path, params: payload, headers:)
+        end
+      end
+    end
+
+    assert_response :bad_request
+  end
 end

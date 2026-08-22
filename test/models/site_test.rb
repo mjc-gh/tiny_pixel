@@ -326,6 +326,9 @@ class SiteTest < ActiveSupport::TestCase
       pathname: "/page1"
     )
 
+    Event.create!(visitor_digest: stale_visitor.digest, name: "stale", hostname: "example.com", pathname: "/stale")
+    Event.create!(visitor_digest: current_visitor.digest, name: "current", hostname: "example.com", pathname: "/current")
+
     # Verify records exist before cycling
     assert_equal 2, Visitor.where(property_id: site.id).count
     assert_equal 3, PageView.count
@@ -339,5 +342,7 @@ class SiteTest < ActiveSupport::TestCase
     assert_equal current_visitor.digest, Visitor.where(property_id: site.id).pluck(:digest).first
     assert_equal 1, PageView.count
     assert_not_nil PageView.find_by(digest: "current_page_view")
+    assert_nil Event.find_by(name: "stale")
+    assert_not_nil Event.find_by(name: "current")
   end
 end

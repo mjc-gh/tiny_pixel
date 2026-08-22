@@ -4,6 +4,8 @@ class PixelRequest
   include ActiveModel::Model
   include ActiveModel::Attributes
 
+  VALUE_NOT_SUPPLIED = Object.new.freeze
+
   # attribute :origin, :string
   attribute :property_id, :string
   attribute :remote_ip, :string
@@ -12,10 +14,13 @@ class PixelRequest
   attribute :pathname, :string
   attribute :attribution, :string
   attribute :referrer, :string
+  attribute :event
+  attribute :value, default: -> { VALUE_NOT_SUPPLIED }
 
   # TODO: add :origin?
   validates :hostname, :pathname, :property_id, :remote_ip, :user_agent, presence: true
   validate :property_must_exist
+  validate :event_must_be_valid
 
   DEFAULT_COUNTRY_CODE = ""
 
@@ -40,9 +45,11 @@ class PixelRequest
         pathname: params[:p],
         attribution: params[:qs],
         referrer: params[:r],
+        event: params[:ev].nil? ? "view" : params[:ev],
         remote_ip: request.remote_ip,
         user_agent: request.user_agent
       )
+      instance.value = params[:v] if params.key?(:v) || params.key?("v")
     end
   end
 
@@ -57,28 +64,11 @@ class PixelRequest
   def process!
     return unless valid?
 
-    result = Visitor.insert(visitor_attributes, returning: %i[digest])
+    Visitor.insert visitor_attributes, returning: %i[digest]
 
-    if result.rows.any?
-      @new_visit = true
-      @new_session = true
-    else
-      previous_pageview = find_previous_pageview
-      in_same_session = previous_pageview.present? &&
-        (@created_at - previous_pageview.created_at) <= property.session_timeout
+    return process_event! unless page_view?
 
-      if in_same_session
-        update_previous_pageview_duration(previous_pageview)
-        update_session_pageviews_as_not_bounced(previous_pageview)
-      else
-        @new_session = true
-      end
-    end
-
-    @is_unique = !PageView.exists?(visitor_digest:, pathname:, created_at: unique_window_start..)
-
-    PageView.insert page_view_attributes
-
+    process_page_view!
     nil
   end
 
@@ -99,6 +89,17 @@ class PixelRequest
       utm_medium:,
       utm_campaign:,
       ref: }
+  end
+
+  def event_attributes
+    { visitor_digest:,
+      name: event,
+      value: parsed_value,
+      created_at: @created_at,
+      hostname:,
+      pathname:,
+      attribution:,
+      referrer: }
   end
 
   def parsed_attribution
@@ -129,6 +130,67 @@ class PixelRequest
   end
 
   private
+
+  def process_page_view!
+    @new_visit = !PageView.exists?(visitor_digest:)
+
+    if @new_visit
+      @new_session = true
+    else
+      previous_pageview = find_previous_pageview
+      in_same_session = previous_pageview.present? &&
+        (@created_at - previous_pageview.created_at) <= property.session_timeout
+
+      if in_same_session
+        update_previous_pageview_duration(previous_pageview)
+        update_session_pageviews_as_not_bounced(previous_pageview)
+      else
+        @new_session = true
+      end
+    end
+
+    @is_unique = !PageView.exists?(visitor_digest:, pathname:, created_at: unique_window_start..)
+
+    PageView.insert page_view_attributes
+  end
+
+  def process_event!
+    Event.insert event_attributes
+  end
+
+  def page_view?
+    event == "view"
+  end
+
+  def parsed_value
+    return unless value_supplied?
+
+    value.is_a?(Numeric) ? value.to_f : Float(value)
+  end
+
+  def event_must_be_valid
+    unless event.is_a?(String) && event.present?
+      errors.add :event, :blank
+      return
+    end
+
+    if page_view?
+      errors.add(:value, :invalid) if value_supplied?
+    elsif value_supplied? && !valid_value?
+      errors.add :value, :invalid
+    end
+  end
+
+  def value_supplied?
+    attributes["value"] != VALUE_NOT_SUPPLIED
+  end
+
+  def valid_value?
+    return false unless value.is_a?(Numeric) || value.is_a?(String)
+    return false if value.is_a?(Numeric) && !value.finite?
+
+    value.is_a?(Numeric) || value.match?(/\A[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\z/) && Float(value).finite?
+  end
 
   def unique_window_start
     case property.salt_duration

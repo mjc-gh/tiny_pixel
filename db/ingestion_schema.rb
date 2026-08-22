@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_21_143613) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_13_000000) do
+  create_table "events", id: false, force: :cascade do |t|
+    t.text "attribution"
+    t.datetime "created_at", null: false
+    t.text "hostname", null: false
+    t.text "name", null: false
+    t.text "pathname", null: false
+    t.text "referrer"
+    t.float "value"
+    t.text "visitor_digest", null: false
+    t.index ["visitor_digest", "created_at"], name: "event_created_at_idx", order: { created_at: :desc }
+  end
+
   create_table "page_views", id: false, force: :cascade do |t|
     t.text "attribution"
     t.boolean "bounced", default: true

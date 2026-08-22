@@ -930,4 +930,59 @@ class PixelRequestTest < ActiveSupport::TestCase
 
     assert_equal "footer", attributes[:ref]
   end
+
+  test "custom event persists request context and value" do
+    site = sites(:my_blog)
+    request = FakeRequest.new("38.39.40.41", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    params = {
+      pid: site.property_id,
+      ev: "signup",
+      v: "-1.25e2",
+      p: "/register",
+      h: "example.com",
+      qs: "utm_source=campaign",
+      r: "https://search.example/"
+    }
+
+    assert_no_difference "PageView.count" do
+      assert_difference "Event.count" do
+        PixelRequest.from_incoming(request, params).process!
+      end
+    end
+
+    event = Event.order(created_at: :desc).first
+    assert_equal "signup", event.name
+    assert_equal(-125.0, event.value)
+    assert_equal "/register", event.pathname
+    assert_equal "example.com", event.hostname
+    assert_equal "utm_source=campaign", event.attribution
+    assert_equal "https://search.example/", event.referrer
+  end
+
+  test "custom event can precede the first page view" do
+    site = sites(:my_blog)
+    request = FakeRequest.new("39.40.41.42", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    params = { pid: site.property_id, ev: "signup", p: "/", h: "example.com" }
+
+    PixelRequest.from_incoming(request, params).process!
+    page_view = PixelRequest.from_incoming(request, params.merge(ev: "view", p: "/home"))
+    page_view.process!
+
+    assert page_view.instance_variable_get(:@new_visit)
+    assert page_view.instance_variable_get(:@new_session)
+  end
+
+  test "event values require a finite number and page views reject values" do
+    site = sites(:my_blog)
+    request = FakeRequest.new("40.41.42.43", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+
+    [nil, "", " ", "NaN", "Infinity", "1x", [], {}].each do |value|
+      params = { pid: site.property_id, ev: "signup", p: "/", h: "example.com" }
+      params[:v] = value unless value.nil?
+      params[:v] = nil if value.nil?
+      refute PixelRequest.from_incoming(request, params).valid?, "expected #{value.inspect} to be invalid"
+    end
+
+    refute PixelRequest.from_incoming(request, pid: site.property_id, ev: "view", v: "1", p: "/", h: "example.com").valid?
+  end
 end
