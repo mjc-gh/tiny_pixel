@@ -413,7 +413,7 @@ GEM
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
     shellany (0.0.1)
-    simplecov (1.1.0)
+    simplecov (1.1.1)
     simplecov-console (0.9.5)
       ansi
       simplecov
