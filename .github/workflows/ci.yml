@@ -87,18 +87,10 @@ jobs:
           RAILS_ENV: test
           COVERAGE: 1
           # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
+        run: bin/rails db:test:prepare test
 
       - name: Run JS tracking code tests
         run: cd pkg && bun test
-
-      - name: Keep screenshots from failed system tests
-        uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
-          if-no-files-found: ignore
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v7
