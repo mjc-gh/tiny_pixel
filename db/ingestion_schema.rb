@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_000001) do
   create_table "events", id: false, force: :cascade do |t|
     t.text "attribution"
     t.datetime "created_at", null: false
@@ -20,6 +20,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_000000) do
     t.text "referrer"
     t.float "value"
     t.text "visitor_digest", null: false
+    t.index ["created_at"], name: "events_created_at_idx"
     t.index ["visitor_digest", "created_at"], name: "event_created_at_idx", order: { created_at: :desc }
   end
 

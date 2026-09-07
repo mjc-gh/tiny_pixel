@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_09_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_000000) do
   create_table "aggregation_logs", force: :cascade do |t|
     t.string "aggregation_type", null: false
     t.datetime "completed_at"
@@ -35,6 +35,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_120000) do
     t.index ["user_id"], name: "index_api_keys_on_user_id"
   end
 
+  create_table "daily_event_stats", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.integer "hits", default: 0, null: false
+    t.string "hostname", null: false
+    t.string "name", null: false
+    t.string "pathname", null: false
+    t.integer "site_id", null: false
+    t.integer "unique_hits", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["site_id", "date"], name: "idx_daily_event_stats_site_time"
+    t.index ["site_id", "hostname", "date"], name: "idx_daily_event_stats_site_host_time"
+    t.index ["site_id", "name", "date"], name: "idx_daily_event_stats_site_name_time"
+    t.index ["site_id", "name", "hostname", "pathname", "date"], name: "idx_daily_event_stats_unique", unique: true
+    t.index ["site_id"], name: "index_daily_event_stats_on_site_id"
+  end
+
   create_table "daily_page_stats", force: :cascade do |t|
     t.integer "bounced_count", default: 0, null: false
     t.datetime "created_at", null: false
@@ -56,6 +73,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_120000) do
     t.index ["site_id", "hostname", "date"], name: "idx_daily_page_stats_site_host_date"
     t.index ["site_id", "hostname", "pathname", "dimension_type", "dimension_value", "date"], name: "idx_daily_page_stats_unique", unique: true
     t.index ["site_id"], name: "index_daily_page_stats_on_site_id"
+  end
+
+  create_table "hourly_event_stats", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "hits", default: 0, null: false
+    t.string "hostname", null: false
+    t.string "name", null: false
+    t.string "pathname", null: false
+    t.integer "site_id", null: false
+    t.datetime "time_bucket", null: false
+    t.integer "unique_hits", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["site_id", "hostname", "time_bucket"], name: "idx_hourly_event_stats_site_host_time"
+    t.index ["site_id", "name", "hostname", "pathname", "time_bucket"], name: "idx_hourly_event_stats_unique", unique: true
+    t.index ["site_id", "name", "time_bucket"], name: "idx_hourly_event_stats_site_name_time"
+    t.index ["site_id", "time_bucket"], name: "idx_hourly_event_stats_site_time"
+    t.index ["site_id"], name: "index_hourly_event_stats_on_site_id"
   end
 
   create_table "hourly_page_stats", force: :cascade do |t|
@@ -129,6 +163,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_120000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  create_table "weekly_event_stats", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "hits", default: 0, null: false
+    t.string "hostname", null: false
+    t.string "name", null: false
+    t.string "pathname", null: false
+    t.integer "site_id", null: false
+    t.integer "unique_hits", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.date "week_start", null: false
+    t.index ["site_id", "hostname", "week_start"], name: "idx_weekly_event_stats_site_host_time"
+    t.index ["site_id", "name", "hostname", "pathname", "week_start"], name: "idx_weekly_event_stats_unique", unique: true
+    t.index ["site_id", "name", "week_start"], name: "idx_weekly_event_stats_site_name_time"
+    t.index ["site_id", "week_start"], name: "idx_weekly_event_stats_site_time"
+    t.index ["site_id"], name: "index_weekly_event_stats_on_site_id"
+  end
+
   create_table "weekly_page_stats", force: :cascade do |t|
     t.integer "bounced_count", default: 0, null: false
     t.datetime "created_at", null: false
@@ -154,9 +205,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_120000) do
 
   add_foreign_key "aggregation_logs", "sites"
   add_foreign_key "api_keys", "users"
+  add_foreign_key "daily_event_stats", "sites"
   add_foreign_key "daily_page_stats", "sites"
+  add_foreign_key "hourly_event_stats", "sites"
   add_foreign_key "hourly_page_stats", "sites"
   add_foreign_key "memberships", "sites"
   add_foreign_key "memberships", "users"
+  add_foreign_key "weekly_event_stats", "sites"
   add_foreign_key "weekly_page_stats", "sites"
 end

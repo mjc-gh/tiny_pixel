@@ -42,6 +42,20 @@ class StatsRetentionJobTest < ActiveJob::TestCase
     assert WeeklyPageStat.exists?(recent_weekly.id)
   end
 
+  test "#perform deletes expired event stats at every granularity" do
+    site = sites(:my_blog)
+    cutoff = site.stats_retention_cutoff
+    old_hourly = HourlyEventStat.create!(site:, name: "hourly", hostname: "old.com", pathname: "/", time_bucket: cutoff - 1.day)
+    old_daily = DailyEventStat.create!(site:, name: "daily", hostname: "old.com", pathname: "/", date: (cutoff - 1.day).to_date)
+    old_weekly = WeeklyEventStat.create!(site:, name: "weekly", hostname: "old.com", pathname: "/", week_start: (cutoff - 1.day).to_date)
+
+    StatsRetentionJob.new.perform
+
+    assert_not HourlyEventStat.exists?(old_hourly.id)
+    assert_not DailyEventStat.exists?(old_daily.id)
+    assert_not WeeklyEventStat.exists?(old_weekly.id)
+  end
+
   test "#perform iterates through all sites" do
     site_one = sites(:my_blog)
     site_two = Site.create!(name: "Second Site", salt: "placeholder")

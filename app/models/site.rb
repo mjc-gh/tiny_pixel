@@ -9,12 +9,12 @@
 #  display_hostname         :boolean          default(FALSE), not null
 #  name                     :string           not null
 #  salt                     :string           not null
-#  salt_duration            :integer          default("daily"), not null
+#  salt_duration            :integer          default(0), not null
 #  salt_last_cycled_at      :datetime         not null
 #  salt_version             :integer          default(0), not null
 #  session_timeout_minutes  :integer          default(30)
 #  stats_retention_duration :integer          default(12), not null
-#  stats_retention_unit     :integer          default("months"), not null
+#  stats_retention_unit     :integer          default(2), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  property_id              :string           not null
@@ -37,6 +37,9 @@ class Site < ApplicationRecord
   has_many :hourly_page_stats, dependent: :destroy
   has_many :daily_page_stats, dependent: :destroy
   has_many :weekly_page_stats, dependent: :destroy
+  has_many :hourly_event_stats, dependent: :destroy
+  has_many :daily_event_stats, dependent: :destroy
+  has_many :weekly_event_stats, dependent: :destroy
   has_many :aggregation_logs, dependent: :destroy
 
   validates :name, :property_id, :salt, presence: true

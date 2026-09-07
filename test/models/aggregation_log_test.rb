@@ -52,6 +52,14 @@ class AggregationLogTest < ActiveSupport::TestCase
     assert_equal 0, AggregationLog.for_type("weekly").count
   end
 
+  test "accepts event aggregation types" do
+    %w[event_hourly event_daily event_weekly].each_with_index do |type, index|
+      AggregationLog.create!(site: @site, aggregation_type: type, time_bucket: @time_bucket + index.hours)
+    end
+
+    assert_equal %w[event_hourly event_daily event_weekly], AggregationLog.order(:time_bucket).pluck(:aggregation_type)
+  end
+
   test "recent scope orders by time_bucket descending" do
     AggregationLog.create!(site: @site, aggregation_type: "hourly", time_bucket: @time_bucket)
     AggregationLog.create!(site: @site, aggregation_type: "hourly", time_bucket: @time_bucket + 1.hour)

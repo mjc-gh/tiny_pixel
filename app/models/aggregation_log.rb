@@ -25,7 +25,7 @@
 #  site_id  (site_id => sites.id)
 #
 class AggregationLog < ApplicationRecord
-  AGGREGATION_TYPES = %w[hourly daily weekly].freeze
+  AGGREGATION_TYPES = %w[hourly daily weekly event_hourly event_daily event_weekly].freeze
 
   belongs_to :site
 

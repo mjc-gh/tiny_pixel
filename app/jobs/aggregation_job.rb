@@ -5,5 +5,6 @@ class AggregationJob < ApplicationJob
 
   def perform(lookback_hours: AggregationService::LOOKBACK_HOURS)
     AggregationService.aggregate_all_sites(lookback_hours: lookback_hours)
+    EventAggregationService.aggregate_all_sites(lookback_hours: lookback_hours)
   end
 end

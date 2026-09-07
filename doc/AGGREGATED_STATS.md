@@ -8,6 +8,20 @@ tiny_pixel aggregates page analytics into three time-based models sharing the sa
 | `DailyPageStat` | `date` (date) | Per day |
 | `WeeklyPageStat` | `week_start` (date) | Per week |
 
+Custom events are aggregated in parallel:
+
+| Model | Time Column | Granularity |
+|-------|-------------|-------------|
+| `HourlyEventStat` | `time_bucket` (datetime) | Per hour |
+| `DailyEventStat` | `date` (date) | Per day |
+| `WeeklyEventStat` | `week_start` (date) | Per week |
+
+Event rows are keyed by `(site_id, name, hostname, pathname, time_column)`. They contain
+`hits` (every delivered event) and `unique_hits` (distinct privacy-preserving `visitor_digest`
+values in the complete bucket). Repeated delivery counts as repeated hits. Event values are
+intentionally not aggregated because their units are event-specific. Event uniqueness is not
+session uniqueness: custom events do not carry session identifiers.
+
 ## Fields
 
 **Unique key**: `(site_id, hostname, pathname, dimension_type, dimension_value, time_column)`
@@ -103,6 +117,33 @@ service.aggregate_all_dimensions_weekly(week_start)
 **Class methods**:
 - `AggregationService.dimension_expression_for_type(type)` → SQL column expression
 - `AggregationService::SUPPORTED_DIMENSION_TYPES` → list of types
+
+## EventAggregationService
+
+`EventAggregationService` reads raw `Event` rows from the ingestion database, joins visitors by
+digest, and filters the visitor property to preserve tenant isolation. Each granularity is
+computed directly from its complete raw time range, so daily and weekly `unique_hits` must not be
+summed from hourly rows.
+
+```ruby
+service = EventAggregationService.new(site)
+service.aggregate_hourly(Time.current)
+service.aggregate_daily(Date.current)
+service.aggregate_weekly(Date.current.beginning_of_week(:monday))
+service.aggregate_recent(lookback_hours: 48)
+EventAggregationService.aggregate_all_sites(lookback_hours: 48)
+```
+
+Every run reconciles the complete site/bucket scope: existing groups are updated, new groups are
+created, and rows with no remaining raw source group are removed. The recurring job processes a
+48-hour lookback, rounds hourly buckets down, uses half-open raw ranges, and normalizes weeks to
+Monday. Salt rotation deletes old visitors and their events; event aggregates already retained
+for those visitors cannot be reconstructed after that deletion and are refreshed only when their
+raw source rows still exist.
+
+Event models provide `for_site`, `for_date_range`, `for_hostname`, `for_pathname`, `for_name`,
+`ordered_by_hits`, a time ordering scope (`ordered_by_time`, `ordered_by_date`, or
+`ordered_by_week`), and `older_than` retention scopes.
 
 ## Adding New Dimensions
 
