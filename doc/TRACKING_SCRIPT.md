@@ -261,8 +261,10 @@ The production version is located at `public/tp.js`. When making changes to the 
 
 ```
 pkg/
-├── tiny_pixel.js        # Source tracking script
-├── tiny_pixel.test.js   # Unit tests
+├── tiny_pixel.js              # Source tracking script
+├── tiny_pixel.browser.js      # Browser bundle entrypoint
+├── tiny_pixel.test.js         # Unit tests
+├── tiny_pixel.build.test.js # Production bundle smoke test
 └── package.json         # NPM configuration with Bun test runner
 
 public/
